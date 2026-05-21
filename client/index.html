@@ -1,0 +1,103 @@
+<!doctype html>
+<html class="dark" lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>FlowBuilder AI</title>
+    <script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&display=swap" rel="stylesheet"/>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&family=Geist:wght@100..900&display=swap" rel="stylesheet"/>
+    <script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    "colors": {
+                        "outline-variant": "#424754",
+                        "on-error-container": "#ffdad6",
+                        "outline": "#8c909f",
+                        "error-container": "#93000a",
+                        "surface-container-high": "#2a2a2a",
+                        "on-secondary": "#1000a9",
+                        "secondary-fixed": "#e1e0ff",
+                        "primary": "#adc6ff",
+                        "inverse-primary": "#005ac2",
+                        "surface-container-low": "#1c1b1b",
+                        "surface-dim": "#131313",
+                        "on-tertiary": "#502400",
+                        "on-background": "#e5e2e1",
+                        "inverse-on-surface": "#313030",
+                        "on-primary-container": "#00285d",
+                        "tertiary-container": "#df7412",
+                        "surface-container-highest": "#353534",
+                        "surface-tint": "#adc6ff",
+                        "secondary-fixed-dim": "#c0c1ff",
+                        "surface": "#131313",
+                        "on-tertiary-fixed-variant": "#723600",
+                        "on-surface-variant": "#c2c6d6",
+                        "tertiary": "#ffb786",
+                        "inverse-surface": "#e5e2e1",
+                        "on-secondary-fixed": "#07006c",
+                        "surface-bright": "#3a3939",
+                        "tertiary-fixed": "#ffdcc6",
+                        "on-secondary-container": "#b0b2ff",
+                        "surface-container-lowest": "#0e0e0e",
+                        "on-primary-fixed": "#001a42",
+                        "on-primary-fixed-variant": "#004395",
+                        "on-error": "#690005",
+                        "background": "#131313",
+                        "primary-fixed-dim": "#adc6ff",
+                        "surface-variant": "#353534",
+                        "on-tertiary-fixed": "#311400",
+                        "on-tertiary-container": "#461f00",
+                        "surface-container": "#201f1f",
+                        "error": "#ffb4ab",
+                        "secondary-container": "#3131c0",
+                        "on-secondary-fixed-variant": "#2f2ebe",
+                        "on-primary": "#002e6a",
+                        "secondary": "#c0c1ff",
+                        "on-surface": "#e5e2e1",
+                        "primary-container": "#4d8eff",
+                        "primary-fixed": "#d8e2ff",
+                        "tertiary-fixed-dim": "#ffb786"
+                    },
+                    "borderRadius": {
+                        "DEFAULT": "0.125rem",
+                        "lg": "0.25rem",
+                        "xl": "0.5rem",
+                        "full": "0.75rem"
+                    },
+                    "spacing": {
+                        "margin-mobile": "16px",
+                        "margin-desktop": "32px",
+                        "unit": "4px",
+                        "gutter": "16px",
+                        "node-gap": "24px"
+                    },
+                    "fontFamily": {
+                        "label-md": ["Geist"],
+                        "code-sm": ["Geist"],
+                        "headline-md": ["Inter"],
+                        "body-md": ["Inter"],
+                        "body-lg": ["Inter"],
+                        "headline-lg": ["Inter"]
+                    },
+                    "fontSize": {
+                        "label-md": ["13px", {"lineHeight": "16px", "letterSpacing": "0.02em", "fontWeight": "500"}],
+                        "code-sm": ["12px", {"lineHeight": "18px", "fontWeight": "400"}],
+                        "headline-md": ["24px", {"lineHeight": "32px", "letterSpacing": "-0.01em", "fontWeight": "600"}],
+                        "body-md": ["14px", {"lineHeight": "20px", "fontWeight": "400"}],
+                        "body-lg": ["16px", {"lineHeight": "24px", "fontWeight": "400"}],
+                        "headline-lg": ["30px", {"lineHeight": "38px", "letterSpacing": "-0.02em", "fontWeight": "600"}]
+                    }
+                },
+            },
+        }
+    </script>
+  </head>
+  <body class="flex flex-col h-screen font-body-md text-body-md bg-[#0f0f0f] text-[#e5e2e1]">
+    <div id="root" class="h-full flex flex-col"></div>
+    <script type="module" src="/src/main.jsx"></script>
+  </body>
+</html>

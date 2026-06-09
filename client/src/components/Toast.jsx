@@ -11,7 +11,7 @@ export default function Toast({ message, type = 'success', onClose }) {
   const isSuccess = type === 'success';
 
   return (
-    <div className="flex items-center gap-3 px-4 py-3 rounded-lg border bg-[#1a1a1a] shadow-lg animate-fade-in border-[#2e2e2e] pointer-events-auto">
+    <div className="flex items-center gap-3 px-4 py-3 rounded-lg glass-card border border-white/10 pointer-events-auto bg-white/5 backdrop-blur-md shadow-2xl">
       <span className={`material-symbols-outlined ${isSuccess ? 'text-emerald-500' : 'text-rose-500'}`}>
         {isSuccess ? 'check_circle' : 'error'}
       </span>

@@ -1,0 +1,37 @@
+[
+  {
+    "id": "96M8NqtJq3E5W8Y5",
+    "timestamp": "2026-05-22T08:40:00.634Z",
+    "prompt": "Send an email notification every morning at 8 AM with a daily motivational quote",
+    "workflowName": "Daily Motivational Email",
+    "n8nId": "96M8NqtJq3E5W8Y5"
+  },
+  {
+    "id": "62IulYkg9o7S489b",
+    "timestamp": "2026-05-24T08:27:59.143Z",
+    "prompt": "every morning at 9am send a Slack message saying good morning",
+    "workflowName": "Daily Good Morning Slack Message",
+    "n8nId": "62IulYkg9o7S489b"
+  },
+  {
+    "id": "M3iFoUnS4HvsVEiu",
+    "timestamp": "2026-05-24T08:44:11.379Z",
+    "prompt": "workflow to post goodmorning on twiteer everyday at 8 am",
+    "workflowName": "Daily Twitter Post",
+    "n8nId": "M3iFoUnS4HvsVEiu"
+  },
+  {
+    "id": "1mjyYXI5pe9KKSSc",
+    "timestamp": "2026-05-25T09:21:33.920Z",
+    "prompt": "i need a workflow to create buckets in s3 in aws which uses imap and smtp creds i need it to read my mail with keywords example if my mail says create bucket 123s it should create like a choose task to create delete update buckets like while condition",
+    "workflowName": "S3 Bucket Management via Email",
+    "n8nId": "1mjyYXI5pe9KKSSc"
+  },
+  {
+    "id": "1zK0Rgcxtpws83eT",
+    "timestamp": "2026-06-06T14:44:30.810Z",
+    "prompt": "i want to apply for internships on internshala which are according to my roleprofession like upload resumes where needed write answers and all",
+    "workflowName": "Internshala Internship Application",
+    "n8nId": "1zK0Rgcxtpws83eT"
+  }
+]

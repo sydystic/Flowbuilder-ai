@@ -1,8 +1,11 @@
 const express = require("express");
 const cors = require("cors");
-require("dotenv").config({ path: "../.env" });
+const path = require("path");
+require("dotenv").config({ path: path.resolve(__dirname, "../.env") });
 
 const workflowRoutes = require("./routes/workflow");
+const credentialRoutes = require("./routes/credentials");
+const chatRoutes = require("./routes/chat");
 
 const app = express();
 
@@ -10,6 +13,8 @@ app.use(cors());
 app.use(express.json());
 
 app.use("/api/workflows", workflowRoutes);
+app.use("/api/credentials", credentialRoutes);
+app.use("/api", chatRoutes);
 
 app.get("/health", (req, res) => {
   res.json({ status: "ok", timestamp: new Date().toISOString() });

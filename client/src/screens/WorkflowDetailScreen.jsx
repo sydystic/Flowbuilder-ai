@@ -1,6 +1,7 @@
 /* eslint-disable react-hooks/set-state-in-effect, react-hooks/exhaustive-deps */
-import React, { useState, useEffect } from 'react';
+import React, { useState } from 'react';
 import { useParams, Link } from 'react-router-dom';
+import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import axios from 'axios';
 import Toast from '../components/Toast';
 import Header from '../components/Header';
@@ -25,10 +26,7 @@ const getNodeInfo = (type = '', name = '') => {
 
 export default function WorkflowDetailScreen() {
   const { id } = useParams();
-  const [workflow, setWorkflow] = useState(null);
-  const [executions, setExecutions] = useState([]);
-  const [isLoadingWorkflow, setIsLoadingWorkflow] = useState(true);
-  const [isLoadingExecutions, setIsLoadingExecutions] = useState(true);
+  const queryClient = useQueryClient();
   const [toasts, setToasts] = useState([]);
   const [settingsOpen, setSettingsOpen] = useState(false);
   const [notificationsOpen, setNotificationsOpen] = useState(false);
@@ -43,43 +41,41 @@ export default function WorkflowDetailScreen() {
     setToasts(prev => prev.filter(t => t.id !== toastId));
   };
 
-  const fetchWorkflowDetails = async () => {
-    setIsLoadingWorkflow(true);
-    try {
-      const res = await axios.get('/api/workflows');
-      const data = Array.isArray(res.data) ? res.data : (res.data?.data || []);
-      const found = data.find(w => w.id === id || String(w.id) === String(id));
-      if (found) {
-        setWorkflow(found);
-      } else {
-        showToast('Workflow not found', 'error');
-      }
-    } catch (err) {
-      console.error(err);
-      showToast('Failed to load workflow details', 'error');
-    } finally {
-      setIsLoadingWorkflow(false);
+  // React Query: Fetch single workflow details
+  const { data: workflow, isLoading: isLoadingWorkflow, error: workflowError } = useQuery({
+    queryKey: ['workflow', id],
+    queryFn: async () => {
+      const res = await axios.get(`/api/workflows/${id}`);
+      return res.data;
     }
-  };
+  });
 
-  const fetchExecutions = async () => {
-    setIsLoadingExecutions(true);
-    try {
+  // React Query: Fetch executions runs (triggers backend incremental sync)
+  const { data: executions = [], isLoading: isLoadingExecutions, error: executionsError, refetch: refetchExecutions } = useQuery({
+    queryKey: ['executions', id],
+    queryFn: async () => {
       const res = await axios.get(`/api/workflows/${id}/executions`);
-      const data = Array.isArray(res.data) ? res.data : (res.data?.data || []);
-      setExecutions(data);
-    } catch (err) {
-      console.error(err);
-      showToast('Failed to load executions history', 'error');
-    } finally {
-      setIsLoadingExecutions(false);
-    }
-  };
+      return Array.isArray(res.data) ? res.data : [];
+    },
+    enabled: !!workflow
+  });
 
-  useEffect(() => {
-    fetchWorkflowDetails();
-    fetchExecutions();
-  }, [id]);
+  // React Query: Deploy/Retry Mutation
+  const deployMutation = useMutation({
+    mutationFn: async () => {
+      const res = await axios.post(`/api/workflows/${id}/deploy`);
+      return res.data;
+    },
+    onSuccess: (data) => {
+      queryClient.invalidateQueries({ queryKey: ['workflow', id] });
+      queryClient.invalidateQueries({ queryKey: ['workflows'] });
+      showToast(`Workflow "${data.workflow?.name || 'Workflow'}" deployed successfully!`);
+    },
+    onError: (err) => {
+      const errorMsg = err.response?.data?.error || err.message || 'Something went wrong';
+      showToast(`Failed to deploy: ${errorMsg}`, 'error');
+    }
+  });
 
   const handleCopyJson = () => {
     if (!workflow) return;
@@ -91,7 +87,7 @@ export default function WorkflowDetailScreen() {
     showToast('Triggering workflow execution in n8n...', 'info');
     setTimeout(() => {
       showToast('Workflow triggered. Refreshing run history...', 'success');
-      fetchExecutions();
+      refetchExecutions();
     }, 1500);
   };
 
@@ -123,11 +119,13 @@ export default function WorkflowDetailScreen() {
             <div className="mb-4 h-8 w-8 animate-spin rounded-full border-2 border-primary border-r-transparent" />
             <p className="text-sm">Loading workflow details...</p>
           </div>
-        ) : !workflow ? (
+        ) : (!workflow || workflowError) ? (
           <div className="flex flex-1 flex-col items-center justify-center p-6 text-center">
             <span className="material-symbols-outlined mb-4 text-[44px] text-[#93000a]">error</span>
             <h2 className="text-xl font-semibold text-ink">Workflow Not Found</h2>
-            <p className="mt-2 max-w-md text-sm leading-6 text-ink-muted">We couldn't locate a workflow with ID "{id}". It may have been deleted.</p>
+            <p className="mt-2 max-w-md text-sm leading-6 text-ink-muted">
+              {workflowError?.response?.data?.error || `We couldn't locate a workflow with ID "${id}". It may have been deleted or access is forbidden.`}
+            </p>
             <Link to="/dashboard" className="notion-button mt-6">Back to Dashboard</Link>
           </div>
         ) : (
@@ -143,11 +141,11 @@ export default function WorkflowDetailScreen() {
                   <h1 className="max-w-3xl text-[34px] font-semibold leading-tight tracking-[-0.02em] text-ink">
                     {workflow.name || 'Untitled workflow'}
                   </h1>
-                  <p className="mt-2 text-sm text-ink-muted">ID: {workflow.id}</p>
+                  <p className="mt-2 text-xs text-ink-faint">ID: {workflow.id}</p>
                 </div>
               </div>
 
-              <div className="notion-panel flex min-h-[280px] items-center overflow-x-auto p-8">
+              <div className="notion-panel flex min-h-[280px] items-center overflow-x-auto p-8 bg-white/40">
                 <div className="flex items-center gap-5">
                   {workflow.nodes && workflow.nodes.length > 0 ? (
                     workflow.nodes.map((node, index) => {
@@ -166,29 +164,36 @@ export default function WorkflowDetailScreen() {
                       );
                     })
                   ) : (
-                    <div className="text-sm text-ink-muted">No nodes configured for this workflow.</div>
+                    <div className="text-sm text-ink-muted">No nodes configured for this workflow draft. Retrying deployment will construct the nodes.</div>
                   )}
                 </div>
               </div>
 
-              <section className="mt-6 min-h-0 flex-1 overflow-hidden rounded-xl bg-white/48">
-                <div className="flex items-center justify-between px-4 py-3">
+              <section className="mt-6 min-h-0 flex-1 overflow-hidden rounded-xl bg-white/48 flex flex-col">
+                <div className="flex items-center justify-between px-4 py-3 shrink-0 border-b border-black/[0.05]">
                   <h3 className="flex items-center gap-2 text-sm font-semibold text-ink">
                     <span className="material-symbols-outlined text-[18px] text-primary">history</span>
-                    Run History
+                    Run History (Incremental Sync)
                   </h3>
-                  <button onClick={fetchExecutions} className="notion-nav-item flex h-8 w-8 items-center justify-center" type="button">
-                    <span className="material-symbols-outlined text-[18px]">refresh</span>
+                  <button 
+                    onClick={() => refetchExecutions()} 
+                    disabled={isLoadingExecutions}
+                    className="notion-nav-item flex h-8 w-8 items-center justify-center" 
+                    type="button"
+                  >
+                    <span className={`material-symbols-outlined text-[18px] ${isLoadingExecutions ? 'animate-spin' : ''}`}>
+                      refresh
+                    </span>
                   </button>
                 </div>
-                <div className="max-h-full overflow-auto px-2 pb-3">
+                <div className="flex-1 overflow-y-auto px-4 py-3">
                   {isLoadingExecutions ? (
                     <div className="flex items-center justify-center py-12 text-sm text-ink-muted">
                       <div className="mr-2 h-5 w-5 animate-spin rounded-full border-2 border-primary border-r-transparent" />
                       Loading execution history...
                     </div>
                   ) : executions.length === 0 ? (
-                    <div className="py-12 text-center text-sm text-ink-muted">No run executions found for this workflow.</div>
+                    <div className="py-12 text-center text-sm text-ink-muted">No execution runs found for this workflow.</div>
                   ) : (
                     <div className="space-y-1">
                       {executions.map((exec) => (
@@ -197,19 +202,30 @@ export default function WorkflowDetailScreen() {
                             <p className="font-medium text-ink">#{exec.id.substring(0, 8)}</p>
                             <p className="text-xs text-ink-muted">{formatTimestamp(exec.startedAt)}</p>
                           </div>
-                          <span className={`w-fit rounded-full px-2 py-0.5 text-xs font-medium ${
+                          <span className={`w-fit rounded-full px-2.5 py-0.5 text-xs font-medium ${
                             exec.status === 'success'
                               ? 'bg-primary/10 text-primary'
-                              : exec.status === 'failed' || exec.status === 'error'
+                              : exec.status === 'failed'
                                 ? 'bg-[#93000a]/10 text-[#93000a]'
                                 : 'bg-black/[0.05] text-ink-muted'
                           }`}>
-                            {exec.status || 'Running'}
+                            {exec.status.toUpperCase()}
                           </span>
-                          <span className="text-ink-muted">{exec.workflowData?.nodes?.length || workflow.nodes?.length || '-'} nodes</span>
-                          <a href={`http://localhost:5678/workflow/${id}/executions/${exec.id}`} target="_blank" rel="noreferrer" className="text-right font-medium text-primary hover:underline">
-                            View
-                          </a>
+                          <span className="text-ink-muted text-xs">
+                            {exec.logs?.workflowData?.nodes?.length || workflow.nodes?.length || '-'} nodes
+                          </span>
+                          {workflow.n8nWorkflowId ? (
+                            <a 
+                              href={`http://localhost:5678/workflow/${workflow.n8nWorkflowId}/executions/${exec.id}`} 
+                              target="_blank" 
+                              rel="noreferrer" 
+                              className="text-right font-medium text-primary hover:underline text-xs"
+                            >
+                              View in n8n
+                            </a>
+                          ) : (
+                            <span className="text-right text-xs text-ink-faint">-</span>
+                          )}
                         </div>
                       ))}
                     </div>
@@ -218,7 +234,7 @@ export default function WorkflowDetailScreen() {
               </section>
             </section>
 
-            <aside className="flex w-[340px] shrink-0 flex-col overflow-hidden px-5 py-6">
+            <aside className="flex w-[340px] shrink-0 flex-col overflow-hidden px-5 py-6 border-l border-black/[0.05]">
               <div className="mb-4 flex items-center justify-between">
                 <div>
                   <p className="text-xs font-semibold uppercase tracking-[0.08em] text-ink-faint">Inspector</p>
@@ -229,23 +245,67 @@ export default function WorkflowDetailScreen() {
                 </button>
               </div>
 
-              <div className="min-h-0 flex-1 overflow-auto rounded-xl bg-white/52 p-4">
+              <div className="min-h-0 flex-1 overflow-auto rounded-xl bg-white/52 p-4 border border-black/[0.05]">
                 <pre className="text-xs leading-5 text-ink-secondary"><code>{JSON.stringify(workflow, null, 2)}</code></pre>
               </div>
 
-              <div className="mt-4 rounded-xl bg-white/52 p-4">
+              <div className="mt-4 rounded-xl bg-white/52 p-4 border border-black/[0.05]">
                 <p className="text-xs font-semibold uppercase tracking-[0.08em] text-ink-faint">Status</p>
+                
+                {workflow.status === 'failed' && (
+                  <div className="mt-2 text-xs text-[#93000a] bg-[#93000a]/5 p-2 rounded border border-[#93000a]/10 whitespace-pre-wrap mb-4">
+                    <p className="font-semibold mb-1">Deployment Error:</p>
+                    {workflow.deploymentError || 'An error occurred during deployment.'}
+                  </div>
+                )}
+
                 <div className="mt-2 flex items-center gap-2 text-sm font-medium text-ink">
-                  <span className={`h-2 w-2 rounded-full ${workflow.active ? 'bg-primary' : 'bg-ink-faint'}`} />
-                  {workflow.active ? 'Active & Monitoring' : 'Inactive / Paused'}
+                  <span className={`h-2 w-2 rounded-full ${
+                    workflow.status === 'failed' 
+                      ? 'bg-[#93000a]' 
+                      : workflow.status === 'draft' 
+                        ? 'bg-amber-500' 
+                        : workflow.active 
+                          ? 'bg-primary' 
+                          : 'bg-ink-faint'
+                  }`} />
+                  {workflow.status === 'failed' 
+                    ? 'Deployment Failed' 
+                    : workflow.status === 'draft' 
+                      ? 'Draft Workflow' 
+                      : workflow.active 
+                        ? 'Active & Monitoring' 
+                        : 'Inactive / Paused'}
                 </div>
+
                 <div className="mt-4 flex gap-2">
-                  <a href={`http://localhost:5678/workflow/${id}`} target="_blank" rel="noreferrer" className="notion-button-secondary flex-1">
-                    Configure
-                  </a>
-                  <button onClick={handleRunNow} className="notion-button flex-1" type="button">
-                    Run Now
-                  </button>
+                  {workflow.status === 'failed' || workflow.status === 'draft' ? (
+                    <button 
+                      onClick={() => deployMutation.mutate()} 
+                      disabled={deployMutation.isPending} 
+                      className="notion-button flex-1 justify-center gap-1"
+                      type="button"
+                    >
+                      <span className={`material-symbols-outlined text-[17px] ${deployMutation.isPending ? 'animate-spin' : ''}`}>
+                        {deployMutation.isPending ? 'sync' : 'bolt'}
+                      </span>
+                      {deployMutation.isPending ? 'Deploying...' : 'Deploy Now'}
+                    </button>
+                  ) : (
+                    <>
+                      <a 
+                        href={`http://localhost:5678/workflow/${workflow.n8nWorkflowId || ''}`} 
+                        target="_blank" 
+                        rel="noreferrer" 
+                        className="notion-button-secondary flex-1 text-center flex items-center justify-center"
+                      >
+                        Configure
+                      </a>
+                      <button onClick={handleRunNow} className="notion-button flex-1" type="button">
+                        Run Now
+                      </button>
+                    </>
+                  )}
                 </div>
               </div>
             </aside>

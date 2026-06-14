@@ -2,126 +2,236 @@ const express = require("express");
 const router = express.Router();
 const n8nClient = require("../services/n8nClient");
 const aiClient = require("../services/aiClient");
-const historyStore = require("../services/historyStore");
+const workflowService = require("../services/workflowService");
+const requireAuth = require("../middlewares/auth");
 
-// POST /generate → calls aiClient then n8nClient.createWorkflow, saves to historyStore, returns {success, workflowName, n8nId, workflow}
+// Require authentication for all workflow routes
+router.use(requireAuth);
+
+// GET /api/workflows → Retrieve all workflows for the authenticated user
+router.get("/", async (req, res) => {
+  try {
+    const workflows = await workflowService.listWorkflows(req.user.id);
+    res.json(workflows);
+  } catch (err) {
+    console.error("List workflows error:", err.message);
+    res.status(500).json({ error: err.message });
+  }
+});
+
+// GET /api/workflows/:id → Retrieve a single workflow by UUID, checking ownership
+router.get("/:id", async (req, res) => {
+  try {
+    const workflow = await workflowService.getWorkflow(req.params.id, req.user.id);
+    if (!workflow) {
+      return res.status(404).json({ error: "Workflow not found" });
+    }
+    res.json(workflow);
+  } catch (err) {
+    const status = err.status || 500;
+    res.status(status).json({ error: err.message });
+  }
+});
+
+// POST /api/workflows/generate → Generate, save draft, and deploy a workflow
 router.post("/generate", async (req, res) => {
   try {
-    const { prompt } = req.body;
+    const { prompt, spec: clientSpec } = req.body;
     if (!prompt) {
       return res.status(400).json({ error: "prompt is required" });
     }
 
-    console.log("Generating workflow for:", prompt);
-    const generated = await aiClient.generateWorkflow(prompt);
-    if (!generated.success) {
-      return res.status(500).json({
-        error: "AI generation failed",
-        details: generated.error,
+    console.log("1. Generating/extracting spec for:", prompt);
+    const spec = clientSpec || await aiClient.generateWorkflowSpec(prompt);
+
+    console.log("2. Saving workflow as draft in Supabase...");
+    let workflow = await workflowService.createWorkflow(req.user.id, {
+      name: spec.name || "Generated Workflow",
+      description: spec.description || prompt,
+      workflowSpec: spec,
+      status: "draft",
+      active: false
+    });
+
+    console.log("3. Generating workflow_json via AI...");
+    let generated;
+    try {
+      generated = await aiClient.generateWorkflow(prompt);
+      if (!generated.success) {
+        throw new Error(generated.error || "AI generation returned success=false");
+      }
+    } catch (aiErr) {
+      console.error("AI Generation failed:", aiErr.message);
+      workflow = await workflowService.updateWorkflow(workflow.id, req.user.id, {
+        status: "failed",
+        deploymentError: `AI Generation failed: ${aiErr.message}`
+      });
+      return res.json({
+        success: false,
+        error: `AI Generation failed: ${aiErr.message}`,
+        workflowId: workflow.id,
+        status: "failed"
       });
     }
 
-    console.log("Generated workflow:", generated.workflow.name);
-    const deployed = await n8nClient.createWorkflow(generated.workflow);
+    console.log("4. Updating draft with workflow_json...");
+    workflow = await workflowService.updateWorkflow(workflow.id, req.user.id, {
+      name: generated.workflow.name || workflow.name,
+      workflowJson: generated.workflow
+    });
 
-    historyStore.save({
-      prompt,
-      workflowName: generated.workflow.name,
-      n8nId: deployed.id,
+    console.log("5. Deploying to n8n...");
+    let deployed;
+    try {
+      deployed = await n8nClient.createWorkflow(generated.workflow);
+    } catch (n8nErr) {
+      console.error("n8n deployment failed:", n8nErr.message);
+      workflow = await workflowService.updateWorkflow(workflow.id, req.user.id, {
+        status: "failed",
+        deploymentError: `n8n deployment failed: ${n8nErr.message}`
+      });
+      return res.json({
+        success: false,
+        error: `n8n deployment failed: ${n8nErr.message}`,
+        workflowId: workflow.id,
+        status: "failed",
+        workflow: workflow
+      });
+    }
+
+    console.log("6. Saving n8n ID and marking active in Supabase...");
+    workflow = await workflowService.updateWorkflow(workflow.id, req.user.id, {
+      n8nWorkflowId: deployed.id,
+      status: "active",
+      active: true,
+      deploymentError: null // Clear any error
     });
 
     res.json({
       success: true,
-      workflowName: generated.workflow.name,
+      workflowId: workflow.id,
+      workflowName: workflow.name,
       n8nId: deployed.id,
-      workflow: generated.workflow,
+      workflow: workflow
     });
-   } catch (err) {
-  console.error("Generate error:", err.message);
-  res.status(500).json({
-    error: err.message || "Unknown error",
-    hint: "Check server console for full n8n error details"
-  });
-}
-});
-
-// GET /history → returns historyStore.getAll()
-router.get("/history", (req, res) => {
-  try {
-    res.json(historyStore.getAll());
   } catch (err) {
-    console.error("History error:", err.message);
+    console.error("Generate route error:", err.message);
     res.status(500).json({ error: err.message });
   }
 });
 
-// GET / → n8nClient.listWorkflows()
-router.get("/", async (req, res) => {
+// POST /api/workflows/:id/deploy → Retry deploying a failed or draft workflow
+router.post("/:id/deploy", async (req, res) => {
   try {
-    const workflows = await n8nClient.listWorkflows();
-    res.json(workflows);
-  } catch (err) {
-    console.error("List error:", err.message);
-    res.status(500).json({ error: err.message });
-  }
-});
-
-// POST / → n8nClient.createWorkflow(workflowJson)
-router.post("/", async (req, res) => {
-  try {
-    const workflowJson = req.body.workflowJson || req.body;
-    if (!workflowJson) {
-      return res.status(400).json({ error: "workflowJson is required" });
+    const { id } = req.params;
+    let workflow = await workflowService.getWorkflow(id, req.user.id);
+    if (!workflow) {
+      return res.status(404).json({ error: "Workflow not found" });
     }
-    const result = await n8nClient.createWorkflow(workflowJson);
-    res.json(result);
+
+    if (!workflow.workflowJson) {
+      console.log("Workflow is missing workflow_json. Regenerating...");
+      const prompt = workflow.description || workflow.name;
+      const generated = await aiClient.generateWorkflow(prompt);
+      if (!generated.success) {
+        throw new Error(generated.error || "AI generation failed");
+      }
+      workflow = await workflowService.updateWorkflow(id, req.user.id, {
+        name: generated.workflow.name,
+        workflowJson: generated.workflow
+      });
+    }
+
+    console.log("Attempting to deploy to n8n:", workflow.name);
+    const deployed = await n8nClient.createWorkflow(workflow.workflowJson);
+
+    console.log("Deployment success. Updating workflow in Supabase...");
+    workflow = await workflowService.updateWorkflow(id, req.user.id, {
+      n8nWorkflowId: deployed.id,
+      status: "active",
+      active: true,
+      deploymentError: null
+    });
+
+    res.json({
+      success: true,
+      workflow
+    });
   } catch (err) {
-    console.error("Create error:", err.message);
+    console.error("Deploy retry error:", err.message);
+    await workflowService.updateWorkflow(req.params.id, req.user.id, {
+      status: "failed",
+      deploymentError: err.message
+    });
     res.status(500).json({ error: err.message });
   }
 });
 
-// PATCH /activate/:id -> activate or deactivate workflow in n8n
-router.patch("/activate/:id", async (req, res) => {
+// Helper for activation toggles
+const handleActivate = async (req, res) => {
   try {
+    const { id } = req.params;
     const { active } = req.body;
-    const result = await n8nClient.activateWorkflow(req.params.id, active);
-    res.json(result);
-  } catch (err) {
-    res.status(500).json({ error: err.message });
-  }
-});
+    
+    // Verify ownership
+    const workflow = await workflowService.getWorkflow(id, req.user.id);
+    if (!workflow) {
+      return res.status(404).json({ error: "Workflow not found" });
+    }
 
-// PATCH /:id/activate -> activate or deactivate workflow in n8n
-router.patch("/:id/activate", async (req, res) => {
-  try {
-    const { active } = req.body;
-    const result = await n8nClient.activateWorkflow(req.params.id, active);
-    res.json(result);
-  } catch (err) {
-    res.status(500).json({ error: err.message });
-  }
-});
+    if (workflow.n8nWorkflowId) {
+      await n8nClient.activateWorkflow(workflow.n8nWorkflowId, active);
+    } else if (active) {
+      return res.status(400).json({ error: "Cannot activate a workflow that has not been deployed to n8n yet" });
+    }
 
-// GET /:id/executions → n8nClient.getExecutions(req.params.id)
+    const updated = await workflowService.updateWorkflow(id, req.user.id, { active });
+    res.json(updated);
+  } catch (err) {
+    const status = err.status || 500;
+    res.status(status).json({ error: err.message });
+  }
+};
+
+// PATCH /api/workflows/activate/:id -> activate or deactivate workflow
+router.patch("/activate/:id", handleActivate);
+
+// PATCH /api/workflows/:id/activate -> activate or deactivate workflow
+router.patch("/:id/activate", handleActivate);
+
+// GET /api/workflows/:id/executions → Fetch and sync executions history
 router.get("/:id/executions", async (req, res) => {
   try {
-    const executions = await n8nClient.getExecutions(req.params.id);
-    res.json(executions);
+    const runs = await workflowService.syncWorkflowRuns(req.params.id, req.user.id);
+    res.json(runs);
   } catch (err) {
-    console.error("Executions error:", err.message);
-    res.status(500).json({ error: err.message });
+    const status = err.status || 500;
+    res.status(status).json({ error: err.message });
   }
 });
 
-// DELETE /:id → n8nClient.deleteWorkflow(req.params.id)
+// DELETE /api/workflows/:id → Delete workflow from Supabase and n8n
 router.delete("/:id", async (req, res) => {
   try {
-    const result = await n8nClient.deleteWorkflow(req.params.id);
-    res.json({ success: true, result });
+    const { id } = req.params;
+    const workflow = await workflowService.getWorkflow(id, req.user.id);
+    if (!workflow) {
+      return res.status(404).json({ error: "Workflow not found" });
+    }
+
+    if (workflow.n8nWorkflowId) {
+      try {
+        await n8nClient.deleteWorkflow(workflow.n8nWorkflowId);
+      } catch (n8nErr) {
+        console.warn(`n8n delete workflow ${workflow.n8nWorkflowId} failed:`, n8nErr.message);
+      }
+    }
+
+    await workflowService.deleteWorkflow(id, req.user.id);
+    res.json({ success: true });
   } catch (err) {
-    console.error("Delete error:", err.message);
-    res.status(500).json({ error: err.message });
+    const status = err.status || 500;
+    res.status(status).json({ error: err.message });
   }
 });
 

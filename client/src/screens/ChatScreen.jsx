@@ -1,5 +1,6 @@
 import React, { useState, useEffect, useRef, useCallback } from 'react';
 import axios from 'axios';
+import { useQueryClient } from '@tanstack/react-query';
 import Toast from '../components/Toast';
 import Header from '../components/Header';
 import Sidebar from '../components/Sidebar';
@@ -12,6 +13,7 @@ import ProfileModal from '../components/modals/ProfileModal';
 const uid = () => Math.random().toString(36).slice(2) + Date.now().toString(36);
 
 export default function ChatScreen() {
+  const queryClient = useQueryClient();
   const [sessions, setSessions] = useState([]);
   const [activeSessionId, setActiveSessionId] = useState(null);
   const [messages, setMessages] = useState([]);
@@ -297,7 +299,7 @@ export default function ChatScreen() {
 Trigger: ${spec.trigger.service} (Event: ${spec.trigger.event}, Source/Sheet: ${spec.trigger.sheetName}, Details: ${spec.trigger.details})
 Action: ${spec.action.service} (Action: ${spec.action.action}, Target/Channel: ${spec.action.channel}, Details: ${spec.action.details})`;
 
-      const res = await axios.post(`/api/workflows/generate`, { prompt: summaryPrompt });
+      const res = await axios.post(`/api/workflows/generate`, { prompt: summaryPrompt, spec });
       if (res.data.success) {
         const deployMsg = {
           id: uid(),
@@ -310,7 +312,7 @@ Action: ${spec.action.service} (Action: ${spec.action.action}, Target/Channel: $
         addMsg(deployMsg);
         await persistMessage(activeSessionId, deployMsg);
         showToast('Workflow generated and deployed!');
-        fetchRecentWorkflows();
+        queryClient.invalidateQueries({ queryKey: ['workflows'] });
       } else {
         throw new Error(res.data.error || 'Failed to deploy workflow');
       }

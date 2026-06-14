@@ -301,7 +301,51 @@ const aiClient = {
     } catch (err) {
       return { needsClarification: false };
     }
+  },
+
+  async generateWorkflowSpec(prompt) {
+    const systemInstruction = `Analyze the prompt and generate a workflow spec.
+    Return ONLY a JSON object:
+    {
+      "name": "descriptive name",
+      "description": "short description",
+      "trigger": { "service": "Trigger Service", "event": "Trigger Event", "details": "Trigger Details" },
+      "action": { "service": "Action Service", "action": "Action Name", "details": "Action Details" }
+    }`;
+    
+    try {
+      let text = "";
+      if (genAI) {
+        const model = genAI.getGenerativeModel({
+          model: "gemini-1.5-flash",
+          systemInstruction: systemInstruction,
+        });
+        const result = await model.generateContent(prompt);
+        text = result.response.text();
+      } else {
+        const completion = await groq.chat.completions.create({
+          model: "llama-3.3-70b-versatile",
+          messages: [
+            { role: "system", content: systemInstruction },
+            { role: "user", content: prompt }
+          ],
+          temperature: 0.2,
+          response_format: { type: "json_object" }
+        });
+        text = completion.choices[0].message.content;
+      }
+      return this.parseJsonResponse(text);
+    } catch (err) {
+      console.warn("Failed to generate workflow spec via AI:", err.message);
+      // Fallback spec
+      return {
+        name: "Generated Workflow",
+        description: prompt,
+        trigger: { service: "Trigger", event: "Event", details: "Active" },
+        action: { service: "Action", action: "Execute", details: "Complete" }
+      };
+    }
   }
 };
 
-module.exports = aiClient;
+module.exports = aiClient;

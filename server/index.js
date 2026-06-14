@@ -3,6 +3,9 @@ const cors = require("cors");
 const path = require("path");
 require("dotenv").config({ path: path.resolve(__dirname, "../.env") });
 
+// Validate Encryption Key at startup
+require("./services/credentialEncryptionService");
+
 const workflowRoutes = require("./routes/workflow");
 const credentialRoutes = require("./routes/credentials");
 const chatRoutes = require("./routes/chat");

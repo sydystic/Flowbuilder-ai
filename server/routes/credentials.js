@@ -1,38 +1,42 @@
 const express = require("express");
 const router = express.Router();
 const n8nClient = require("../services/n8nClient");
-const credentialStore = require("../services/credentialStore");
+const supabase = require("../services/supabaseClient");
+const requireAuth = require("../middlewares/auth");
+const credentialEncryptionService = require("../services/credentialEncryptionService");
 
-// GET /api/credentials → list all credentials
+// Require authentication for all credentials routes
+router.use(requireAuth);
+
+// GET /api/credentials → List all credentials for the authenticated user (secrets stripped)
 router.get("/", async (req, res) => {
   try {
-    let n8nCreds = [];
-    try {
-      n8nCreds = await n8nClient.listCredentials();
-    } catch (n8nErr) {
-      console.warn("n8n list credentials failed, falling back to local store:", n8nErr.message);
-      const localCreds = credentialStore.getAll();
-      return res.json(localCreds);
-    }
+    const { data: dbCreds, error } = await supabase
+      .from("credentials")
+      .select("*")
+      .eq("user_id", req.user.id);
 
-    const localCreds = credentialStore.getAll();
-    const merged = n8nCreds.map(nc => {
-      const local = localCreds.find(lc => lc.id === nc.id || lc.id === String(nc.id));
+    if (error) throw error;
+
+    const mapped = (dbCreds || []).map(c => {
       return {
-        id: nc.id,
-        name: local ? local.name : nc.name,
-        type: nc.type,
-        createdAt: local ? local.createdAt : nc.createdAt || new Date().toISOString(),
+        id: c.id, // Supabase UUID
+        name: c.credential_name,
+        type: c.service_name,
+        createdAt: c.created_at || new Date().toISOString(),
+        isActive: c.is_active,
+        n8nId: c.provider_user_id // The n8n credential ID
       };
     });
-    res.json(merged);
+
+    res.json(mapped);
   } catch (err) {
     console.error("List credentials error:", err.message);
     res.status(500).json({ error: err.message });
   }
 });
 
-// POST /api/credentials → create credential in n8n and store metadata locally
+// POST /api/credentials → Create credential in n8n and store encrypted in Supabase
 router.post("/", async (req, res) => {
   try {
     const { name, type, data } = req.body;
@@ -40,40 +44,86 @@ router.post("/", async (req, res) => {
       return res.status(400).json({ error: "type and data are required" });
     }
 
-    console.log("Creating credential in n8n:", name, type);
-    const result = await n8nClient.createCredential(name || "Unnamed Credential", type, data);
+    const credentialName = name || `Credential for ${type}`;
 
-    // Save metadata locally
-    credentialStore.save({
-      id: result.id,
-      name: name || result.name,
-      type: type
+    console.log("Creating credential in n8n:", credentialName, type);
+    const n8nResult = await n8nClient.createCredential(credentialName, type, data);
+
+    console.log("Encrypting credential secrets...");
+    const encryptedConfig = credentialEncryptionService.encrypt(data);
+
+    console.log("Saving encrypted credential to Supabase...");
+    const { data: inserted, error: insertError } = await supabase
+      .from("credentials")
+      .insert({
+        user_id: req.user.id,
+        service_name: type,
+        credential_name: credentialName,
+        encrypted_config: encryptedConfig,
+        provider_user_id: String(n8nResult.id),
+        is_active: true
+      })
+      .select()
+      .single();
+
+    if (insertError) {
+      throw insertError;
+    }
+
+    res.json({
+      id: inserted.id,
+      name: inserted.credential_name,
+      type: inserted.service_name,
+      createdAt: inserted.created_at,
+      n8nId: inserted.provider_user_id
     });
-
-    res.json(result);
   } catch (err) {
     console.error("Create credential error:", err.message);
     res.status(500).json({ error: err.message });
   }
 });
 
-// DELETE /api/credentials/:id → delete credential from n8n and local store
+// DELETE /api/credentials/:id → Delete credential from n8n and Supabase (checking ownership)
 router.delete("/:id", async (req, res) => {
   try {
     const { id } = req.params;
 
-    console.log("Deleting credential:", id);
-    let result;
-    try {
-      result = await n8nClient.deleteCredential(id);
-    } catch (n8nErr) {
-      console.warn(`n8n delete credential ${id} failed:`, n8nErr.message);
+    // Check ownership & existence
+    const { data: cred, error } = await supabase
+      .from("credentials")
+      .select("*")
+      .eq("id", id)
+      .maybeSingle();
+
+    if (error) throw error;
+    if (!cred) {
+      return res.status(404).json({ error: "Credential not found" });
     }
 
-    // Delete locally
-    credentialStore.delete(id);
+    if (cred.user_id !== req.user.id) {
+      return res.status(403).json({ error: "Forbidden: You do not own this credential" });
+    }
 
-    res.json({ success: true, result });
+    // Delete from n8n (if it has n8n credential ID)
+    if (cred.provider_user_id) {
+      try {
+        console.log("Deleting credential from n8n:", cred.provider_user_id);
+        await n8nClient.deleteCredential(cred.provider_user_id);
+      } catch (n8nErr) {
+        console.warn(`n8n delete credential ${cred.provider_user_id} failed:`, n8nErr.message);
+      }
+    }
+
+    // Delete from Supabase
+    console.log("Deleting credential from Supabase:", id);
+    const { error: deleteError } = await supabase
+      .from("credentials")
+      .delete()
+      .eq("id", id);
+
+    if (deleteError) throw deleteError;
+
+    res.json({ success: true });
   } catch (err) {
     console.error("Delete credential error:", err.message);
     res.status(500).json({ error: err.message });

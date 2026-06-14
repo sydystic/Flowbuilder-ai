@@ -1,6 +1,7 @@
 /* eslint-disable react-hooks/set-state-in-effect, react-hooks/exhaustive-deps */
-import { useState, useEffect } from 'react';
+import { useState } from 'react';
 import { Link } from 'react-router-dom';
+import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import axios from 'axios';
 import Toast from '../components/Toast';
 import Header from '../components/Header';
@@ -21,12 +22,10 @@ const getWorkflowIcon = (name = '') => {
 };
 
 export default function DashboardScreen() {
-  const [workflows, setWorkflows] = useState([]);
+  const queryClient = useQueryClient();
   const [searchQuery, setSearchQuery] = useState('');
-  const [isLoading, setIsLoading] = useState(false);
   const [toasts, setToasts] = useState([]);
   const [deleteModal, setDeleteModal] = useState({ isOpen: false, workflowId: null, workflowName: '' });
-  const [deletingIds, setDeletingIds] = useState([]);
   const [settingsOpen, setSettingsOpen] = useState(false);
   const [notificationsOpen, setNotificationsOpen] = useState(false);
   const [profileOpen, setProfileOpen] = useState(false);
@@ -40,67 +39,76 @@ export default function DashboardScreen() {
     setToasts((prev) => prev.filter((t) => t.id !== id));
   };
 
-  const fetchWorkflows = async () => {
-    setIsLoading(true);
-    try {
+  // React Query: Fetch workflows
+  const { data: workflows = [], isLoading, error } = useQuery({
+    queryKey: ['workflows'],
+    queryFn: async () => {
       const res = await axios.get('/api/workflows');
-      const data = Array.isArray(res.data) ? res.data : (res.data?.data || []);
-      setWorkflows(data);
-    } catch (err) {
-      console.error('Failed to fetch workflows', err);
-      showToast('Failed to load workflows', 'error');
-    } finally {
-      setIsLoading(false);
+      return Array.isArray(res.data) ? res.data : [];
     }
-  };
+  });
 
-  useEffect(() => {
-    fetchWorkflows();
-  }, []);
-
-  const handleToggleActive = async (id, currentActive) => {
-    const newActive = !currentActive;
-
-    setWorkflows(prev =>
-      prev.map(wf => wf.id === id ? { ...wf, active: newActive } : wf)
-    );
-
-    try {
-      await axios.patch(`/api/workflows/${id}/activate`, { active: newActive });
-      showToast(`Workflow ${newActive ? 'activated' : 'deactivated'} successfully`);
-    } catch (err) {
-      setWorkflows(prev =>
-        prev.map(wf => wf.id === id ? { ...wf, active: currentActive } : wf)
-      );
+  // React Query: Toggle Active Mutation
+  const toggleActiveMutation = useMutation({
+    mutationFn: async ({ id, active }) => {
+      const res = await axios.patch(`/api/workflows/${id}/activate`, { active });
+      return res.data;
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['workflows'] });
+      showToast('Workflow status updated successfully');
+    },
+    onError: (err) => {
       const errorMsg = err.response?.data?.error || err.message || 'Something went wrong';
-      showToast(`Failed to toggle status: ${errorMsg}`, 'error');
+      showToast(`Failed to update status: ${errorMsg}`, 'error');
     }
+  });
+
+  // React Query: Delete Mutation
+  const deleteMutation = useMutation({
+    mutationFn: async (id) => {
+      const res = await axios.delete(`/api/workflows/${id}`);
+      return res.data;
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['workflows'] });
+      showToast('Workflow deleted successfully');
+    },
+    onError: (err) => {
+      const errorMsg = err.response?.data?.error || err.message || 'Something went wrong';
+      showToast(`Error: ${errorMsg}`, 'error');
+    }
+  });
+
+  // React Query: Deploy Retry Mutation
+  const deployMutation = useMutation({
+    mutationFn: async (id) => {
+      const res = await axios.post(`/api/workflows/${id}/deploy`);
+      return res.data;
+    },
+    onSuccess: (data) => {
+      queryClient.invalidateQueries({ queryKey: ['workflows'] });
+      showToast(`Workflow "${data.workflow?.name || 'Workflow'}" deployed successfully!`);
+    },
+    onError: (err, id) => {
+      queryClient.invalidateQueries({ queryKey: ['workflows'] });
+      const errorMsg = err.response?.data?.error || err.message || 'Something went wrong';
+      showToast(`Failed to deploy workflow: ${errorMsg}`, 'error');
+    }
+  });
+
+  const handleToggleActive = (id, currentActive) => {
+    toggleActiveMutation.mutate({ id, active: !currentActive });
   };
 
   const handleDeleteClick = (id, name) => {
     setDeleteModal({ isOpen: true, workflowId: id, workflowName: name });
   };
 
-  const confirmDelete = async () => {
+  const confirmDelete = () => {
     const id = deleteModal.workflowId;
     setDeleteModal({ isOpen: false, workflowId: null, workflowName: '' });
-    setDeletingIds(prev => [...prev, id]);
-
-    setTimeout(async () => {
-      try {
-        const res = await axios.delete(`/api/workflows/${id}`);
-        if (res.data.success) {
-          showToast('Workflow deleted successfully');
-          fetchWorkflows();
-        } else {
-          throw new Error(res.data.error || 'Failed to delete workflow');
-        }
-      } catch (err) {
-        setDeletingIds(prev => prev.filter(dId => dId !== id));
-        const errorMsg = err.response?.data?.error || err.message || 'Something went wrong';
-        showToast(`Error: ${errorMsg}`, 'error');
-      }
-    }, 200);
+    deleteMutation.mutate(id);
   };
 
   const filteredWorkflows = workflows.filter((wf) =>
@@ -151,13 +159,20 @@ export default function DashboardScreen() {
               </div>
             </div>
 
+            {error && (
+              <div className="mb-6 rounded-xl bg-[#93000a]/5 p-4 border border-[#93000a]/10 text-sm text-[#93000a]">
+                <p className="font-semibold">Failed to load workflows</p>
+                <p className="mt-1">{error.response?.data?.error || error.message || "An unexpected error occurred."}</p>
+              </div>
+            )}
+
             <div className="grid gap-4 md:grid-cols-2 xl:grid-cols-3">
               {isLoading && [1, 2, 3].map((placeholderId) => (
                 <div key={placeholderId} className="notion-panel p-5">
-                  <div className="h-4 w-28 rounded shimmer-bg" />
-                  <div className="mt-5 h-7 w-3/4 rounded shimmer-bg" />
-                  <div className="mt-3 h-4 w-1/2 rounded shimmer-bg" />
-                  <div className="mt-8 h-9 w-full rounded shimmer-bg" />
+                  <div className="h-4 w-28 rounded shimmer-bg bg-black/[0.05]" />
+                  <div className="mt-5 h-7 w-3/4 rounded shimmer-bg bg-black/[0.05]" />
+                  <div className="mt-3 h-4 w-1/2 rounded shimmer-bg bg-black/[0.05]" />
+                  <div className="mt-8 h-9 w-full rounded shimmer-bg bg-black/[0.05]" />
                 </div>
               ))}
 
@@ -169,7 +184,21 @@ export default function DashboardScreen() {
 
               {!isLoading && filteredWorkflows.map((wf) => {
                 const icon = getWorkflowIcon(wf.name);
-                const isDeleting = deletingIds.includes(wf.id);
+                const isDeleting = deleteMutation.isPending && deleteMutation.variables === wf.id;
+                const isDeploying = deployMutation.isPending && deployMutation.variables === wf.id;
+
+                // Determine badge and status styling
+                let statusBadgeText = wf.active ? 'Active' : 'Inactive';
+                let statusBadgeClass = wf.active ? 'bg-primary/10 text-primary' : 'bg-black/[0.05] text-ink-muted';
+
+                if (wf.status === 'failed') {
+                  statusBadgeText = 'Failed';
+                  statusBadgeClass = 'bg-[#93000a]/10 text-[#93000a]';
+                } else if (wf.status === 'draft') {
+                  statusBadgeText = 'Draft';
+                  statusBadgeClass = 'bg-amber-500/10 text-amber-700';
+                }
+
                 return (
                   <article
                     key={wf.id}
@@ -183,36 +212,44 @@ export default function DashboardScreen() {
                       </div>
 
                       <div className="flex items-center gap-2">
-                        <span className={`rounded-full px-2.5 py-1 text-xs font-medium ${
-                          wf.active ? 'bg-primary/10 text-primary' : 'bg-black/[0.05] text-ink-muted'
-                        }`}>
-                          {wf.active ? 'Active' : 'Inactive'}
+                        <span className={`rounded-full px-2.5 py-1 text-xs font-medium ${statusBadgeClass}`}>
+                          {statusBadgeText}
                         </span>
-                        <label className="relative inline-flex cursor-pointer items-center">
-                          <input
-                            type="checkbox"
-                            checked={!!wf.active}
-                            onChange={() => handleToggleActive(wf.id, wf.active)}
-                            className="peer sr-only"
-                          />
-                          <span className="h-5 w-9 rounded-full bg-black/10 transition-colors peer-checked:bg-primary" />
-                          <span className="absolute left-0.5 h-4 w-4 rounded-full bg-white shadow-sm transition-transform peer-checked:translate-x-4" />
-                        </label>
+                        
+                        {(wf.status !== 'failed' && wf.status !== 'draft') && (
+                          <label className="relative inline-flex cursor-pointer items-center">
+                            <input
+                              type="checkbox"
+                              checked={!!wf.active}
+                              disabled={toggleActiveMutation.isPending}
+                              onChange={() => handleToggleActive(wf.id, wf.active)}
+                              className="peer sr-only"
+                            />
+                            <span className="h-5 w-9 rounded-full bg-black/10 transition-colors peer-checked:bg-primary" />
+                            <span className="absolute left-0.5 h-4 w-4 rounded-full bg-white shadow-sm transition-transform peer-checked:translate-x-4" />
+                          </label>
+                        )}
                       </div>
                     </div>
 
                     <h3 className="mt-5 truncate text-[19px] font-semibold tracking-[-0.01em] text-ink">
                       {wf.name}
                     </h3>
-                    <p className="mt-1 truncate text-sm text-ink-muted">ID: {wf.id}</p>
+                    <p className="mt-1 truncate text-xs text-ink-faint">ID: {wf.id}</p>
+
+                    {wf.deploymentError && (
+                      <div className="mt-3 rounded-lg bg-[#93000a]/5 p-2.5 border border-[#93000a]/10 text-xs text-[#93000a] whitespace-pre-wrap max-h-16 overflow-y-auto">
+                        {wf.deploymentError}
+                      </div>
+                    )}
 
                     <div className="mt-5 grid grid-cols-2 gap-3 text-sm">
                       <div>
-                        <p className="text-ink-faint">Nodes</p>
+                        <p className="text-ink-faint text-xs">Nodes</p>
                         <p className="mt-1 font-semibold text-ink">{wf.nodes ? wf.nodes.length : 0}</p>
                       </div>
                       <div>
-                        <p className="text-ink-faint">Updated</p>
+                        <p className="text-ink-faint text-xs">Updated</p>
                         <p className="mt-1 font-semibold text-ink">
                           {wf.updatedAt
                             ? new Date(wf.updatedAt).toLocaleDateString('en-US', { month: 'short', day: 'numeric' })
@@ -222,17 +259,39 @@ export default function DashboardScreen() {
                     </div>
 
                     <div className="mt-5 flex items-center gap-2">
-                      <a href="http://localhost:5678" target="_blank" rel="noreferrer" className="notion-button-secondary flex-1">
-                        <span className="material-symbols-outlined text-[17px]">open_in_new</span>
-                        n8n
-                      </a>
-                      <Link to={`/workflow/${wf.id}`} className="notion-button-secondary flex-1">
-                        <span className="material-symbols-outlined text-[17px]">edit</span>
-                        Edit
+                      {wf.status === 'failed' || wf.status === 'draft' ? (
+                        <button
+                          onClick={() => deployMutation.mutate(wf.id)}
+                          disabled={isDeploying}
+                          className="notion-button flex-1 h-9 gap-1 text-sm justify-center"
+                          type="button"
+                        >
+                          <span className={`material-symbols-outlined text-[17px] ${isDeploying ? 'animate-spin' : ''}`}>
+                            {isDeploying ? 'sync' : 'bolt'}
+                          </span>
+                          {isDeploying ? 'Deploying...' : 'Deploy'}
+                        </button>
+                      ) : (
+                        <a
+                          href={`http://localhost:5678/workflow/${wf.n8nWorkflowId || ''}`}
+                          target="_blank"
+                          rel="noreferrer"
+                          className="notion-button-secondary flex-1 h-9 text-sm text-center justify-center flex items-center"
+                        >
+                          <span className="material-symbols-outlined text-[17px] mr-1">open_in_new</span>
+                          n8n
+                        </a>
+                      )}
+                      
+                      <Link to={`/workflow/${wf.id}`} className="notion-button-secondary flex-1 h-9 text-sm text-center justify-center flex items-center">
+                        <span className="material-symbols-outlined text-[17px] mr-1">edit</span>
+                        Details
                       </Link>
+
                       <button
                         onClick={() => handleDeleteClick(wf.id, wf.name)}
-                        className="notion-button-secondary h-9 w-9 px-0 hover:text-[#93000a]"
+                        disabled={deleteMutation.isPending}
+                        className="notion-button-secondary h-9 w-9 px-0 hover:text-[#93000a] shrink-0 justify-center flex items-center"
                         type="button"
                       >
                         <span className="material-symbols-outlined text-[17px]">delete</span>
@@ -251,7 +310,7 @@ export default function DashboardScreen() {
           <div className="notion-surface w-full max-w-md p-6">
             <h3 className="text-xl font-semibold text-ink">Delete Workflow</h3>
             <p className="mt-2 text-sm leading-6 text-ink-muted">
-              Delete <span className="font-semibold text-ink">"{deleteModal.workflowName}"</span>? This cannot be undone.
+              Delete <span className="font-semibold text-ink">"{deleteModal.workflowName}"</span>? This will remove it from Supabase and n8n.
             </p>
             <div className="mt-6 flex justify-end gap-2">
               <button

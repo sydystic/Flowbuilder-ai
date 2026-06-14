@@ -6,7 +6,7 @@ const workflowService = require("../services/workflowService");
 const requireAuth = require("../middlewares/auth");
 
 // Require authentication for all workflow routes
-router.use(requireAuth);
+//router.use(requireAuth);
 
 // GET /api/workflows → Retrieve all workflows for the authenticated user
 router.get("/", async (req, res) => {
@@ -172,7 +172,7 @@ const handleActivate = async (req, res) => {
   try {
     const { id } = req.params;
     const { active } = req.body;
-    
+
     // Verify ownership
     const workflow = await workflowService.getWorkflow(id, req.user.id);
     if (!workflow) {

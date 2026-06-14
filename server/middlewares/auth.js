@@ -1,6 +1,27 @@
 const supabase = require("../services/supabaseClient");
 
+// ── DEMO MODE ──────────────────────────────────────────────────────────────────
+// Set DEMO_MODE=true in your .env to bypass authentication.
+// This lets anyone run the project locally without Supabase credentials.
+// NEVER use DEMO_MODE=true in production.
+// ──────────────────────────────────────────────────────────────────────────────
+const DEMO_MODE = process.env.DEMO_MODE === "true";
+
+const DEMO_USER = {
+  id: "demo-user-001",
+  auth_id: "demo-auth-001",
+  email: "demo@flowbuilder.local",
+  full_name: "Demo User",
+  avatar_url: null,
+};
+
 async function requireAuth(req, res, next) {
+  // ── Demo mode: skip auth entirely ─────────────────────────────────────────
+  if (DEMO_MODE) {
+    req.user = DEMO_USER;
+    return next();
+  }
+
   try {
     const authHeader = req.headers.authorization;
     if (!authHeader || !authHeader.startsWith("Bearer ")) {
@@ -12,15 +33,13 @@ async function requireAuth(req, res, next) {
       return res.status(401).json({ error: "Unauthorized: Token missing" });
     }
 
-    // Call Supabase Auth to retrieve the authenticated user
     const { data: { user }, error } = await supabase.auth.getUser(token);
-    
+
     if (error || !user) {
       console.error("Supabase auth error:", error?.message || "User not found");
       return res.status(401).json({ error: "Unauthorized: Invalid or expired token" });
     }
 
-    // Sync profile in public.users table
     let { data: profile, error: profileError } = await supabase
       .from("users")
       .select("*")
@@ -33,7 +52,6 @@ async function requireAuth(req, res, next) {
     }
 
     if (!profile) {
-      // Lazy create profile
       const fullName = user.user_metadata?.full_name || user.email.split("@")[0];
       const avatarUrl = user.user_metadata?.avatar_url || null;
 
@@ -43,7 +61,7 @@ async function requireAuth(req, res, next) {
           auth_id: user.id,
           email: user.email,
           full_name: fullName,
-          avatar_url: avatarUrl
+          avatar_url: avatarUrl,
         })
         .select()
         .single();
@@ -54,7 +72,6 @@ async function requireAuth(req, res, next) {
       }
       profile = newProfile;
     } else {
-      // Sync if email changed
       if (profile.email !== user.email) {
         const { data: updatedProfile, error: updateError } = await supabase
           .from("users")
@@ -69,7 +86,6 @@ async function requireAuth(req, res, next) {
       }
     }
 
-    // Bind public.users profile row to the request object
     req.user = profile;
     next();
   } catch (err) {

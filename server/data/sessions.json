@@ -454,6 +454,195 @@
           "details": "Post new GitHub issues"
         }
       }
+    },
+    {
+      "id": "miop1cfwqfmqdlykhr",
+      "title": "Trigger a webhook when a Stripe payment fails",
+      "createdAt": "2026-06-14T09:54:55.935Z",
+      "updatedAt": "2026-06-14T09:55:09.527Z",
+      "messages": [
+        {
+          "id": "k74rgg1mgh8mqdlykio",
+          "sender": "user",
+          "text": "Trigger a webhook when a Stripe payment fails",
+          "messageType": "message",
+          "workflow": null,
+          "n8nId": null,
+          "createdAt": "2026-06-14T09:54:55.968Z"
+        },
+        {
+          "id": "zfu9tybfnetmqdlylet",
+          "sender": "ai",
+          "text": "To create a workflow that triggers a webhook when a Stripe payment fails, we need more details. Please consider the following: \n   * What specific event in Stripe should trigger the webhook? Is it when a payment fails, or when a subscription is canceled due to a failed payment?\n   * What information should be sent in the webhook? Should it include customer details, payment amount, or failure reason?\n   * Are there any specific conditions or filters that should be applied before triggering the webhook, such as only for certain products or customers?",
+          "messageType": "clarifying_question",
+          "workflow": {
+            "spec": {
+              "trigger": {
+                "service": "Stripe",
+                "event": "[unknown]",
+                "sheetName": "[unknown]",
+                "details": "Payment failure"
+              },
+              "action": {
+                "service": "Webhook",
+                "action": "Send Request",
+                "channel": "[unknown]",
+                "details": "[unknown]"
+              }
+            },
+            "isReadyToGenerate": false,
+            "questions": [
+              "What is the exact Stripe event that should trigger the webhook?",
+              "What details should be included in the webhook request?"
+            ],
+            "suggestedTemplates": [
+              "Stripe Payment Failure Notification",
+              "Stripe Subscription Cancellation Webhook",
+              "Stripe Payment Event Webhook"
+            ]
+          },
+          "n8nId": null,
+          "createdAt": "2026-06-14T09:54:57.125Z"
+        },
+        {
+          "id": "sv5vmdadujmqdlynu5",
+          "sender": "user",
+          "text": "Stripe Payment Failure Notification",
+          "messageType": "message",
+          "workflow": null,
+          "n8nId": null,
+          "createdAt": "2026-06-14T09:55:00.269Z"
+        },
+        {
+          "id": "my3slj5r4xmqdlyooe",
+          "sender": "ai",
+          "text": "To set up a workflow for sending a notification when a Stripe payment fails, we'll need to clarify a few details. \n   * The trigger will be based on the Stripe service and the event of a payment failure.\n   * The action will involve sending a notification, possibly via email or a messaging platform.\n   Please consider the following:\n   - What service should be used for sending the notification (e.g., Gmail, Slack, Telegram)?\n   - What details about the failed payment should be included in the notification (e.g., customer name, payment amount, failure reason)?\n   - Are there any specific conditions under which the notification should or should not be sent?",
+          "messageType": "clarifying_question",
+          "workflow": {
+            "spec": {
+              "trigger": {
+                "service": "Stripe",
+                "event": "Payment Failure",
+                "details": "[unknown]"
+              },
+              "action": {
+                "service": "[unknown]",
+                "action": "Send Notification",
+                "channel": "[unknown]",
+                "details": "[unknown]"
+              }
+            },
+            "isReadyToGenerate": false,
+            "questions": [
+              "What service should be used for sending the notification (e.g., Gmail, Slack, Telegram)?",
+              "What details about the failed payment should be included in the notification?"
+            ],
+            "suggestedTemplates": [
+              "Stripe Payment Failure to Slack Notification",
+              "Stripe Payment Failure to Email Notification",
+              "Stripe Payment Failure to Custom Webhook"
+            ]
+          },
+          "n8nId": null,
+          "createdAt": "2026-06-14T09:55:01.358Z"
+        },
+        {
+          "id": "2dni49349r1mqdlyr72",
+          "sender": "user",
+          "text": "Stripe Payment Failure to Custom Webhook",
+          "messageType": "message",
+          "workflow": null,
+          "n8nId": null,
+          "createdAt": "2026-06-14T09:55:04.622Z"
+        },
+        {
+          "id": "kl6imee1hqmmqdlyrv1",
+          "sender": "ai",
+          "text": "To create a workflow that sends a notification to a custom webhook when a Stripe payment fails, we need to finalize a few details. \n   The trigger will be based on the Stripe service and the event of a payment failure. \n   The action will involve sending a request to a custom webhook.",
+          "messageType": "clarifying_question",
+          "workflow": {
+            "spec": {
+              "trigger": {
+                "service": "Stripe",
+                "event": "Payment Failure",
+                "details": "[unknown]"
+              },
+              "action": {
+                "service": "Webhook",
+                "action": "Send Request",
+                "channel": "[unknown]",
+                "details": "[unknown]"
+              }
+            },
+            "isReadyToGenerate": false,
+            "questions": [
+              "What specific details about the failed payment should be sent in the webhook request (e.g., payment amount, customer ID, failure reason)?",
+              "What is the URL of the custom webhook that should receive the notification?"
+            ],
+            "suggestedTemplates": [
+              "Stripe Payment Failure to Slack Notification",
+              "Stripe Payment Failure to Email Notification",
+              "Stripe Payment Failure to Custom API Endpoint"
+            ]
+          },
+          "n8nId": null,
+          "createdAt": "2026-06-14T09:55:05.485Z"
+        },
+        {
+          "id": "uoxooumtmehmqdlyuft",
+          "sender": "user",
+          "text": "Stripe Payment Failure to Slack Notification",
+          "messageType": "message",
+          "workflow": null,
+          "n8nId": null,
+          "createdAt": "2026-06-14T09:55:08.825Z"
+        },
+        {
+          "id": "iyk8tittb2mqdlyuzb",
+          "sender": "ai",
+          "text": "To send a notification to Slack when a Stripe payment fails, we need to confirm a few details. \n   The trigger will be based on the Stripe service and the event of a payment failure. \n   The action will involve sending a message to a Slack channel. \n   Please consider the following:\n   * Which Slack channel should receive the notification?\n   * What details about the failed payment should be included in the notification (e.g., customer name, payment amount, failure reason)?",
+          "messageType": "clarifying_question",
+          "workflow": {
+            "spec": {
+              "trigger": {
+                "service": "Stripe",
+                "event": "Payment Failure",
+                "details": "Payment failure event"
+              },
+              "action": {
+                "service": "Slack",
+                "action": "Send Message",
+                "channel": "[unknown]",
+                "details": "[unknown]"
+              }
+            },
+            "isReadyToGenerate": false,
+            "questions": [
+              "Which Slack channel should receive the notification?",
+              "What details about the failed payment should be included in the notification?"
+            ],
+            "suggestedTemplates": [
+              "Stripe Payment Failure to Email Notification",
+              "Stripe Payment Success to Slack Notification"
+            ]
+          },
+          "n8nId": null,
+          "createdAt": "2026-06-14T09:55:09.527Z"
+        }
+      ],
+      "spec": {
+        "trigger": {
+          "service": "Stripe",
+          "event": "Payment Failure",
+          "details": "Payment failure event"
+        },
+        "action": {
+          "service": "Slack",
+          "action": "Send Message",
+          "channel": "[unknown]",
+          "details": "[unknown]"
+        }
+      }
     }
   ]
 }

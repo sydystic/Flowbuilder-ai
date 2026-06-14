@@ -1,0 +1,18 @@
+FROM node:20-alpine
+
+WORKDIR /app
+
+# Copy root package.json for backend deps
+COPY package.json ./
+COPY package-lock.json* ./
+RUN npm install --production
+
+# Copy server source
+COPY server/ ./server/
+
+# Ensure data directory exists
+RUN mkdir -p ./server/data
+
+EXPOSE 3001
+
+CMD ["node", "server/index.js"]

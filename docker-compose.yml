@@ -10,6 +10,11 @@ services:
       POSTGRES_DB: ${POSTGRES_DB}
     volumes:
       - postgres_data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U ${POSTGRES_USER}"]
+      interval: 5s
+      timeout: 5s
+      retries: 5
 
   n8n:
     image: n8nio/n8n
@@ -31,7 +36,40 @@ services:
     volumes:
       - n8n_data:/home/node/.n8n
     depends_on:
-      - postgres
+      postgres:
+        condition: service_healthy
+
+  backend:
+    build:
+      context: .
+      dockerfile: Dockerfile.backend
+    restart: always
+    ports:
+      - "3001:3001"
+    environment:
+      - PORT=3001
+      - N8N_BASE_URL=http://n8n:5678
+      - N8N_API_KEY=${N8N_API_KEY}
+      - GEMINI_API_KEY=${GEMINI_API_KEY}
+      - GROQ_API_KEY=${GROQ_API_KEY}
+      - SUPABASE_URL=${SUPABASE_URL}
+      - SUPABASE_SERVICE_ROLE_KEY=${SUPABASE_SERVICE_ROLE_KEY}
+      - ENCRYPTION_KEY=${ENCRYPTION_KEY}
+      - DEMO_MODE=${DEMO_MODE:-true}
+    depends_on:
+      - n8n
+    volumes:
+      - ./server/data:/app/server/data
+
+  frontend:
+    build:
+      context: ./client
+      dockerfile: Dockerfile.frontend
+    restart: always
+    ports:
+      - "3000:80"
+    depends_on:
+      - backend
 
 volumes:
   postgres_data:

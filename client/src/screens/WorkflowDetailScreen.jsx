@@ -1,3 +1,4 @@
+/* eslint-disable react-hooks/set-state-in-effect, react-hooks/exhaustive-deps */
 import React, { useState, useEffect } from 'react';
 import { useParams, Link } from 'react-router-dom';
 import axios from 'axios';
@@ -11,51 +12,15 @@ import ProfileModal from '../components/modals/ProfileModal';
 const getNodeInfo = (type = '', name = '') => {
   const lowerType = type.toLowerCase();
   const lowerName = name.toLowerCase();
-  
-  if (lowerType.includes('schedule') || lowerName.includes('cron') || lowerName.includes('schedule')) {
-    return { icon: 'schedule', colorClass: 'text-primary' };
-  }
-  if (lowerType.includes('gmail') || lowerType.includes('email') || lowerName.includes('gmail') || lowerName.includes('email')) {
-    return { icon: 'mail', colorClass: 'text-red-400' };
-  }
-  if (lowerType.includes('sheets') || lowerName.includes('sheet') || lowerType.includes('table')) {
-    return { icon: 'table_chart', colorClass: 'text-green-400' };
-  }
-  if (lowerType.includes('slack') || lowerName.includes('slack')) {
-    return { icon: 'chat', colorClass: 'text-purple-400' };
-  }
-  if (lowerType.includes('webhook') || lowerName.includes('webhook')) {
-    return { icon: 'lan', colorClass: 'text-amber-400' };
-  }
-  if (lowerType.includes('httprequest') || lowerName.includes('http') || lowerName.includes('api')) {
-    return { icon: 'http', colorClass: 'text-teal-400' };
-  }
-  if (lowerType.includes('postgres') || lowerType.includes('database') || lowerType.includes('db') || lowerName.includes('db')) {
-    return { icon: 'database', colorClass: 'text-blue-400' };
-  }
-  return { icon: 'account_tree', colorClass: 'text-outline' };
-};
 
-const getNodeBorderClass = (type = '', name = '') => {
-  const lowerType = type.toLowerCase();
-  const lowerName = name.toLowerCase();
-  
-  if (lowerType.includes('schedule') || lowerName.includes('cron') || lowerName.includes('schedule')) {
-    return 'node-schedule';
-  }
-  if (lowerType.includes('gmail') || lowerType.includes('email') || lowerName.includes('gmail') || lowerName.includes('email')) {
-    return 'node-gmail';
-  }
-  if (lowerType.includes('slack') || lowerName.includes('slack')) {
-    return 'node-slack';
-  }
-  if (lowerType.includes('webhook') || lowerName.includes('webhook')) {
-    return 'node-webhook';
-  }
-  if (lowerType.includes('httprequest') || lowerName.includes('http') || lowerName.includes('api')) {
-    return 'node-http';
-  }
-  return 'node-default';
+  if (lowerType.includes('schedule') || lowerName.includes('cron') || lowerName.includes('schedule')) return { icon: 'schedule' };
+  if (lowerType.includes('gmail') || lowerType.includes('email') || lowerName.includes('gmail') || lowerName.includes('email')) return { icon: 'mail' };
+  if (lowerType.includes('sheets') || lowerName.includes('sheet') || lowerType.includes('table')) return { icon: 'table_chart' };
+  if (lowerType.includes('slack') || lowerName.includes('slack')) return { icon: 'chat' };
+  if (lowerType.includes('webhook') || lowerName.includes('webhook')) return { icon: 'lan' };
+  if (lowerType.includes('httprequest') || lowerName.includes('http') || lowerName.includes('api')) return { icon: 'http' };
+  if (lowerType.includes('postgres') || lowerType.includes('database') || lowerType.includes('db') || lowerName.includes('db')) return { icon: 'database' };
+  return { icon: 'account_tree' };
 };
 
 export default function WorkflowDetailScreen() {
@@ -65,8 +30,6 @@ export default function WorkflowDetailScreen() {
   const [isLoadingWorkflow, setIsLoadingWorkflow] = useState(true);
   const [isLoadingExecutions, setIsLoadingExecutions] = useState(true);
   const [toasts, setToasts] = useState([]);
-
-  // Modals state
   const [settingsOpen, setSettingsOpen] = useState(false);
   const [notificationsOpen, setNotificationsOpen] = useState(false);
   const [profileOpen, setProfileOpen] = useState(false);
@@ -135,22 +98,16 @@ export default function WorkflowDetailScreen() {
   const formatTimestamp = (isoString) => {
     if (!isoString) return '-';
     const date = new Date(isoString);
-    return date.getFullYear() + '-' + 
-      String(date.getMonth() + 1).padStart(2, '0') + '-' + 
-      String(date.getDate()).padStart(2, '0') + ' ' + 
-      String(date.getHours()).padStart(2, '0') + ':' + 
-      String(date.getMinutes()).padStart(2, '0') + ':' + 
+    return date.getFullYear() + '-' +
+      String(date.getMonth() + 1).padStart(2, '0') + '-' +
+      String(date.getDate()).padStart(2, '0') + ' ' +
+      String(date.getHours()).padStart(2, '0') + ':' +
+      String(date.getMinutes()).padStart(2, '0') + ':' +
       String(date.getSeconds()).padStart(2, '0');
   };
 
-  const formatDuration = (started, finished) => {
-    if (!started || !finished) return '-';
-    const diff = new Date(finished) - new Date(started);
-    return (diff / 1000).toFixed(1) + 's';
-  };
-
   return (
-    <div className="flex flex-col h-screen overflow-hidden bg-background">
+    <div className="app-shell flex h-screen flex-col overflow-hidden">
       <Header
         activeTab="dashboard"
         onOpenSettings={() => setSettingsOpen(true)}
@@ -158,186 +115,135 @@ export default function WorkflowDetailScreen() {
         onOpenProfile={() => setProfileOpen(true)}
       />
 
-      <div className="flex flex-1 overflow-hidden h-full relative z-10">
+      <div className="flex h-full flex-1 overflow-hidden">
         <Sidebar activeTab="dashboard" />
 
         {isLoadingWorkflow ? (
-          <div className="flex-1 flex flex-col items-center justify-center bg-surface text-on-surface-variant">
-            <div className="animate-spin rounded-full h-10 w-10 border-t-2 border-primary border-r-2 mb-4"></div>
-            <p className="font-body-md">Loading workflow details...</p>
+          <div className="flex flex-1 flex-col items-center justify-center text-ink-muted">
+            <div className="mb-4 h-8 w-8 animate-spin rounded-full border-2 border-primary border-r-transparent" />
+            <p className="text-sm">Loading workflow details...</p>
           </div>
         ) : !workflow ? (
-          <div className="flex-1 flex flex-col items-center justify-center bg-surface text-on-surface-variant p-6 text-center">
-            <span className="material-symbols-outlined text-[48px] text-error mb-4">error</span>
-            <h2 className="font-headline-md text-on-surface mb-2">Workflow Not Found</h2>
-            <p className="font-body-md mb-6">We couldn't locate a workflow with ID "{id}". It may have been deleted.</p>
-            <Link to="/dashboard" className="bg-primary text-on-primary px-4 py-2 rounded-lg font-label-md">Back to Dashboard</Link>
+          <div className="flex flex-1 flex-col items-center justify-center p-6 text-center">
+            <span className="material-symbols-outlined mb-4 text-[44px] text-[#93000a]">error</span>
+            <h2 className="text-xl font-semibold text-ink">Workflow Not Found</h2>
+            <p className="mt-2 max-w-md text-sm leading-6 text-ink-muted">We couldn't locate a workflow with ID "{id}". It may have been deleted.</p>
+            <Link to="/dashboard" className="notion-button mt-6">Back to Dashboard</Link>
           </div>
         ) : (
-          <main className="flex-1 flex overflow-hidden">
-            {/* Main Canvas Area */}
-            <div className="flex-1 relative overflow-hidden canvas-grid flex flex-col">
-              {/* Toolbar Overlay */}
-              <div className="absolute top-4 left-4 z-10 flex gap-2">
-                <Link to="/dashboard" className="bg-surface-container-low border border-outline-variant p-2 flex items-center gap-2 hover:bg-surface-container-highest transition-all rounded-lg active:scale-95 text-on-surface">
-                  <span className="material-symbols-outlined text-on-surface-variant text-[20px]">arrow_back</span>
-                  <span className="font-label-md text-on-surface">Back to Dashboard</span>
-                </Link>
-                <div className="h-8 w-px bg-outline-variant mx-2 self-center"></div>
-                <div className="bg-surface-container-low border border-outline-variant rounded-lg flex p-1">
-                  <div className="p-1 px-3 text-primary bg-primary-container/20 rounded-md font-label-md">View Mode</div>
+          <main className="flex flex-1 overflow-hidden">
+            <section className="flex flex-1 flex-col overflow-hidden px-8 py-7">
+              <div className="mb-8 flex items-start justify-between gap-6">
+                <div>
+                  <Link to="/dashboard" className="notion-button-secondary mb-5">
+                    <span className="material-symbols-outlined text-[17px]">arrow_back</span>
+                    Back
+                  </Link>
+                  <p className="mb-2 text-sm font-medium text-primary">Workflow</p>
+                  <h1 className="max-w-3xl text-[34px] font-semibold leading-tight tracking-[-0.02em] text-ink">
+                    {workflow.name || 'Untitled workflow'}
+                  </h1>
+                  <p className="mt-2 text-sm text-ink-muted">ID: {workflow.id}</p>
                 </div>
               </div>
 
-              {/* Workflow Visualizer (Horizontal Scroll Flexbox) */}
-              <div className="absolute inset-0 flex items-center justify-center p-8 overflow-x-auto custom-scrollbar pointer-events-none">
-                <div className="flex items-center gap-8 pointer-events-auto max-w-full">
+              <div className="notion-panel flex min-h-[280px] items-center overflow-x-auto p-8">
+                <div className="flex items-center gap-5">
                   {workflow.nodes && workflow.nodes.length > 0 ? (
                     workflow.nodes.map((node, index) => {
                       const nodeInfo = getNodeInfo(node.type, node.name);
                       return (
                         <React.Fragment key={node.id || index}>
-                          {index > 0 && (
-                            <div className="flex flex-col items-center justify-center flex-shrink-0">
-                              <div className="w-12 h-0.5 bg-outline-variant relative">
-                                <div className="absolute -right-1 -top-1 w-2.5 h-2.5 border-t-2 border-r-2 border-outline-variant rotate-45"></div>
-                              </div>
+                          {index > 0 && <div className="h-px w-8 shrink-0 bg-black/10" />}
+                          <div className="notion-surface w-52 shrink-0 p-4">
+                            <div className="mb-3 flex h-9 w-9 items-center justify-center rounded-lg bg-primary/10 text-primary">
+                              <span className="material-symbols-outlined text-[19px]">{nodeInfo.icon}</span>
                             </div>
-                          )}
-                          
-                          <div className={`relative w-52 node-card ${getNodeBorderClass(node.type, node.name)} p-3 hover:border-outline transition-all duration-200 flex-shrink-0`}>
-                            <div className="flex items-center gap-2 mb-2">
-                              <span className={`material-symbols-outlined ${nodeInfo.colorClass} text-[18px]`}>
-                                {nodeInfo.icon}
-                              </span>
-                              <span className="font-label-md text-on-surface truncate font-semibold">{node.name}</span>
-                            </div>
-                            <div className="text-[11px] text-on-surface-variant font-code-sm mb-1 truncate opacity-60">
-                              {node.type.split('.').pop() || node.type}
-                            </div>
-                            
-                            {/* Dots on left/right edges for visual connections */}
-                            {index > 0 && (
-                              <div className="absolute -left-1.5 top-1/2 -translate-y-1/2 w-3 h-3 bg-purple-500 border border-surface rounded-full"></div>
-                            )}
-                            {index < workflow.nodes.length - 1 && (
-                              <div className="absolute -right-1.5 top-1/2 -translate-y-1/2 w-3 h-3 bg-purple-500 border border-surface rounded-full"></div>
-                            )}
+                            <p className="truncate text-sm font-semibold text-ink">{node.name}</p>
+                            <p className="mt-1 truncate text-xs text-ink-muted">{node.type.split('.').pop() || node.type}</p>
                           </div>
                         </React.Fragment>
                       );
                     })
                   ) : (
-                    <div className="text-on-surface-variant italic font-body-md">No nodes configured for this workflow.</div>
+                    <div className="text-sm text-ink-muted">No nodes configured for this workflow.</div>
                   )}
                 </div>
               </div>
 
-              {/* Bottom Panel (Run History) */}
-              <div className="h-64 bg-surface border-t border-outline-variant flex flex-col z-20">
-                <div className="px-6 py-3 border-b border-outline-variant flex justify-between items-center bg-surface-container-low">
-                  <h3 className="font-label-md text-on-surface flex items-center gap-2">
-                    <span className="material-symbols-outlined text-[18px]">history</span>
+              <section className="mt-6 min-h-0 flex-1 overflow-hidden rounded-xl bg-white/48">
+                <div className="flex items-center justify-between px-4 py-3">
+                  <h3 className="flex items-center gap-2 text-sm font-semibold text-ink">
+                    <span className="material-symbols-outlined text-[18px] text-primary">history</span>
                     Run History
                   </h3>
-                  <div className="flex gap-2">
-                    <button onClick={fetchExecutions} className="text-on-surface-variant hover:text-on-surface p-1 active:scale-95 transition-transform" title="Refresh Executions">
-                      <span className="material-symbols-outlined text-[20px]">refresh</span>
-                    </button>
-                  </div>
+                  <button onClick={fetchExecutions} className="notion-nav-item flex h-8 w-8 items-center justify-center" type="button">
+                    <span className="material-symbols-outlined text-[18px]">refresh</span>
+                  </button>
                 </div>
-                <div className="flex-1 overflow-auto custom-scrollbar bg-surface-container-lowest">
+                <div className="max-h-full overflow-auto px-2 pb-3">
                   {isLoadingExecutions ? (
-                    <div className="h-full flex items-center justify-center text-on-surface-variant">
-                      <div className="animate-spin rounded-full h-6 w-6 border-t-2 border-primary border-r-2 mr-2"></div>
-                      <span className="font-body-md">Loading execution history...</span>
+                    <div className="flex items-center justify-center py-12 text-sm text-ink-muted">
+                      <div className="mr-2 h-5 w-5 animate-spin rounded-full border-2 border-primary border-r-transparent" />
+                      Loading execution history...
                     </div>
                   ) : executions.length === 0 ? (
-                    <div className="h-full flex flex-col items-center justify-center text-on-surface-variant p-4">
-                      <span className="material-symbols-outlined text-[32px] opacity-40 mb-1">history</span>
-                      <span className="font-body-md italic text-sm">No run executions found for this workflow.</span>
-                    </div>
+                    <div className="py-12 text-center text-sm text-ink-muted">No run executions found for this workflow.</div>
                   ) : (
-                    <table className="w-full text-left border-collapse">
-                      <thead className="sticky top-0 bg-surface-container-low border-b border-outline-variant z-10">
-                        <tr className="font-label-md text-on-surface-variant">
-                          <th className="px-6 py-3 font-medium">Execution ID</th>
-                          <th className="px-6 py-3 font-medium">Timestamp</th>
-                          <th className="px-6 py-3 font-medium">Status</th>
-                          <th className="px-6 py-3 font-medium">Duration</th>
-                          <th className="px-6 py-3 font-medium">Nodes Executed</th>
-                          <th className="px-6 py-3 font-medium text-right">Actions</th>
-                        </tr>
-                      </thead>
-                      <tbody className="font-body-md text-on-surface divide-y divide-outline-variant/10">
-                        {executions.map((exec) => {
-                          const isSuccess = exec.status === 'success';
-                          const isFailed = exec.status === 'failed' || exec.status === 'error';
-                          
-                          return (
-                            <tr key={exec.id} className="hover:bg-surface-container-high transition-colors">
-                              <td className="px-6 py-3 font-code-sm text-primary">#{exec.id.substring(0, 8)}</td>
-                              <td className="px-6 py-3">{formatTimestamp(exec.startedAt)}</td>
-                              <td className="px-6 py-3">
-                                {isSuccess ? (
-                                  <span className="px-2 py-0.5 rounded text-[11px] font-bold bg-green-500/10 text-green-400 border border-green-500/20">Success</span>
-                                ) : isFailed ? (
-                                  <span className="px-2 py-0.5 rounded text-[11px] font-bold bg-red-500/10 text-red-400 border border-red-500/20">Failed</span>
-                                ) : (
-                                  <span className="px-2 py-0.5 rounded text-[11px] font-bold bg-amber-500/10 text-amber-400 border border-amber-500/20">{exec.status || 'Running'}</span>
-                                )}
-                              </td>
-                              <td className="px-6 py-3">{formatDuration(exec.startedAt, exec.finishedAt)}</td>
-                              <td className="px-6 py-3">{exec.workflowData?.nodes?.length || workflow.nodes?.length || '-'}</td>
-                              <td className="px-6 py-3 text-right">
-                                <a
-                                  href={`http://localhost:5678/workflow/${id}/executions/${exec.id}`}
-                                  target="_blank"
-                                  rel="noreferrer"
-                                  className="text-primary hover:underline font-label-md"
-                                >
-                                  View in n8n
-                                </a>
-                              </td>
-                            </tr>
-                          );
-                        })}
-                      </tbody>
-                    </table>
+                    <div className="space-y-1">
+                      {executions.map((exec) => (
+                        <div key={exec.id} className="grid grid-cols-[1fr_120px_80px_100px] items-center gap-4 rounded-lg px-3 py-2 text-sm hover:bg-black/[0.04]">
+                          <div>
+                            <p className="font-medium text-ink">#{exec.id.substring(0, 8)}</p>
+                            <p className="text-xs text-ink-muted">{formatTimestamp(exec.startedAt)}</p>
+                          </div>
+                          <span className={`w-fit rounded-full px-2 py-0.5 text-xs font-medium ${
+                            exec.status === 'success'
+                              ? 'bg-primary/10 text-primary'
+                              : exec.status === 'failed' || exec.status === 'error'
+                                ? 'bg-[#93000a]/10 text-[#93000a]'
+                                : 'bg-black/[0.05] text-ink-muted'
+                          }`}>
+                            {exec.status || 'Running'}
+                          </span>
+                          <span className="text-ink-muted">{exec.workflowData?.nodes?.length || workflow.nodes?.length || '-'} nodes</span>
+                          <a href={`http://localhost:5678/workflow/${id}/executions/${exec.id}`} target="_blank" rel="noreferrer" className="text-right font-medium text-primary hover:underline">
+                            View
+                          </a>
+                        </div>
+                      ))}
+                    </div>
                   )}
                 </div>
-              </div>
-            </div>
+              </section>
+            </section>
 
-            {/* Right Property/Code Panel */}
-            <aside className="w-[320px] bg-surface-container-low border-l border-outline-variant flex flex-col z-10">
-              <div className="p-4 border-b border-outline-variant flex justify-between items-center bg-surface-container-low">
-                <span className="font-label-md text-on-surface">Workflow JSON</span>
-                <button onClick={handleCopyJson} className="text-on-surface-variant hover:text-on-surface p-1 active:scale-95 transition-transform" title="Copy JSON">
+            <aside className="flex w-[340px] shrink-0 flex-col overflow-hidden px-5 py-6">
+              <div className="mb-4 flex items-center justify-between">
+                <div>
+                  <p className="text-xs font-semibold uppercase tracking-[0.08em] text-ink-faint">Inspector</p>
+                  <h2 className="mt-1 text-xl font-semibold text-ink">Workflow JSON</h2>
+                </div>
+                <button onClick={handleCopyJson} className="notion-nav-item flex h-8 w-8 items-center justify-center" type="button">
                   <span className="material-symbols-outlined text-[18px]">content_copy</span>
                 </button>
               </div>
-              <div className="flex-1 bg-[#0e0e0e] p-4 overflow-auto custom-scrollbar font-code-sm text-primary text-[12px] leading-relaxed">
-                <pre><code className="block select-text whitespace-pre-wrap">{JSON.stringify(workflow, null, 2)}</code></pre>
+
+              <div className="min-h-0 flex-1 overflow-auto rounded-xl bg-white/52 p-4">
+                <pre className="text-xs leading-5 text-ink-secondary"><code>{JSON.stringify(workflow, null, 2)}</code></pre>
               </div>
-              <div className="p-4 border-t border-outline-variant space-y-4 bg-surface-container-low">
-                <div className="space-y-1">
-                  <span className="text-[10px] uppercase tracking-wider text-on-surface-variant font-bold">Status</span>
-                  <div className="flex items-center gap-2 text-on-surface">
-                    <div className={`w-2 h-2 rounded-full ${workflow.active ? 'bg-green-500 shadow-[0_0_8px_rgba(34,197,94,0.6)]' : 'bg-outline-variant'}`}></div>
-                    <span className="font-label-md">{workflow.active ? 'Active & Monitoring' : 'Inactive / Paused'}</span>
-                  </div>
+
+              <div className="mt-4 rounded-xl bg-white/52 p-4">
+                <p className="text-xs font-semibold uppercase tracking-[0.08em] text-ink-faint">Status</p>
+                <div className="mt-2 flex items-center gap-2 text-sm font-medium text-ink">
+                  <span className={`h-2 w-2 rounded-full ${workflow.active ? 'bg-primary' : 'bg-ink-faint'}`} />
+                  {workflow.active ? 'Active & Monitoring' : 'Inactive / Paused'}
                 </div>
-                <div className="flex gap-2 pt-2">
-                  <a
-                    href={`http://localhost:5678/workflow/${id}`}
-                    target="_blank"
-                    rel="noreferrer"
-                    className="flex-1 bg-[#2e2e2e] hover:bg-surface-container-highest border border-outline-variant text-on-surface py-2 rounded-lg font-label-md text-center transition-all"
-                  >
+                <div className="mt-4 flex gap-2">
+                  <a href={`http://localhost:5678/workflow/${id}`} target="_blank" rel="noreferrer" className="notion-button-secondary flex-1">
                     Configure
                   </a>
-                  <button onClick={handleRunNow} className="flex-1 bg-primary text-on-primary font-bold py-2 rounded-lg font-label-md active:scale-95 transition-transform">
+                  <button onClick={handleRunNow} className="notion-button flex-1" type="button">
                     Run Now
                   </button>
                 </div>
@@ -347,30 +253,13 @@ export default function WorkflowDetailScreen() {
         )}
       </div>
 
-      {/* Global Overlay Modals */}
-      <SettingsModal
-        isOpen={settingsOpen}
-        onClose={() => setSettingsOpen(false)}
-        showToast={showToast}
-      />
-      <NotificationsModal
-        isOpen={notificationsOpen}
-        onClose={() => setNotificationsOpen(false)}
-      />
-      <ProfileModal
-        isOpen={profileOpen}
-        onClose={() => setProfileOpen(false)}
-      />
+      <SettingsModal isOpen={settingsOpen} onClose={() => setSettingsOpen(false)} showToast={showToast} />
+      <NotificationsModal isOpen={notificationsOpen} onClose={() => setNotificationsOpen(false)} />
+      <ProfileModal isOpen={profileOpen} onClose={() => setProfileOpen(false)} />
 
-      {/* Render toasts */}
       <div className="fixed bottom-4 right-4 z-[9999] flex flex-col gap-2 pointer-events-none">
         {toasts.map(toast => (
-          <Toast
-            key={toast.id}
-            message={toast.message}
-            type={toast.type}
-            onClose={() => removeToast(toast.id)}
-          />
+          <Toast key={toast.id} message={toast.message} type={toast.type} onClose={() => removeToast(toast.id)} />
         ))}
       </div>
     </div>

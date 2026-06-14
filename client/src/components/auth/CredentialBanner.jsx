@@ -1,4 +1,5 @@
-import React, { useState, useEffect } from 'react';
+/* eslint-disable react-hooks/set-state-in-effect, react-hooks/exhaustive-deps */
+import { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import axios from 'axios';
 
@@ -35,38 +36,33 @@ export default function CredentialBanner({ triggerService, actionService, showTo
 
   if (requiredServices.length === 0) return null;
 
-  // Compile missing items
   const missing = requiredServices.filter(s => status[s] === false);
 
   if (missing.length === 0) return null;
 
   return (
-    <div className="glass-card p-4 rounded-xl border border-error/30 bg-error/5 flex flex-col gap-2 animate-fade-in">
-      <div className="flex items-center gap-2 text-error font-bold text-xs uppercase tracking-wider">
-        <span className="material-symbols-outlined text-[16px]">lock</span>
-        Authentication Required
+    <section className="rounded-xl bg-white/52 p-4">
+      <div className="flex items-center gap-2 text-sm font-semibold text-ink">
+        <span className="material-symbols-outlined text-[18px] text-[#93000a]">lock</span>
+        Authentication required
       </div>
-      
-      <p className="text-[11px] text-on-surface-variant leading-relaxed">
-        🔐 To build and run this workflow, you need to connect:
+
+      <p className="mt-2 text-sm leading-5 text-ink-muted">
+        Connect these services before deploying the workflow.
       </p>
 
-      <ul className="space-y-1">
+      <ul className="mt-3 space-y-1.5">
         {missing.map((s, idx) => (
-          <li key={idx} className="text-[11px] text-on-surface font-semibold flex items-center gap-1.5">
-            <span className="material-symbols-outlined text-error text-[12px]">cancel</span>
-            {s} API (not connected)
+          <li key={idx} className="flex items-center gap-2 text-sm text-ink">
+            <span className="h-1.5 w-1.5 rounded-full bg-[#93000a]" />
+            {s} API
           </li>
         ))}
       </ul>
 
-      <div className="flex gap-2.5 mt-2.5">
-        <Link
-          to="/credentials"
-          className="text-[10px] font-bold bg-error text-white px-3.5 py-1.5 rounded hover:bg-error/95 active:scale-95 transition-all flex items-center gap-1 cursor-pointer"
-        >
-          <span className="material-symbols-outlined text-[12px] font-bold">settings</span>
-          Configure Now
+      <div className="mt-4 flex gap-2">
+        <Link to="/credentials" className="notion-button">
+          Configure
         </Link>
         <button
           type="button"
@@ -75,11 +71,11 @@ export default function CredentialBanner({ triggerService, actionService, showTo
             if (showToast) showToast('Credentials status updated.');
           }}
           disabled={checking}
-          className="text-[10px] font-bold bg-white/5 border border-white/10 text-on-surface px-3 py-1.5 rounded hover:bg-white/10 transition-all cursor-pointer"
+          className="notion-button-secondary"
         >
-          {checking ? 'Checking...' : 'Check Status'}
+          {checking ? 'Checking...' : 'Check'}
         </button>
       </div>
-    </div>
+    </section>
   );
 }

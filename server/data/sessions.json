@@ -1,0 +1,459 @@
+{
+  "sessions": [
+    {
+      "id": "6m742oom2qamqdgjk0f",
+      "title": "Post to Discord when a new RSS item matches a…",
+      "createdAt": "2026-06-14T07:23:17.391Z",
+      "updatedAt": "2026-06-14T07:25:04.181Z",
+      "messages": [
+        {
+          "id": "lqi8e35vndgmqdgjk1j",
+          "sender": "user",
+          "text": "Post to Discord when a new RSS item matches a keyword",
+          "messageType": "message",
+          "workflow": null,
+          "n8nId": null,
+          "createdAt": "2026-06-14T07:23:17.431Z"
+        },
+        {
+          "id": "gic1qfh3haqmqdgjkyx",
+          "sender": "ai",
+          "text": "To create a workflow that posts to Discord when a new RSS item matches a keyword, we need to clarify a few details. We will use the RSS feed as the trigger and Discord as the action.",
+          "messageType": "clarifying_question",
+          "workflow": {
+            "spec": {
+              "trigger": {
+                "service": "RSS",
+                "event": "New Item",
+                "sheetName": "[unknown]",
+                "details": "[unknown] keyword, feed URL"
+              },
+              "action": {
+                "service": "Discord",
+                "action": "Send Message",
+                "channel": "[unknown]",
+                "details": "[unknown] message content, formatting"
+              }
+            },
+            "isReadyToGenerate": false,
+            "questions": [
+              "What is the URL of the RSS feed you want to monitor?",
+              "What keyword do you want to match in the RSS items?",
+              "Which Discord channel do you want to post the matching items to?"
+            ],
+            "suggestedTemplates": [
+              "Monitor RSS feed for specific keywords and send email notifications",
+              "Post new RSS items to a Slack channel",
+              "Trigger a webhook when an RSS item matches a certain condition"
+            ]
+          },
+          "n8nId": null,
+          "createdAt": "2026-06-14T07:23:18.633Z"
+        },
+        {
+          "id": "j7qwxtgd86imqdgkw43",
+          "sender": "user",
+          "text": "Post new RSS items to a Slack channel",
+          "messageType": "message",
+          "workflow": null,
+          "n8nId": null,
+          "createdAt": "2026-06-14T07:24:19.731Z"
+        },
+        {
+          "id": "uqp2jqmpy5kmqdgkwq5",
+          "sender": "ai",
+          "text": "To post new RSS items to a Slack channel, we need to define the specifics of the workflow. The RSS feed will serve as the trigger, and Slack will be the action. We'll need to determine the details of the RSS feed and the Slack channel.",
+          "messageType": "clarifying_question",
+          "workflow": {
+            "spec": {
+              "trigger": {
+                "service": "RSS",
+                "event": "New Item",
+                "sheetName": "[unknown]",
+                "details": "[unknown]"
+              },
+              "action": {
+                "service": "Slack",
+                "action": "Send Message",
+                "channel": "[unknown]",
+                "details": "[unknown]"
+              }
+            },
+            "isReadyToGenerate": false,
+            "questions": [
+              "What is the URL of the RSS feed you want to monitor?",
+              "What is the name of the Slack channel where you want to post new RSS items?"
+            ],
+            "suggestedTemplates": [
+              "Post new GitHub issues to a Slack channel",
+              "Send new Reddit posts to a Discord server",
+              "Forward new email notifications to a Slack channel"
+            ]
+          },
+          "n8nId": null,
+          "createdAt": "2026-06-14T07:24:20.525Z"
+        },
+        {
+          "id": "177yc3dnnfwhmqdgl0st",
+          "sender": "user",
+          "text": "Post new GitHub issues to a Slack channel",
+          "messageType": "message",
+          "workflow": null,
+          "n8nId": null,
+          "createdAt": "2026-06-14T07:24:25.805Z"
+        },
+        {
+          "id": "llarsdo674mqdgl1jo",
+          "sender": "ai",
+          "text": "To post new GitHub issues to a Slack channel, we'll need to define the specifics of the workflow. The GitHub issues will serve as the trigger, and Slack will be the action. We'll need to determine the details of the GitHub repository and the Slack channel. \n   Please consider the following:\n   * Which GitHub repository should we monitor for new issues?\n   * What type of issues should we post to Slack (e.g. all issues, issues with specific labels)?\n   * Which Slack channel should we post the issues to?\n   * What information about the issue should we include in the Slack post (e.g. title, description, assignee)?",
+          "messageType": "clarifying_question",
+          "workflow": {
+            "spec": {
+              "trigger": {
+                "service": "GitHub",
+                "event": "New Issue",
+                "details": "[unknown]"
+              },
+              "action": {
+                "service": "Slack",
+                "action": "Send Message",
+                "channel": "[unknown]",
+                "details": "[unknown]"
+              }
+            },
+            "isReadyToGenerate": false,
+            "questions": [
+              "Which GitHub repository should we monitor for new issues?",
+              "What type of issues should we post to Slack?"
+            ],
+            "suggestedTemplates": [
+              "Post new GitHub issues with specific labels to a Slack channel",
+              "Post all new GitHub issues to a Slack channel",
+              "Post new GitHub issues assigned to a specific user to a Slack channel"
+            ]
+          },
+          "n8nId": null,
+          "createdAt": "2026-06-14T07:24:26.772Z"
+        },
+        {
+          "id": "in0j4zqwxrmqdgl4ke",
+          "sender": "user",
+          "text": "Post new GitHub issues assigned to a specific user to a Slack channel",
+          "messageType": "message",
+          "workflow": null,
+          "n8nId": null,
+          "createdAt": "2026-06-14T07:24:30.686Z"
+        },
+        {
+          "id": "iq0dexlvclpmqdgl53m",
+          "sender": "ai",
+          "text": "To post new GitHub issues assigned to a specific user to a Slack channel, we need to clarify a few details. We will use the GitHub issues as the trigger and Slack as the action.",
+          "messageType": "clarifying_question",
+          "workflow": {
+            "spec": {
+              "trigger": {
+                "service": "GitHub",
+                "event": "New Issue",
+                "details": "Issues assigned to a specific user"
+              },
+              "action": {
+                "service": "Slack",
+                "action": "Send Message",
+                "channel": "[unknown]",
+                "details": "[unknown]"
+              }
+            },
+            "isReadyToGenerate": false,
+            "questions": [
+              "Which GitHub repository should we monitor for new issues?",
+              "What is the username of the user that issues should be assigned to?",
+              "Which Slack channel should we post the issues to?"
+            ],
+            "suggestedTemplates": [
+              "Post new GitHub issues to a Slack channel",
+              "Post new GitHub issues with specific labels to a Slack channel",
+              "Post new GitHub issues assigned to a team to a Slack channel"
+            ]
+          },
+          "n8nId": null,
+          "createdAt": "2026-06-14T07:24:31.378Z"
+        },
+        {
+          "id": "yy6q8c7jjemqdgl71c",
+          "sender": "user",
+          "text": "Post new GitHub issues with specific labels to a Slack channel",
+          "messageType": "message",
+          "workflow": null,
+          "n8nId": null,
+          "createdAt": "2026-06-14T07:24:33.888Z"
+        },
+        {
+          "id": "qqhlnrlc1tmqdgl7n3",
+          "sender": "ai",
+          "text": "To post new GitHub issues with specific labels to a Slack channel, we need to define the specifics of the workflow. The GitHub issues will serve as the trigger, and Slack will be the action. \n   Please consider the following:\n   * Which GitHub repository should we monitor for new issues?\n   * What specific labels should we look for in the issues (e.g. 'bug', 'feature request')?\n   * Which Slack channel should we post the issues to?\n   * What information about the issue should we include in the Slack post (e.g. title, description, assignee)?",
+          "messageType": "clarifying_question",
+          "workflow": {
+            "spec": {
+              "trigger": {
+                "service": "GitHub",
+                "event": "New Issue",
+                "details": "Issues with specific labels"
+              },
+              "action": {
+                "service": "Slack",
+                "action": "Send Message",
+                "channel": "[unknown]",
+                "details": "[unknown]"
+              }
+            },
+            "isReadyToGenerate": false,
+            "questions": [
+              "Which GitHub repository should we monitor for new issues?",
+              "What specific labels should we look for in the issues?"
+            ],
+            "suggestedTemplates": [
+              "Post new GitHub issues assigned to a specific user to a Slack channel",
+              "Post new GitHub issues with specific milestones to a Slack channel",
+              "Post new GitHub pull requests to a Slack channel"
+            ]
+          },
+          "n8nId": null,
+          "createdAt": "2026-06-14T07:24:34.671Z"
+        },
+        {
+          "id": "ihzu8l1n1t9mqdglb47",
+          "sender": "user",
+          "text": "Post new GitHub issues assigned to a specific user to a Slack channel",
+          "messageType": "message",
+          "workflow": null,
+          "n8nId": null,
+          "createdAt": "2026-06-14T07:24:39.175Z"
+        },
+        {
+          "id": "2dgcxyk2l95mqdglclu",
+          "sender": "ai",
+          "text": "To post new GitHub issues assigned to a specific user to a Slack channel, we'll need to define the specifics of the workflow. The GitHub issues will serve as the trigger, and Slack will be the action. \n   Please consider the following:\n   * Which GitHub repository should we monitor for new issues?\n   * What is the username of the specific user that issues should be assigned to?\n   * Which Slack channel should we post the issues to?\n   * What information about the issue should we include in the Slack post (e.g. title, description, labels)?",
+          "messageType": "clarifying_question",
+          "workflow": {
+            "spec": {
+              "trigger": {
+                "service": "GitHub",
+                "event": "New Issue",
+                "sheetName": "[unknown]",
+                "details": "Assigned to specific user"
+              },
+              "action": {
+                "service": "Slack",
+                "action": "Send Message",
+                "channel": "[unknown]",
+                "details": "[unknown]"
+              }
+            },
+            "isReadyToGenerate": false,
+            "questions": [
+              "Which GitHub repository should we monitor for new issues?",
+              "What is the username of the specific user that issues should be assigned to?",
+              "Which Slack channel should we post the issues to?"
+            ],
+            "suggestedTemplates": [
+              "Post new GitHub issues to a Slack channel",
+              "Post new GitHub issues with specific labels to a Slack channel",
+              "Post new GitHub issues assigned to a specific team to a Slack channel"
+            ]
+          },
+          "n8nId": null,
+          "createdAt": "2026-06-14T07:24:41.106Z"
+        },
+        {
+          "id": "2172x7ib112mqdglfgm",
+          "sender": "user",
+          "text": "Post new GitHub issues assigned to a specific team to a Slack channel",
+          "messageType": "message",
+          "workflow": null,
+          "n8nId": null,
+          "createdAt": "2026-06-14T07:24:44.806Z"
+        },
+        {
+          "id": "urxj44m5namqdglg1a",
+          "sender": "ai",
+          "text": "To post new GitHub issues assigned to a specific team to a Slack channel, we need to clarify a few details. The GitHub issues will serve as the trigger, and Slack will be the action. \n   Please consider the following:\n   * Which GitHub repository should we monitor for new issues?\n   * What is the name of the specific team that issues should be assigned to?\n   * Which Slack channel should we post the issues to?\n   * What information about the issue should we include in the Slack post (e.g. title, description, labels)?",
+          "messageType": "clarifying_question",
+          "workflow": {
+            "spec": {
+              "trigger": {
+                "service": "GitHub",
+                "event": "New Issue",
+                "sheetName": "[unknown]",
+                "details": "Assigned to a specific team"
+              },
+              "action": {
+                "service": "Slack",
+                "action": "Send Message",
+                "channel": "[unknown]",
+                "details": "[unknown]"
+              }
+            },
+            "isReadyToGenerate": false,
+            "questions": [
+              "Which GitHub repository should we monitor for new issues?",
+              "What is the name of the specific team that issues should be assigned to?",
+              "Which Slack channel should we post the issues to?"
+            ],
+            "suggestedTemplates": [
+              "Post new GitHub issues to a Slack channel",
+              "Post new GitHub issues assigned to a specific user to a Slack channel",
+              "Post new GitHub issues with specific labels to a Slack channel"
+            ]
+          },
+          "n8nId": null,
+          "createdAt": "2026-06-14T07:24:45.550Z"
+        },
+        {
+          "id": "vymsaxmoirgmqdgli6q",
+          "sender": "user",
+          "text": "Post new GitHub issues to a Slack channel",
+          "messageType": "message",
+          "workflow": null,
+          "n8nId": null,
+          "createdAt": "2026-06-14T07:24:48.338Z"
+        },
+        {
+          "id": "rmezqexmlzkmqdgliq5",
+          "sender": "ai",
+          "text": "To post new GitHub issues to a Slack channel, we need to define the specifics of the workflow. The GitHub issues will serve as the trigger, and Slack will be the action. \n   Please consider the following:\n   * Which GitHub repository should we monitor for new issues?\n   * Which Slack channel should we post the issues to?\n   * What information about the issue should we include in the Slack post (e.g. title, description, labels, assignee)?",
+          "messageType": "clarifying_question",
+          "workflow": {
+            "spec": {
+              "trigger": {
+                "service": "GitHub",
+                "event": "New Issue",
+                "sheetName": "[unknown]",
+                "details": "[unknown]"
+              },
+              "action": {
+                "service": "Slack",
+                "action": "Send Message",
+                "channel": "[unknown]",
+                "details": "[unknown]"
+              }
+            },
+            "isReadyToGenerate": false,
+            "questions": [
+              "Which GitHub repository should we monitor for new issues?",
+              "Which Slack channel should we post the issues to?"
+            ],
+            "suggestedTemplates": [
+              "Post new GitHub issues assigned to a specific user to a Slack channel",
+              "Post new GitHub issues with specific labels to a Slack channel",
+              "Post new GitHub issues to a Discord channel"
+            ]
+          },
+          "n8nId": null,
+          "createdAt": "2026-06-14T07:24:49.037Z"
+        },
+        {
+          "id": "wt2lzco4tsmqdglkli",
+          "sender": "user",
+          "text": "Post new GitHub issues assigned to a specific user to a Slack channel",
+          "messageType": "message",
+          "workflow": null,
+          "n8nId": null,
+          "createdAt": "2026-06-14T07:24:51.462Z"
+        },
+        {
+          "id": "2w9z13lhj6xmqdgll5p",
+          "sender": "ai",
+          "text": "To post new GitHub issues assigned to a specific user to a Slack channel, we'll need to define the specifics of the workflow. The GitHub issues will serve as the trigger, and Slack will be the action.",
+          "messageType": "clarifying_question",
+          "workflow": {
+            "spec": {
+              "trigger": {
+                "service": "GitHub",
+                "event": "New Issue",
+                "sheetName": "[unknown]",
+                "details": "Assigned to a specific user"
+              },
+              "action": {
+                "service": "Slack",
+                "action": "Send Message",
+                "channel": "[unknown]",
+                "details": "Include issue title, description, and assignee"
+              }
+            },
+            "isReadyToGenerate": false,
+            "questions": [
+              "Which GitHub repository should we monitor for new issues?",
+              "What is the username of the specific user that issues should be assigned to?",
+              "Which Slack channel should we post the issues to?"
+            ],
+            "suggestedTemplates": [
+              "Post new GitHub issues to a Slack channel",
+              "Post new GitHub issues with specific labels to a Slack channel",
+              "Post new GitHub issues assigned to a specific team to a Slack channel"
+            ]
+          },
+          "n8nId": null,
+          "createdAt": "2026-06-14T07:24:52.189Z"
+        },
+        {
+          "id": "d3spza8ug2mqdgltmu",
+          "sender": "user",
+          "text": "Post new GitHub issues assigned to a specific team to a Slack channel",
+          "messageType": "message",
+          "workflow": null,
+          "n8nId": null,
+          "createdAt": "2026-06-14T07:25:03.174Z"
+        },
+        {
+          "id": "vzxri21jtwmqdgluet",
+          "sender": "ai",
+          "text": "To post new GitHub issues assigned to a specific team to a Slack channel, we need to clarify a few details. The GitHub issues will serve as the trigger, and Slack will be the action. \n   Please consider the following:\n   * Which GitHub repository should we monitor for new issues?\n   * What is the name of the specific team that issues should be assigned to?\n   * Which Slack channel should we post the issues to?\n   * What information about the issue should we include in the Slack post (e.g. title, description, labels)?",
+          "messageType": "clarifying_question",
+          "workflow": {
+            "spec": {
+              "trigger": {
+                "service": "GitHub",
+                "event": "New Issue",
+                "sheetName": "[unknown]",
+                "details": "Assigned to a specific team"
+              },
+              "action": {
+                "service": "Slack",
+                "action": "Send Message",
+                "channel": "[unknown]",
+                "details": "Post new GitHub issues"
+              }
+            },
+            "isReadyToGenerate": false,
+            "questions": [
+              "Which GitHub repository should we monitor for new issues?",
+              "What is the name of the specific team that issues should be assigned to?",
+              "Which Slack channel should we post the issues to?"
+            ],
+            "suggestedTemplates": [
+              "Post new GitHub issues to a Slack channel",
+              "Post new GitHub issues assigned to a specific user to a Slack channel",
+              "Post new GitHub issues with specific labels to a Slack channel"
+            ]
+          },
+          "n8nId": null,
+          "createdAt": "2026-06-14T07:25:04.181Z"
+        }
+      ],
+      "spec": {
+        "trigger": {
+          "service": "GitHub",
+          "event": "New Issue",
+          "sheetName": "[unknown]",
+          "details": "Assigned to a specific team"
+        },
+        "action": {
+          "service": "Slack",
+          "action": "Send Message",
+          "channel": "[unknown]",
+          "details": "Post new GitHub issues"
+        }
+      }
+    }
+  ]
+}

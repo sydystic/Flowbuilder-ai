@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import { useState } from 'react';
 
 function EditableField({ label, value, onSave, validate }) {
   const [isEditing, setIsEditing] = useState(false);
@@ -9,11 +9,12 @@ function EditableField({ label, value, onSave, validate }) {
     const validationError = validate ? validate(tempValue) : null;
     if (validationError) {
       setError(validationError);
-    } else {
-      setError(null);
-      setIsEditing(false);
-      onSave(tempValue);
+      return;
     }
+
+    setError(null);
+    setIsEditing(false);
+    onSave(tempValue);
   };
 
   const handleKeyDown = (e) => {
@@ -30,43 +31,52 @@ function EditableField({ label, value, onSave, validate }) {
 
   if (isEditing) {
     return (
-      <div className="flex flex-col gap-1 w-full animate-fade-in mt-1">
-        <div className="flex items-center gap-1.5">
-          <input
-            type="text"
-            value={tempValue}
-            autoFocus
-            onChange={(e) => setTempValue(e.target.value)}
-            onBlur={handleBlur}
-            onKeyDown={handleKeyDown}
-            className="flex-1 bg-[#1a1a2e] border border-primary/50 rounded px-2 py-1 text-xs text-on-surface focus:outline-none"
-          />
-        </div>
-        {error && <span className="text-[9px] text-error font-semibold">{error}</span>}
+      <div className="py-2">
+        <div className="mb-1 text-xs font-medium text-ink-faint">{label}</div>
+        <input
+          type="text"
+          value={tempValue}
+          autoFocus
+          onChange={(e) => setTempValue(e.target.value)}
+          onBlur={handleBlur}
+          onKeyDown={handleKeyDown}
+          className="notion-input"
+        />
+        {error && <span className="mt-1 block text-sm text-[#93000a]">{error}</span>}
       </div>
     );
   }
 
   return (
-    <div 
+    <button
       onClick={() => setIsEditing(true)}
-      className="group flex justify-between items-center py-1.5 px-2 hover:bg-white/5 rounded transition-all cursor-pointer border border-transparent hover:border-white/5 mt-0.5"
+      className="group flex w-full items-start justify-between gap-3 rounded-lg px-2 py-2 text-left transition-colors hover:bg-black/[0.04]"
+      type="button"
     >
-      <div className="text-[11px] text-on-surface-variant flex-1 min-w-0 pr-2">
-        <span className="font-semibold text-outline-variant mr-1.5">{label}:</span>
-        <span className={displayVal ? 'text-on-surface font-medium truncate inline-block max-w-[150px]' : 'text-outline-variant/40 italic'}>
-          {displayVal || 'Click to configure'}
-        </span>
-      </div>
-      <span className="material-symbols-outlined text-[12px] text-outline-variant opacity-0 group-hover:opacity-100 transition-opacity">
+      <span className="w-24 shrink-0 text-sm text-ink-muted">{label}</span>
+      <span className={`min-w-0 flex-1 truncate text-sm ${displayVal ? 'text-ink' : 'italic text-ink-faint'}`}>
+        {displayVal || 'Click to configure'}
+      </span>
+      <span className="material-symbols-outlined text-[16px] text-ink-faint opacity-0 transition-opacity group-hover:opacity-100">
         edit
       </span>
-    </div>
+    </button>
+  );
+}
+
+function SpecSection({ icon, title, children }) {
+  return (
+    <section className="rounded-xl bg-white/52 p-3">
+      <div className="mb-2 flex items-center gap-2 px-2 text-sm font-semibold text-ink">
+        <span className="material-symbols-outlined text-[18px] text-primary">{icon}</span>
+        {title}
+      </div>
+      <div className="space-y-0.5">{children}</div>
+    </section>
   );
 }
 
 export default function WorkflowSpecPanel({ spec, onSpecUpdate }) {
-  // Validate Slack channel starts with #
   const validateSlackChannel = (val) => {
     if (val && !val.startsWith('#') && !val.startsWith('@') && spec.action?.service?.toLowerCase().includes('slack')) {
       return 'Slack channel must start with # or @';
@@ -85,7 +95,6 @@ export default function WorkflowSpecPanel({ spec, onSpecUpdate }) {
     if (onSpecUpdate) onSpecUpdate(updated);
   };
 
-  // Compile missing fields dynamically
   const getMissingFieldsList = () => {
     const list = [];
     if (!spec.trigger?.service || spec.trigger.service === '[unknown]') {
@@ -109,17 +118,8 @@ export default function WorkflowSpecPanel({ spec, onSpecUpdate }) {
   const missingFields = getMissingFieldsList();
 
   return (
-    <div className="flex flex-col gap-4">
-      {/* TRIGGER CARD */}
-      <div className="glass-card p-4 rounded-xl border border-white/10 bg-[#131320]/40 flex flex-col gap-1 animate-fade-in">
-        <div className="flex items-center justify-between border-b border-white/5 pb-2 mb-2">
-          <div className="flex items-center gap-2 text-primary font-bold text-xs uppercase tracking-wider">
-            <span className="material-symbols-outlined text-[16px]">play_circle</span>
-            Trigger Node
-          </div>
-          <span className="text-[10px] bg-primary/10 text-primary px-2 py-0.5 rounded font-bold">n8n Node</span>
-        </div>
-
+    <div className="space-y-4">
+      <SpecSection icon="play_circle" title="Trigger">
         <EditableField
           label="Service"
           value={spec.trigger?.service}
@@ -142,18 +142,9 @@ export default function WorkflowSpecPanel({ spec, onSpecUpdate }) {
           value={spec.trigger?.details}
           onSave={(val) => handleUpdate('trigger', 'details', val)}
         />
-      </div>
+      </SpecSection>
 
-      {/* ACTION CARD */}
-      <div className="glass-card p-4 rounded-xl border border-white/10 bg-[#131320]/40 flex flex-col gap-1 animate-fade-in">
-        <div className="flex items-center justify-between border-b border-white/5 pb-2 mb-2">
-          <div className="flex items-center gap-2 text-purple-400 font-bold text-xs uppercase tracking-wider">
-            <span className="material-symbols-outlined text-[16px]">rocket_launch</span>
-            Action Node
-          </div>
-          <span className="text-[10px] bg-purple-400/10 text-purple-400 px-2 py-0.5 rounded font-bold">n8n Node</span>
-        </div>
-
+      <SpecSection icon="rocket_launch" title="Action">
         <EditableField
           label="Service"
           value={spec.action?.service}
@@ -177,24 +168,24 @@ export default function WorkflowSpecPanel({ spec, onSpecUpdate }) {
           value={spec.action?.details}
           onSave={(val) => handleUpdate('action', 'details', val)}
         />
-      </div>
+      </SpecSection>
 
-      {/* MISSING INFO SUMMARY */}
       {missingFields.length > 0 && (
-        <div className="glass-card p-4 rounded-xl border border-amber-400/20 bg-amber-400/5 flex flex-col gap-2">
-          <div className="flex items-center gap-2 text-amber-400 font-bold text-xs uppercase tracking-wider">
-            <span className="material-symbols-outlined text-[16px]">warning</span>
-            Missing Info ({missingFields.length})
+        <section className="rounded-xl bg-white/52 p-4">
+          <div className="mb-3 flex items-center gap-2 text-sm font-semibold text-ink">
+            <span className="material-symbols-outlined text-[18px] text-[#93000a]">warning</span>
+            Missing info
+            <span className="text-ink-faint">({missingFields.length})</span>
           </div>
-          <ul className="space-y-1">
+          <ul className="space-y-2">
             {missingFields.map((f, i) => (
-              <li key={i} className="text-[11px] text-on-surface-variant flex items-start gap-1.5 leading-tight">
-                <span className="text-amber-400 mt-0.5">•</span>
-                {f}
+              <li key={i} className="flex items-start gap-2 text-sm text-ink-muted">
+                <span className="mt-2 h-1 w-1 shrink-0 rounded-full bg-[#93000a]" />
+                <span>{f}</span>
               </li>
             ))}
           </ul>
-        </div>
+        </section>
       )}
     </div>
   );

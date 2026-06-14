@@ -19,7 +19,7 @@ export default function ChatScreen() {
   const [isLoading, setIsLoading] = useState(false);
   const [toasts, setToasts] = useState([]);
   const [recentWorkflows, setRecentWorkflows] = useState([]);
-  
+
   // Modals state
   const [settingsOpen, setSettingsOpen] = useState(false);
   const [notificationsOpen, setNotificationsOpen] = useState(false);
@@ -227,6 +227,7 @@ export default function ChatScreen() {
       const errorMsg = err.response?.data?.error || err.message || 'Something went wrong';
       const failMsg = { id: uid(), sender: 'ai', text: `Sorry, I hit an error: ${errorMsg}`, messageType: 'message' };
       addMsg(failMsg);
+      await persistMessage(activeSessionId, failMsg);
       showToast(errorMsg, 'error');
     } finally {
       setIsLoading(false);
@@ -346,7 +347,7 @@ Action: ${spec.action.service} (Action: ${spec.action.action}, Target/Channel: $
   };
 
   return (
-    <div className="flex flex-col h-screen overflow-hidden bg-[#080810]">
+    <div className="app-shell flex flex-col h-screen overflow-hidden">
       {/* Shared Header Navigation */}
       <Header
         activeTab="chat"

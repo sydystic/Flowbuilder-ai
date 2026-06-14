@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import { useState } from 'react';
 
 const INITIAL_NOTIFICATIONS = [
   { id: 1, type: 'success', title: 'Workflow generated & deployed', desc: 'Sent Slack Message when GitHub issue is urgent', time: '10 mins ago' },
@@ -21,67 +21,43 @@ export default function NotificationsModal({ isOpen, onClose }) {
   };
 
   return (
-    <div className="fixed inset-0 z-[9999] flex items-center justify-center p-4 bg-black/70 backdrop-blur-sm animate-fade-in">
-      <div className="glass-card w-full max-w-md rounded-xl p-6 border border-white/10 bg-white/5 shadow-2xl">
-        <div className="flex justify-between items-center mb-6">
-          <h3 className="text-headline-md font-headline-md text-on-surface font-bold flex items-center gap-2">
-            <span className="material-symbols-outlined text-primary">notifications</span>
-            Notifications
-          </h3>
-          <div className="flex items-center gap-3">
+    <div className="fixed inset-0 z-[9999] flex items-center justify-center bg-black/30 p-4 backdrop-blur-sm">
+      <div className="notion-surface w-full max-w-md p-6">
+        <div className="mb-6 flex items-center justify-between">
+          <div>
+            <h3 className="text-xl font-semibold text-ink">Notifications</h3>
+            <p className="mt-1 text-sm text-ink-muted">Recent workflow activity.</p>
+          </div>
+          <div className="flex items-center gap-1">
             {notifications.length > 0 && (
-              <button
-                onClick={handleClearAll}
-                className="text-[11px] font-label-md text-on-surface-variant hover:text-primary transition-colors cursor-pointer"
-              >
+              <button onClick={handleClearAll} className="notion-button-secondary px-2 py-1 text-xs" type="button">
                 Clear all
               </button>
             )}
-            <button
-              onClick={onClose}
-              className="text-on-surface-variant hover:text-on-surface active:scale-95 transition-all cursor-pointer"
-            >
-              <span className="material-symbols-outlined">close</span>
+            <button onClick={onClose} className="notion-nav-item flex h-8 w-8 items-center justify-center" type="button">
+              <span className="material-symbols-outlined text-[18px]">close</span>
             </button>
           </div>
         </div>
 
-        <div className="space-y-3 max-h-[300px] overflow-y-auto custom-scrollbar pr-1">
+        <div className="max-h-[320px] space-y-1 overflow-y-auto">
           {notifications.map((n) => (
-            <div
-              key={n.id}
-              className="glass-card p-3 rounded-lg border border-white/5 bg-[#13131d]/60 flex items-start gap-3 relative group"
-            >
-              <div className="mt-0.5">
-                {n.type === 'success' && (
-                  <span className="material-symbols-outlined text-green-400 text-[18px]">check_circle</span>
-                )}
-                {n.type === 'info' && (
-                  <span className="material-symbols-outlined text-primary text-[18px]">info</span>
-                )}
-                {n.type === 'warning' && (
-                  <span className="material-symbols-outlined text-amber-400 text-[18px]">warning</span>
-                )}
+            <div key={n.id} className="flex items-start gap-3 rounded-lg px-2 py-2 hover:bg-black/[0.04]">
+              <span className={`material-symbols-outlined mt-0.5 text-[18px] ${n.type === 'warning' ? 'text-[#93000a]' : 'text-primary'}`}>
+                {n.type === 'warning' ? 'warning' : n.type === 'info' ? 'info' : 'check_circle'}
+              </span>
+              <div className="min-w-0 flex-1">
+                <h4 className="text-sm font-medium text-ink">{n.title}</h4>
+                <p className="mt-0.5 text-sm leading-5 text-ink-muted">{n.desc}</p>
+                <p className="mt-1 text-xs text-ink-faint">{n.time}</p>
               </div>
-              <div className="flex-1 min-w-0 pr-4">
-                <div className="text-xs font-bold text-on-surface leading-tight truncate">{n.title}</div>
-                <div className="text-[11px] text-on-surface-variant leading-relaxed mt-0.5">{n.desc}</div>
-                <div className="text-[9px] text-outline mt-1">{n.time}</div>
-              </div>
-              <button
-                onClick={() => handleDismiss(n.id)}
-                className="absolute top-2 right-2 text-on-surface-variant hover:text-error opacity-0 group-hover:opacity-100 transition-opacity p-0.5"
-                title="Dismiss"
-              >
-                <span className="material-symbols-outlined text-[14px]">close</span>
+              <button onClick={() => handleDismiss(n.id)} className="notion-nav-item flex h-7 w-7 items-center justify-center" title="Dismiss" type="button">
+                <span className="material-symbols-outlined text-[16px]">close</span>
               </button>
             </div>
           ))}
           {notifications.length === 0 && (
-            <div className="text-center py-8">
-              <span className="material-symbols-outlined text-outline text-[32px] opacity-40">notifications_off</span>
-              <p className="text-xs text-on-surface-variant mt-2">All caught up! No new notifications.</p>
-            </div>
+            <div className="py-10 text-center text-sm text-ink-muted">All caught up. No new notifications.</div>
           )}
         </div>
       </div>

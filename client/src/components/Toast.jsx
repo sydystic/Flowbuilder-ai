@@ -1,4 +1,4 @@
-import React, { useEffect } from 'react';
+import { useEffect } from 'react';
 
 export default function Toast({ message, type = 'success', onClose }) {
   useEffect(() => {
@@ -8,16 +8,15 @@ export default function Toast({ message, type = 'success', onClose }) {
     return () => clearTimeout(timer);
   }, [onClose]);
 
-  const isSuccess = type === 'success';
+  const icon = type === 'success' ? 'check_circle' : type === 'error' ? 'error' : 'info';
+  const iconClass = type === 'error' ? 'text-[#93000a]' : 'text-primary';
 
   return (
-    <div className="flex items-center gap-3 px-4 py-3 rounded-lg glass-card border border-white/10 pointer-events-auto bg-white/5 backdrop-blur-md shadow-2xl">
-      <span className={`material-symbols-outlined ${isSuccess ? 'text-emerald-500' : 'text-rose-500'}`}>
-        {isSuccess ? 'check_circle' : 'error'}
-      </span>
-      <span className="text-sm font-medium text-[#e5e2e1]">{message}</span>
-      <button onClick={onClose} className="ml-2 text-outline hover:text-[#e5e2e1] transition-colors">
-        <span className="material-symbols-outlined text-sm">close</span>
+    <div className="pointer-events-auto flex items-center gap-3 rounded-xl bg-white px-4 py-3 text-sm text-ink shadow-[0_8px_28px_rgba(0,0,0,0.08)]">
+      <span className={`material-symbols-outlined text-[18px] ${iconClass}`}>{icon}</span>
+      <span className="font-medium">{message}</span>
+      <button onClick={onClose} className="notion-nav-item ml-1 flex h-6 w-6 items-center justify-center" type="button">
+        <span className="material-symbols-outlined text-[16px]">close</span>
       </button>
     </div>
   );

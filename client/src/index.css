@@ -215,3 +215,88 @@ textarea {
     background-position: 200% 0;
   }
 }
+
+/* Notion Dark Mode variables & overrides */
+.dark {
+  --canvas: #191919;
+  --surface: #202020;
+  --ink: #f1f0ee;
+  --ink-secondary: #e3e2e0;
+  --ink-muted: #9f9c99;
+  --ink-faint: #605d5a;
+  --hairline: rgba(255, 255, 255, 0.08);
+  --primary: #529cca;
+  --primary-active: #3f7fa7;
+}
+
+.dark body {
+  background: var(--canvas);
+  color: var(--ink);
+}
+
+.dark .notion-sidebar {
+  background: #1f1f1f;
+  border-right-color: var(--hairline);
+}
+
+.dark .notion-surface {
+  background: var(--surface);
+  border-color: var(--hairline) !important;
+}
+
+.dark .notion-panel {
+  background: rgba(32, 32, 32, 0.56);
+}
+
+.dark .notion-button-secondary {
+  background: rgba(255, 255, 255, 0.05);
+  color: var(--ink-secondary);
+}
+
+.dark .notion-button-secondary:hover {
+  background: rgba(255, 255, 255, 0.08);
+  color: var(--ink);
+}
+
+.dark .notion-input {
+  background: rgba(255, 255, 255, 0.04);
+  border-color: rgba(255, 255, 255, 0.08);
+  color: var(--ink);
+}
+
+.dark .notion-input:focus {
+  background: #252525;
+  border-color: rgba(82, 156, 202, 0.5);
+  box-shadow: 0 0 0 3px rgba(82, 156, 202, 0.15);
+}
+
+.dark .notion-nav-item:hover {
+  background: rgba(255, 255, 255, 0.05);
+  color: var(--ink);
+}
+
+.dark .notion-nav-item-active {
+  background: rgba(255, 255, 255, 0.08);
+  color: var(--ink);
+}
+
+.dark .bg-white {
+  background-color: var(--surface) !important;
+}
+
+.dark .bg-\[\#f6f5f4\] {
+  background-color: #1a1a1a !important;
+}
+
+.dark .border-t,
+.dark .border-b,
+.dark .border,
+.dark .border-\[\#e6e6e6\] {
+  border-color: var(--hairline) !important;
+}
+
+.dark select option {
+  background-color: var(--surface);
+  color: var(--ink);
+}
+

@@ -118,7 +118,8 @@ const n8nClient = {
 },
 
   async activateWorkflow(id, active = true) {
-    const res = await client.patch(`/workflows/${id}`, { active });
+    const action = active ? "activate" : "deactivate";
+    const res = await client.post(`/workflows/${id}/${action}`);
     return res.data;
   },
 
@@ -138,8 +139,14 @@ const n8nClient = {
   },
 
   async createCredential(name, type, data) {
-    const res = await client.post("/credentials", { name, type, data });
-    return res.data;
+    try {
+      const res = await client.post("/credentials", { name, type, data });
+      return res.data;
+    } catch (err) {
+      console.error("n8n createCredential API error status:", err.response?.status);
+      console.error("n8n createCredential API error body:", JSON.stringify(err.response?.data, null, 2));
+      throw new Error(err.response?.data?.message || err.message);
+    }
   },
 
   async deleteCredential(id) {

@@ -136,7 +136,7 @@ const aiClient = {
   },
 
   async chatConversation(sessionId, userMessage) {
-    const session = sessionStore.getSession(sessionId);
+    const session = await sessionStore.getSession(sessionId);
     if (!session) {
       throw new Error(`Session ${sessionId} not found`);
     }
@@ -177,7 +177,10 @@ const aiClient = {
 
         const result = await chat.sendMessage(userMessage);
         const text = result.response.text();
-        return this.parseJsonResponse(text);
+        const parsed = this.parseJsonResponse(text);
+        parsed.modelName = "gemini-1.5-flash";
+        parsed.tokensUsed = result.response.usageMetadata?.totalTokenCount || null;
+        return parsed;
       } catch (err) {
         console.warn("Gemini chat completion failed, falling back to Groq:", err.message);
       }
@@ -200,7 +203,10 @@ const aiClient = {
     });
 
     const text = completion.choices[0].message.content.trim();
-    return this.parseJsonResponse(text);
+    const parsed = this.parseJsonResponse(text);
+    parsed.modelName = "llama-3.3-70b-versatile";
+    parsed.tokensUsed = completion.usage?.total_tokens || null;
+    return parsed;
   },
 
   async generateWorkflow(userPrompt) {

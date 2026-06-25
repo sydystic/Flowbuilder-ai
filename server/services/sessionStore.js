@@ -1,140 +1,225 @@
-const fs = require("fs");
-const path = require("path");
-
-const FILE_PATH = path.join(__dirname, "../data/sessions.json");
-
-// Ensure directory exists
-const dirPath = path.dirname(FILE_PATH);
-if (!fs.existsSync(dirPath)) {
-  fs.mkdirSync(dirPath, { recursive: true });
-}
-
-// Initialize file if not exists
-if (!fs.existsSync(FILE_PATH)) {
-  fs.writeFileSync(FILE_PATH, JSON.stringify({ sessions: [] }, null, 2), "utf8");
-}
+const supabase = require("./supabaseClient");
 
 const sessionStore = {
-  getAll() {
+  async listSessions(userId) {
     try {
-      if (!fs.existsSync(FILE_PATH)) {
+      const { data, error } = await supabase
+        .from("conversations")
+        .select("id, title, created_at, updated_at, spec")
+        .eq("owner_id", userId)
+        .order("updated_at", { ascending: false });
+
+      if (error) {
+        console.error("Error listing sessions from Supabase:", error.message);
         return [];
       }
-      const data = fs.readFileSync(FILE_PATH, "utf8");
-      const parsed = JSON.parse(data || '{"sessions":[]}');
-      return parsed.sessions || [];
+
+      return (data || []).map(s => ({
+        id: s.id,
+        title: s.title,
+        createdAt: s.created_at,
+        updatedAt: s.updated_at,
+        spec: s.spec || {}
+      }));
     } catch (err) {
-      console.error("Error reading sessions:", err);
+      console.error("Error listing sessions exception:", err.message);
       return [];
     }
   },
 
-  saveAll(sessions) {
+  async getSession(id) {
     try {
-      fs.writeFileSync(FILE_PATH, JSON.stringify({ sessions }, null, 2), "utf8");
-    } catch (err) {
-      console.error("Error saving sessions:", err);
-    }
-  },
+      const { data: conv, error: convError } = await supabase
+        .from("conversations")
+        .select("*")
+        .eq("id", id)
+        .maybeSingle();
 
-  listSessions() {
-    const sessions = this.getAll();
-    // Return sessions summary without messages list to keep list lightweight
-    return sessions.map(s => ({
-      id: s.id,
-      title: s.title,
-      createdAt: s.createdAt,
-      updatedAt: s.updatedAt,
-      spec: s.spec || {}
-    })).sort((a, b) => new Date(b.updatedAt) - new Date(a.updatedAt));
-  },
-
-  getSession(id) {
-    const sessions = this.getAll();
-    return sessions.find(s => s.id === id);
-  },
-
-  createSession(title = "New Chat") {
-    const sessions = this.getAll();
-    const newSession = {
-      id: Math.random().toString(36).slice(2) + Date.now().toString(36),
-      title,
-      createdAt: new Date().toISOString(),
-      updatedAt: new Date().toISOString(),
-      messages: [],
-      spec: {
-        trigger: { service: "[unknown]", event: "[unknown]", details: "[unknown]" },
-        action: { service: "[unknown]", action: "[unknown]", details: "[unknown]" },
-        checklist: [
-          { id: "trigger_configured", label: "Trigger app configured", checked: false },
-          { id: "credentials_configured", label: "Credentials configured", checked: false },
-          { id: "data_mapping", label: "Data mapping verified", checked: false },
-          { id: "error_handling", label: "Error handling defined", checked: false },
-          { id: "output_validated", label: "Expected output validated", checked: false }
-        ]
+      if (convError || !conv) {
+        return null;
       }
-    };
-    sessions.push(newSession);
-    this.saveAll(sessions);
-    return newSession;
-  },
 
-  renameSession(id, title) {
-    const sessions = this.getAll();
-    const index = sessions.findIndex(s => s.id === id);
-    if (index !== -1) {
-      sessions[index].title = title;
-      sessions[index].updatedAt = new Date().toISOString();
-      this.saveAll(sessions);
-      return sessions[index];
+      const { data: messages, error: msgError } = await supabase
+        .from("messages")
+        .select("*")
+        .eq("conversation_id", id)
+        .order("created_at", { ascending: true });
+
+      if (msgError) {
+        console.error("Error fetching messages for session:", msgError.message);
+      }
+
+      return {
+        id: conv.id,
+        ownerId: conv.owner_id,
+        title: conv.title,
+        createdAt: conv.created_at,
+        updatedAt: conv.updated_at,
+        spec: conv.spec || {},
+        messages: (messages || []).map(m => ({
+          id: m.id,
+          sender: m.role,
+          text: m.content,
+          messageType: m.meta?.messageType || 'message',
+          workflow: m.meta?.workflow || null,
+          n8nId: m.meta?.n8nId || null,
+          createdAt: m.created_at
+        }))
+      };
+    } catch (err) {
+      console.error("Error getting session exception:", err.message);
+      return null;
     }
-    return null;
   },
 
-  deleteSession(id) {
-    const sessions = this.getAll();
-    const filtered = sessions.filter(s => s.id !== id);
-    this.saveAll(filtered);
+  async createSession(userId, title = "New Chat") {
+    const defaultSpec = {
+      trigger: { service: "[unknown]", event: "[unknown]", details: "[unknown]" },
+      action: { service: "[unknown]", action: "[unknown]", details: "[unknown]" },
+      checklist: [
+        { id: "trigger_configured", label: "Trigger app configured", checked: false },
+        { id: "credentials_configured", label: "Credentials configured", checked: false },
+        { id: "data_mapping", label: "Data mapping verified", checked: false },
+        { id: "error_handling", label: "Error handling defined", checked: false },
+        { id: "output_validated", label: "Expected output validated", checked: false }
+      ]
+    };
+
+    const { data, error } = await supabase
+      .from("conversations")
+      .insert({
+        owner_id: userId,
+        title,
+        spec: defaultSpec
+      })
+      .select()
+      .single();
+
+    if (error) {
+      console.error("Error creating session in Supabase:", error.message);
+      throw error;
+    }
+
+    return {
+      id: data.id,
+      title: data.title,
+      createdAt: data.created_at,
+      updatedAt: data.updated_at,
+      spec: data.spec,
+      messages: []
+    };
+  },
+
+  async renameSession(id, title) {
+    const { data, error } = await supabase
+      .from("conversations")
+      .update({
+        title,
+        updated_at: new Date().toISOString()
+      })
+      .eq("id", id)
+      .select()
+      .single();
+
+    if (error) {
+      console.error("Error renaming session in Supabase:", error.message);
+      return null;
+    }
+
+    return {
+      id: data.id,
+      title: data.title,
+      createdAt: data.created_at,
+      updatedAt: data.updated_at,
+      spec: data.spec
+    };
+  },
+
+  async deleteSession(id) {
+    const { error } = await supabase
+      .from("conversations")
+      .delete()
+      .eq("id", id);
+
+    if (error) {
+      console.error("Error deleting session in Supabase:", error.message);
+      return false;
+    }
     return true;
   },
 
-  saveMessage(sessionId, { sender, text, messageType = "message", workflow = null, n8nId = null }) {
-    const sessions = this.getAll();
-    const index = sessions.findIndex(s => s.id === sessionId);
-    if (index === -1) return null;
+  async saveMessage(sessionId, { sender, text, messageType = "message", workflow = null, n8nId = null, modelName = null, tokensUsed = null }) {
+    const meta = { messageType, workflow, n8nId };
 
-    const message = {
-      id: Math.random().toString(36).slice(2) + Date.now().toString(36),
-      sender,
-      text,
-      messageType,
-      workflow,
-      n8nId,
-      createdAt: new Date().toISOString()
+    const { data: msg, error: msgError } = await supabase
+      .from("messages")
+      .insert({
+        conversation_id: sessionId,
+        role: sender,
+        content: text,
+        meta,
+        model_name: modelName,
+        tokens_used: tokensUsed
+      })
+      .select()
+      .single();
+
+    if (msgError) {
+      console.error("Error saving message in Supabase:", msgError.message);
+      throw msgError;
+    }
+
+    const convUpdates = {
+      updated_at: new Date().toISOString()
     };
 
-    sessions[index].messages.push(message);
-    sessions[index].updatedAt = new Date().toISOString();
-
-    // If message contains a spec in the workflow field, update the session spec
     if (workflow && workflow.spec) {
-      sessions[index].spec = workflow.spec;
+      convUpdates.spec = workflow.spec;
     }
 
-    this.saveAll(sessions);
-    return message;
+    const { error: convError } = await supabase
+      .from("conversations")
+      .update(convUpdates)
+      .eq("id", sessionId);
+
+    if (convError) {
+      console.error("Error updating conversation metadata in Supabase:", convError.message);
+    }
+
+    return {
+      id: msg.id,
+      sender: msg.role,
+      text: msg.content,
+      messageType: msg.meta?.messageType || 'message',
+      workflow: msg.meta?.workflow || null,
+      n8nId: msg.meta?.n8nId || null,
+      createdAt: msg.created_at
+    };
   },
 
-  updateSessionSpec(sessionId, spec) {
-    const sessions = this.getAll();
-    const index = sessions.findIndex(s => s.id === sessionId);
-    if (index !== -1) {
-      sessions[index].spec = spec;
-      sessions[index].updatedAt = new Date().toISOString();
-      this.saveAll(sessions);
-      return sessions[index];
+  async updateSessionSpec(sessionId, spec) {
+    const { data, error } = await supabase
+      .from("conversations")
+      .update({
+        spec,
+        updated_at: new Date().toISOString()
+      })
+      .eq("id", sessionId)
+      .select()
+      .single();
+
+    if (error) {
+      console.error("Error updating session spec in Supabase:", error.message);
+      return null;
     }
-    return null;
+
+    return {
+      id: data.id,
+      title: data.title,
+      createdAt: data.created_at,
+      updatedAt: data.updated_at,
+      spec: data.spec
+    };
   }
 };
 

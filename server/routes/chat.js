@@ -2,11 +2,15 @@ const express = require("express");
 const router = express.Router();
 const sessionStore = require("../services/sessionStore");
 const aiClient = require("../services/aiClient");
+const requireAuth = require("../middlewares/auth");
 
-// GET /api/chat/sessions -> list sessions
-router.get("/chat/sessions", (req, res) => {
+// Require authentication for all chat routes
+router.use(requireAuth);
+
+// GET /api/chat/sessions -> list sessions for the authenticated user
+router.get("/chat/sessions", async (req, res) => {
   try {
-    const list = sessionStore.listSessions();
+    const list = await sessionStore.listSessions(req.user.id);
     res.json({ success: true, sessions: list });
   } catch (err) {
     console.error("List sessions error:", err.message);
@@ -14,11 +18,11 @@ router.get("/chat/sessions", (req, res) => {
   }
 });
 
-// POST /api/chat/sessions -> create session
-router.post("/chat/sessions", (req, res) => {
+// POST /api/chat/sessions -> create session for the authenticated user
+router.post("/chat/sessions", async (req, res) => {
   try {
     const { title } = req.body;
-    const session = sessionStore.createSession(title || "New Chat");
+    const session = await sessionStore.createSession(req.user.id, title || "New Chat");
     res.json({ success: true, session });
   } catch (err) {
     console.error("Create session error:", err.message);
@@ -26,25 +30,38 @@ router.post("/chat/sessions", (req, res) => {
   }
 });
 
-// PATCH /api/chat/sessions/:id -> rename session
-router.patch("/chat/sessions/:id", (req, res) => {
+// PATCH /api/chat/sessions/:id -> rename session (verifying ownership)
+router.patch("/chat/sessions/:id", async (req, res) => {
   try {
     const { title } = req.body;
-    const session = sessionStore.renameSession(req.params.id, title);
+    const session = await sessionStore.getSession(req.params.id);
     if (!session) {
       return res.status(404).json({ error: "Session not found" });
     }
-    res.json({ success: true, session });
+    if (session.ownerId !== req.user.id) {
+      return res.status(403).json({ error: "Forbidden: You do not own this session" });
+    }
+
+    const updated = await sessionStore.renameSession(req.params.id, title);
+    res.json({ success: true, session: updated });
   } catch (err) {
     console.error("Rename session error:", err.message);
     res.status(500).json({ error: err.message });
   }
 });
 
-// DELETE /api/chat/sessions/:id -> delete session
-router.delete("/chat/sessions/:id", (req, res) => {
+// DELETE /api/chat/sessions/:id -> delete session (verifying ownership)
+router.delete("/chat/sessions/:id", async (req, res) => {
   try {
-    sessionStore.deleteSession(req.params.id);
+    const session = await sessionStore.getSession(req.params.id);
+    if (!session) {
+      return res.status(404).json({ error: "Session not found" });
+    }
+    if (session.ownerId !== req.user.id) {
+      return res.status(403).json({ error: "Forbidden: You do not own this session" });
+    }
+
+    await sessionStore.deleteSession(req.params.id);
     res.json({ success: true });
   } catch (err) {
     console.error("Delete session error:", err.message);
@@ -52,12 +69,15 @@ router.delete("/chat/sessions/:id", (req, res) => {
   }
 });
 
-// GET /api/chat/sessions/:id/messages -> get session messages
-router.get("/chat/sessions/:id/messages", (req, res) => {
+// GET /api/chat/sessions/:id/messages -> get session messages (verifying ownership)
+router.get("/chat/sessions/:id/messages", async (req, res) => {
   try {
-    const session = sessionStore.getSession(req.params.id);
+    const session = await sessionStore.getSession(req.params.id);
     if (!session) {
       return res.status(404).json({ error: "Session not found" });
+    }
+    if (session.ownerId !== req.user.id) {
+      return res.status(403).json({ error: "Forbidden: You do not own this session" });
     }
     res.json({ success: true, messages: session.messages || [] });
   } catch (err) {
@@ -66,20 +86,23 @@ router.get("/chat/sessions/:id/messages", (req, res) => {
   }
 });
 
-// POST /api/chat/sessions/:id/messages -> save a message & get AI response
+// POST /api/chat/sessions/:id/messages -> save a message & get AI response (verifying ownership)
 router.post("/chat/sessions/:id/messages", async (req, res) => {
   try {
     const { id } = req.params;
-    const session = sessionStore.getSession(id);
+    const session = await sessionStore.getSession(id);
     if (!session) {
       return res.status(404).json({ error: "Session not found" });
+    }
+    if (session.ownerId !== req.user.id) {
+      return res.status(403).json({ error: "Forbidden: You do not own this session" });
     }
 
     const { sender, text, messageType, workflow, n8nId } = req.body;
 
     // 1. BACKWARDS COMPATIBILITY: If sender is specified (user or ai), just persist the message exactly as sent
     if (sender) {
-      const saved = sessionStore.saveMessage(id, {
+      const saved = await sessionStore.saveMessage(id, {
         sender,
         text,
         messageType: messageType || "message",
@@ -96,7 +119,7 @@ router.post("/chat/sessions/:id/messages", async (req, res) => {
     }
 
     // Save user message first
-    const userMsg = sessionStore.saveMessage(id, {
+    const userMsg = await sessionStore.saveMessage(id, {
       sender: "user",
       text: text.trim(),
       messageType: "message"
@@ -106,7 +129,7 @@ router.post("/chat/sessions/:id/messages", async (req, res) => {
     const aiResponse = await aiClient.chatConversation(id, text.trim());
 
     // Save AI response message
-    const aiMsg = sessionStore.saveMessage(id, {
+    const aiMsg = await sessionStore.saveMessage(id, {
       sender: "ai",
       text: aiResponse.message,
       messageType: aiResponse.isReadyToGenerate ? "workflow" : (aiResponse.questions?.length > 0 ? "clarifying_question" : "message"),
@@ -115,7 +138,9 @@ router.post("/chat/sessions/:id/messages", async (req, res) => {
         isReadyToGenerate: aiResponse.isReadyToGenerate,
         questions: aiResponse.questions || null,
         suggestedTemplates: aiResponse.suggestedTemplates || []
-      }
+      },
+      modelName: aiResponse.modelName || null,
+      tokensUsed: aiResponse.tokensUsed || null
     });
 
     res.json({
@@ -131,12 +156,15 @@ router.post("/chat/sessions/:id/messages", async (req, res) => {
   }
 });
 
-// GET /api/chat/sessions/:id/spec -> get the current spec for the session
-router.get("/chat/sessions/:id/spec", (req, res) => {
+// GET /api/chat/sessions/:id/spec -> get the current spec for the session (verifying ownership)
+router.get("/chat/sessions/:id/spec", async (req, res) => {
   try {
-    const session = sessionStore.getSession(req.params.id);
+    const session = await sessionStore.getSession(req.params.id);
     if (!session) {
       return res.status(404).json({ error: "Session not found" });
+    }
+    if (session.ownerId !== req.user.id) {
+      return res.status(403).json({ error: "Forbidden: You do not own this session" });
     }
     res.json({ success: true, spec: session.spec || {} });
   } catch (err) {
@@ -150,23 +178,31 @@ router.get("/credentials/status", async (req, res) => {
     const servicesStr = req.query.services || "";
     const required = servicesStr.split(",").filter(Boolean);
     const n8nClient = require("../services/n8nClient");
-    const credentialStore = require("../services/credentialStore");
     
     let n8nCreds = [];
     try {
       n8nCreds = await n8nClient.listCredentials();
     } catch (n8nErr) {
-      console.warn("n8n list credentials failed, falling back to local store:", n8nErr.message);
+      console.warn("n8n list credentials failed:", n8nErr.message);
     }
-    const localCreds = credentialStore.getAll();
-    const allCreds = [...n8nCreds, ...localCreds];
+
+    const { data: dbCreds } = await supabase
+      .from("credentials")
+      .select("*")
+      .eq("user_id", req.user.id);
+
+    const allCreds = [...(n8nCreds.data || n8nCreds || []), ...(dbCreds || []).map(c => ({ type: c.service_name }))];
 
     const status = {};
     required.forEach(service => {
       let type = null;
       const name = service.toLowerCase();
       if (name.includes('slack')) type = 'slackApi';
-      else if (name.includes('gmail') || name.includes('email') || name.includes('sheet') || name.includes('google')) type = 'gmailApi';
+      else if (name.includes('gmail') || name.includes('email')) type = 'gmailOAuth2';
+      else if (name.includes('sheet')) type = 'googleSheetsOAuth2Api';
+      else if (name.includes('calendar')) type = 'googleCalendarOAuth2Api';
+      else if (name.includes('drive')) type = 'googleDriveOAuth2Api';
+      else if (name.includes('doc')) type = 'googleDocsOAuth2Api';
       else if (name.includes('telegram')) type = 'telegramApi';
       else if (name.includes('github')) type = 'githubApi';
       else if (name.includes('webhook') || name.includes('http') || name.includes('api')) type = 'genericApi';
@@ -188,7 +224,6 @@ router.post("/clarify", async (req, res) => {
     const { prompt } = req.body;
     if (!prompt) return res.status(400).json({ error: "prompt is required" });
 
-    // Directly use the AI's internal clarify logic or fall back
     const result = await aiClient.clarifyPrompt(prompt);
     res.json({ success: true, ...result });
   } catch (err) {

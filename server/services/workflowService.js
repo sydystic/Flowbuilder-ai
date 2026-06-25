@@ -36,123 +36,36 @@ function mapRunDbToClient(run) {
 
 const workflowService = {
   async listWorkflows(userId) {
-    // If no Supabase / demo mode — fall back to n8n directly
-    if (!process.env.SUPABASE_URL || process.env.DEMO_MODE === "true") {
-      return this.listWorkflowsFromN8n();
-    }
+    const { data, error } = await supabase
+      .from("workflows")
+      .select("*")
+      .eq("owner_id", userId)
+      .order("updated_at", { ascending: false });
 
-    try {
-      const { data, error } = await supabase
-        .from("workflows")
-        .select("*")
-        .eq("owner_id", userId)
-        .order("updated_at", { ascending: false });
-
-      if (error) throw error;
-      return (data || []).map(mapWorkflowDbToClient);
-    } catch (err) {
-      console.warn("Supabase listWorkflows failed, falling back to n8n:", err.message);
-      return this.listWorkflowsFromN8n();
-    }
-  },
-
-  // Fetch workflows directly from n8n (fallback / demo mode)
-  async listWorkflowsFromN8n() {
-    try {
-      const workflows = await n8nClient.listWorkflows();
-      // workflows is already an array from our fixed n8nClient
-      return (Array.isArray(workflows) ? workflows : []).map((wf) => ({
-        id: String(wf.id),
-        name: wf.name || "Untitled",
-        description: "",
-        status: wf.active ? "active" : "inactive",
-        n8nWorkflowId: String(wf.id),
-        active: !!wf.active,
-        deploymentError: null,
-        createdAt: wf.createdAt || new Date().toISOString(),
-        updatedAt: wf.updatedAt || new Date().toISOString(),
-        nodes: wf.nodes || [],
-        connections: wf.connections || {},
-        workflowJson: wf,
-      }));
-    } catch (err) {
-      console.error("n8n listWorkflows failed:", err.message);
-      return [];
-    }
+    if (error) throw error;
+    return (data || []).map(mapWorkflowDbToClient);
   },
 
   async getWorkflow(id, userId) {
-    if (!process.env.SUPABASE_URL || process.env.DEMO_MODE === "true") {
-      return this.getWorkflowFromN8n(id);
+    const { data, error } = await supabase
+      .from("workflows")
+      .select("*")
+      .eq("id", id)
+      .maybeSingle();
+
+    if (error) throw error;
+    if (!data) return null;
+
+    if (userId && data.owner_id !== userId) {
+      const err = new Error("Forbidden: You do not own this workflow");
+      err.status = 403;
+      throw err;
     }
 
-    try {
-      const { data, error } = await supabase
-        .from("workflows")
-        .select("*")
-        .eq("id", id)
-        .maybeSingle();
-
-      if (error) throw error;
-      if (!data) return this.getWorkflowFromN8n(id);
-
-      if (userId && data.owner_id !== userId) {
-        const err = new Error("Forbidden: You do not own this workflow");
-        err.status = 403;
-        throw err;
-      }
-
-      return mapWorkflowDbToClient(data);
-    } catch (err) {
-      if (err.status === 403) throw err;
-      console.warn("Supabase getWorkflow failed, falling back to n8n:", err.message);
-      return this.getWorkflowFromN8n(id);
-    }
-  },
-
-  async getWorkflowFromN8n(id) {
-    try {
-      const wf = await n8nClient.getWorkflow(id);
-      if (!wf) return null;
-      return {
-        id: String(wf.id),
-        name: wf.name || "Untitled",
-        description: "",
-        status: wf.active ? "active" : "inactive",
-        n8nWorkflowId: String(wf.id),
-        active: !!wf.active,
-        deploymentError: null,
-        createdAt: wf.createdAt || new Date().toISOString(),
-        updatedAt: wf.updatedAt || new Date().toISOString(),
-        nodes: wf.nodes || [],
-        connections: wf.connections || {},
-        workflowJson: wf,
-      };
-    } catch (err) {
-      console.error("n8n getWorkflow failed:", err.message);
-      return null;
-    }
+    return mapWorkflowDbToClient(data);
   },
 
   async createWorkflow(userId, workflowData) {
-    if (!process.env.SUPABASE_URL || process.env.DEMO_MODE === "true") {
-      // In demo mode just return a local object — real deploy happens separately
-      return {
-        id: `local-${Date.now()}`,
-        name: workflowData.name || "Untitled Workflow",
-        description: workflowData.description || "",
-        workflowSpec: workflowData.workflowSpec || null,
-        workflowJson: workflowData.workflowJson || null,
-        status: workflowData.status || "draft",
-        active: false,
-        deploymentError: null,
-        createdAt: new Date().toISOString(),
-        updatedAt: new Date().toISOString(),
-        nodes: [],
-        connections: {},
-      };
-    }
-
     const { data, error } = await supabase
       .from("workflows")
       .insert({
@@ -160,7 +73,7 @@ const workflowService = {
         name: workflowData.name || "Untitled Workflow",
         description: workflowData.description || "",
         workflow_spec: workflowData.workflowSpec || null,
-        workflow_json: workflowData.workflowJson || null,
+        workflow_json: workflowData.workflowJson || { nodes: [], connections: {}, settings: {} },
         status: workflowData.status || "draft",
         is_active: !!workflowData.active,
         deployment_error: workflowData.deploymentError || null,
@@ -173,10 +86,6 @@ const workflowService = {
   },
 
   async updateWorkflow(id, userId, updates) {
-    if (!process.env.SUPABASE_URL || process.env.DEMO_MODE === "true") {
-      return { id, ...updates };
-    }
-
     // Verify ownership
     await this.getWorkflow(id, userId);
 
@@ -203,9 +112,6 @@ const workflowService = {
   },
 
   async deleteWorkflow(id, userId) {
-    if (!process.env.SUPABASE_URL || process.env.DEMO_MODE === "true") {
-      return true;
-    }
     await this.getWorkflow(id, userId);
     const { error } = await supabase.from("workflows").delete().eq("id", id);
     if (error) throw error;

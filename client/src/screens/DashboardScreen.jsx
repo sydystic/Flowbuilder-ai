@@ -73,6 +73,9 @@ export default function DashboardScreen() {
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['workflows'] });
       showToast('Workflow deleted successfully');
+      if (window.addFlowBuilderNotification) {
+        window.addFlowBuilderNotification('warning', 'Workflow deleted', 'Successfully deleted workflow draft.');
+      }
     },
     onError: (err) => {
       const errorMsg = err.response?.data?.error || err.message || 'Something went wrong';
@@ -88,7 +91,10 @@ export default function DashboardScreen() {
     },
     onSuccess: (data) => {
       queryClient.invalidateQueries({ queryKey: ['workflows'] });
-      showToast(`Workflow "${data.workflow?.name || 'Workflow'}" deployed successfully!`);
+      showToast('Workflow deployed successfully!');
+      if (window.addFlowBuilderNotification) {
+        window.addFlowBuilderNotification('success', 'Workflow generated & deployed', 'Workflow has been successfully deployed to n8n.');
+      }
     },
     onError: (err, id) => {
       queryClient.invalidateQueries({ queryKey: ['workflows'] });

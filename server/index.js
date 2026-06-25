@@ -9,6 +9,8 @@ require("./services/credentialEncryptionService");
 const workflowRoutes = require("./routes/workflow");
 const credentialRoutes = require("./routes/credentials");
 const chatRoutes = require("./routes/chat");
+const userRoutes = require("./routes/users");
+const configRoutes = require("./routes/config");
 
 const app = express();
 
@@ -17,7 +19,17 @@ app.use(express.json());
 
 app.use("/api/workflows", workflowRoutes);
 app.use("/api/credentials", credentialRoutes);
+app.use("/api/users", userRoutes);
+app.use("/api", configRoutes);
 app.use("/api", chatRoutes);
+
+app.get("/", (req, res) => {
+  res.json({
+    message: "Flowbuilder AI API Server",
+    status: "online",
+    healthCheck: "/health"
+  });
+});
 
 app.get("/health", (req, res) => {
   res.json({ status: "ok", timestamp: new Date().toISOString() });

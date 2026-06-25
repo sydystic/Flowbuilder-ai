@@ -1,26 +1,6 @@
 const supabase = require("../services/supabaseClient");
 
-// ── DEMO MODE ──────────────────────────────────────────────────────────────────
-// Set DEMO_MODE=true in your .env to bypass authentication.
-// This lets anyone run the project locally without Supabase credentials.
-// NEVER use DEMO_MODE=true in production.
-// ──────────────────────────────────────────────────────────────────────────────
-const DEMO_MODE = process.env.DEMO_MODE === "true";
-
-const DEMO_USER = {
-  id: "demo-user-001",
-  auth_id: "demo-auth-001",
-  email: "demo@flowbuilder.local",
-  full_name: "Demo User",
-  avatar_url: null,
-};
-
 async function requireAuth(req, res, next) {
-  // ── Demo mode: skip auth entirely ─────────────────────────────────────────
-  if (DEMO_MODE) {
-    req.user = DEMO_USER;
-    return next();
-  }
 
   try {
     const authHeader = req.headers.authorization;

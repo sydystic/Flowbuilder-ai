@@ -84,6 +84,9 @@ export default function CredentialsScreen() {
         data: credData
       });
       showToast(`${credTypes[selectedType]?.name} connected successfully!`);
+      if (window.addFlowBuilderNotification) {
+        window.addFlowBuilderNotification('success', 'Credential connected', `Successfully connected ${name || credTypes[selectedType]?.name}`);
+      }
       setIsModalOpen(false);
       fetchCredentials();
     } catch (err) {
@@ -98,6 +101,9 @@ export default function CredentialsScreen() {
     try {
       await axios.delete(`/api/credentials/${id}`);
       showToast('Credential removed from n8n');
+      if (window.addFlowBuilderNotification) {
+        window.addFlowBuilderNotification('warning', 'Credential disconnected', `Removed connection for ${name}`);
+      }
       fetchCredentials();
     } catch (err) {
       showToast(err.response?.data?.error || err.message, 'error');
@@ -144,7 +150,7 @@ export default function CredentialsScreen() {
                   Connected Services
                 </h1>
                 <p className="mt-1 text-[15px] text-ink-muted">
-                  Credentials sync directly with n8n. Add here or in n8n — both stay in sync.
+                  Credentials sync directly with n8n. Add here or in n8n - both stay in sync
                 </p>
               </div>
               <div className="flex items-center gap-2">

@@ -1,4 +1,8 @@
 const axios = require("axios");
+const { createClient } = require("@supabase/supabase-js");
+const dotenvResult = require("dotenv").config({ path: require("path").resolve(__dirname, "../.env") });
+console.log("Dotenv load error:", dotenvResult.error);
+console.log("Dotenv parsed keys:", dotenvResult.parsed ? Object.keys(dotenvResult.parsed) : "none");
 
 const BASE_URL = "http://localhost:3001/api/credentials";
 
@@ -6,19 +10,40 @@ async function runTests() {
   console.log("Starting backend credentials integration tests...\n");
 
   try {
+    // Authenticate test user
+    const supabaseUrl = process.env.SUPABASE_URL || process.env.VITE_SUPABASE_URL;
+    const supabaseServiceKey = process.env.SUPABASE_SERVICE_ROLE_KEY;
+    console.log("DEBUG test_credentials - URL:", supabaseUrl);
+    console.log("DEBUG test_credentials - KEY (first 10):", supabaseServiceKey ? supabaseServiceKey.substring(0, 10) : "undefined");
+    const supabase = createClient(supabaseUrl, supabaseServiceKey);
+
+    const email = "siddharth@example.com";
+    const password = "TestPassword123!";
+
+    console.log("Logging in test user...");
+    const { data: authData, error: authError } = await supabase.auth.signInWithPassword({ email, password });
+    if (authError || !authData.session) {
+      throw new Error("Auth failed: " + (authError?.message || "No session"));
+    }
+
+    const token = authData.session.access_token;
+    console.log("Auth success! Token acquired.\n");
+
+    // Configure Axios default headers
+    axios.defaults.headers.common["Authorization"] = `Bearer ${token}`;
     // 1. List credentials (should be empty or fallback to local JSON)
     console.log("1. Listing credentials...");
     const listRes = await axios.get(BASE_URL);
     console.log(`Success! Found ${listRes.data.length} credentials.`);
     console.log("Credentials list:", JSON.stringify(listRes.data, null, 2), "\n");
 
-    // 2. Create Slack Credential
-    console.log("2. Creating a Slack credential...");
+    // 2. Create Telegram Credential
+    console.log("2. Creating a Telegram credential...");
     const payload = {
-      name: "Slack Test Bot Connection",
-      type: "slackApi",
+      name: "Telegram Test Bot Connection",
+      type: "telegramApi",
       data: {
-        accessToken: "xoxb-test-token-12345"
+        accessToken: "123456789:ABCdefGhIJKlmNoPQRsTUVwxyZ"
       }
     };
     const createRes = await axios.post(BASE_URL, payload);

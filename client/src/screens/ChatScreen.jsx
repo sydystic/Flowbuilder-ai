@@ -12,10 +12,22 @@ import ProfileModal from '../components/modals/ProfileModal';
 // ── helpers ────────────────────────────────────────────────────────────────
 const uid = () => Math.random().toString(36).slice(2) + Date.now().toString(36);
 
+import { useSearchParams } from 'react-router-dom';
+
 export default function ChatScreen() {
   const queryClient = useQueryClient();
+  const [searchParams, setSearchParams] = useSearchParams();
+  const activeSessionId = searchParams.get('c');
+
+  const setActiveSessionId = (id) => {
+    if (id) {
+      setSearchParams({ c: id });
+    } else {
+      setSearchParams({});
+    }
+  };
+
   const [sessions, setSessions] = useState([]);
-  const [activeSessionId, setActiveSessionId] = useState(null);
   const [messages, setMessages] = useState([]);
   const [prompt, setPrompt] = useState('');
   const [isLoading, setIsLoading] = useState(false);
@@ -119,6 +131,7 @@ export default function ChatScreen() {
         action: { service: "[unknown]", action: "[unknown]", channel: "[unknown]", details: "[unknown]" }
       });
       setIsReadyToGenerate(false);
+      queryClient.invalidateQueries({ queryKey: ['conversations'] });
     } catch (e) {
       showToast('Failed to create new chat', 'error');
     }
@@ -134,6 +147,7 @@ export default function ChatScreen() {
     try {
       await axios.delete(`/api/chat/sessions/${id}`);
       setSessions(prev => prev.filter(s => s.id !== id));
+      queryClient.invalidateQueries({ queryKey: ['conversations'] });
       if (activeSessionId === id) {
         setActiveSessionId(null);
         setMessages([]);
@@ -151,6 +165,7 @@ export default function ChatScreen() {
     try {
       await axios.patch(`/api/chat/sessions/${id}`, { title });
       setSessions(prev => prev.map(s => s.id === id ? { ...s, title } : s));
+      queryClient.invalidateQueries({ queryKey: ['conversations'] });
     } catch (e) { /* silent */ }
   };
 
@@ -180,6 +195,7 @@ export default function ChatScreen() {
     const session = res.data.session;
     setSessions(prev => [session, ...prev]);
     setActiveSessionId(session.id);
+    queryClient.invalidateQueries({ queryKey: ['conversations'] });
     return session.id;
   };
 
@@ -312,6 +328,9 @@ Action: ${spec.action.service} (Action: ${spec.action.action}, Target/Channel: $
         addMsg(deployMsg);
         await persistMessage(activeSessionId, deployMsg);
         showToast('Workflow generated and deployed!');
+        if (window.addFlowBuilderNotification) {
+          window.addFlowBuilderNotification('success', 'Workflow generated & deployed', `Generated and activated "${res.data.workflowName || 'Workflow'}" in n8n.`);
+        }
         queryClient.invalidateQueries({ queryKey: ['workflows'] });
       } else {
         throw new Error(res.data.error || 'Failed to deploy workflow');

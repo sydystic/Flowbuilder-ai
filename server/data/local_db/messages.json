@@ -1,0 +1,334 @@
+[
+  {
+    "id": "7ed872c0-7e29-4c1a-97d6-4db1d4c45061",
+    "created_at": "2026-06-25T12:29:56.325Z",
+    "updated_at": "2026-06-25T12:29:56.325Z",
+    "conversation_id": "664338d8-b6b4-41f5-9685-996f23f2d4f3",
+    "role": "user",
+    "content": "Create a slack alert for new github issues",
+    "meta": {
+      "messageType": "message",
+      "workflow": null,
+      "n8nId": null
+    },
+    "model_name": null,
+    "tokens_used": null
+  },
+  {
+    "id": "41f538d2-3b95-4dd6-b8ce-a96191e1ccbe",
+    "created_at": "2026-06-25T12:29:58.565Z",
+    "updated_at": "2026-06-25T12:29:58.565Z",
+    "conversation_id": "664338d8-b6b4-41f5-9685-996f23f2d4f3",
+    "role": "ai",
+    "content": "To create a Slack alert for new GitHub issues, we need to clarify a few details. We will use GitHub as the trigger service and Slack as the action service. \n   The event that should trigger this workflow is the creation of a new issue on a specific GitHub repository. \n   The alert will be sent to a Slack channel or user.",
+    "meta": {
+      "messageType": "clarifying_question",
+      "workflow": {
+        "spec": {
+          "trigger": {
+            "service": "GitHub",
+            "event": "New Issue",
+            "sheetName": "[unknown]",
+            "details": "Repository name, issue filters (e.g. labels, assignees)"
+          },
+          "action": {
+            "service": "Slack",
+            "action": "Send Message",
+            "channel": "[unknown]",
+            "details": "Message content, formatting"
+          }
+        },
+        "isReadyToGenerate": false,
+        "questions": [
+          "Which GitHub repository should we monitor for new issues?",
+          "What Slack channel or user should receive the alert?",
+          "Should the alert include any specific details about the issue, such as title, description, or labels?"
+        ],
+        "suggestedTemplates": [
+          "New Issue Alert: Send a direct message to the repository owner",
+          "New Issue Alert: Post a message in a specific Slack channel with issue details",
+          "New Issue Alert: Send a notification to a Slack channel with a custom message"
+        ]
+      },
+      "n8nId": null
+    },
+    "model_name": "llama-3.3-70b-versatile",
+    "tokens_used": 1001
+  },
+  {
+    "id": "3c44f4c7-8b7a-465e-8af5-8306be5c3fb5",
+    "created_at": "2026-06-25T12:59:09.658Z",
+    "updated_at": "2026-06-25T12:59:09.658Z",
+    "conversation_id": "2ebaffa3-562b-437a-949c-2c2845d93526",
+    "role": "user",
+    "content": "Post to Discord when a new RSS item matches a keyword",
+    "meta": {
+      "messageType": "message",
+      "workflow": null,
+      "n8nId": null
+    },
+    "model_name": null,
+    "tokens_used": null
+  },
+  {
+    "id": "0caad466-02ad-4caf-9e0e-86566cec1e9d",
+    "created_at": "2026-06-25T12:59:10.996Z",
+    "updated_at": "2026-06-25T12:59:10.996Z",
+    "conversation_id": "2ebaffa3-562b-437a-949c-2c2845d93526",
+    "role": "ai",
+    "content": "To create a workflow that posts to Discord when a new RSS item matches a keyword, we need to clarify a few details. We will use the RSS feed as the trigger and Discord as the action. Here are the initial steps and questions to refine the specification:",
+    "meta": {
+      "messageType": "clarifying_question",
+      "workflow": {
+        "spec": {
+          "trigger": {
+            "service": "RSS",
+            "event": "New Item",
+            "sheetName": "[unknown]",
+            "details": "Matches a keyword"
+          },
+          "action": {
+            "service": "Discord",
+            "action": "Send Message",
+            "channel": "[unknown]",
+            "details": "[unknown]"
+          }
+        },
+        "isReadyToGenerate": false,
+        "questions": [
+          "What is the URL of the RSS feed you want to monitor?",
+          "What keyword are you looking for in the RSS items?",
+          "Which Discord channel should the message be posted to?"
+        ],
+        "suggestedTemplates": [
+          "Monitor RSS feed for specific keywords and send email notifications",
+          "Post new RSS items to a Slack channel",
+          "Trigger a workflow when a new item appears in an RSS feed"
+        ]
+      },
+      "n8nId": null
+    },
+    "model_name": "llama-3.3-70b-versatile",
+    "tokens_used": 956
+  },
+  {
+    "id": "d644a12b-12a3-48cf-9e72-02c9215303cf",
+    "created_at": "2026-06-25T12:59:14.921Z",
+    "updated_at": "2026-06-25T12:59:14.921Z",
+    "conversation_id": "2ebaffa3-562b-437a-949c-2c2845d93526",
+    "role": "user",
+    "content": "Trigger a workflow when a new item appears in an RSS feed",
+    "meta": {
+      "messageType": "message",
+      "workflow": null,
+      "n8nId": null
+    },
+    "model_name": null,
+    "tokens_used": null
+  },
+  {
+    "id": "f4415a0b-1494-422f-b8fb-15c9944d7582",
+    "created_at": "2026-06-25T12:59:16.137Z",
+    "updated_at": "2026-06-25T12:59:16.138Z",
+    "conversation_id": "2ebaffa3-562b-437a-949c-2c2845d93526",
+    "role": "ai",
+    "content": "To trigger a workflow when a new item appears in an RSS feed and post to Discord when it matches a keyword, let's break down the process. We'll need to know the RSS feed URL and the keyword to filter items. The workflow will then send a message to a Discord channel with the details of the matching item.",
+    "meta": {
+      "messageType": "clarifying_question",
+      "workflow": {
+        "spec": {
+          "trigger": {
+            "service": "RSS",
+            "event": "New Item",
+            "sheetName": "[unknown]",
+            "details": "RSS feed URL: [unknown], filter by keyword: [unknown]"
+          },
+          "action": {
+            "service": "Discord",
+            "action": "Send Message",
+            "channel": "[unknown]",
+            "details": "Message content: [unknown], formatting: [unknown]"
+          }
+        },
+        "isReadyToGenerate": false,
+        "questions": [
+          "What is the URL of the RSS feed you want to monitor?",
+          "What keyword do you want to use to filter new RSS items?",
+          "Which Discord channel should the workflow post the matching items to?"
+        ],
+        "suggestedTemplates": [
+          "Monitor RSS feed for new items and send email notifications",
+          "Post new RSS items to a Slack channel",
+          "Trigger a workflow when a new item appears in a specific RSS feed category"
+        ]
+      },
+      "n8nId": null
+    },
+    "model_name": "llama-3.3-70b-versatile",
+    "tokens_used": 1068
+  },
+  {
+    "id": "50c5501d-48ee-4c70-9a8f-8af4d6103280",
+    "created_at": "2026-06-25T12:59:55.847Z",
+    "updated_at": "2026-06-25T12:59:55.847Z",
+    "conversation_id": "664338d8-b6b4-41f5-9685-996f23f2d4f3",
+    "role": "user",
+    "content": "New Issue Alert: Post a message in a specific Slack channel with issue details",
+    "meta": {
+      "messageType": "message",
+      "workflow": null,
+      "n8nId": null
+    },
+    "model_name": null,
+    "tokens_used": null
+  },
+  {
+    "id": "16d688b8-5906-4209-96bc-ae833663f34f",
+    "created_at": "2026-06-25T12:59:58.310Z",
+    "updated_at": "2026-06-25T12:59:58.310Z",
+    "conversation_id": "664338d8-b6b4-41f5-9685-996f23f2d4f3",
+    "role": "ai",
+    "content": "To create a Slack alert for new GitHub issues, we need to know: \n   * Which GitHub repository to monitor for new issues?\n   * What details about the issue should be included in the Slack message (e.g. title, description, assignee)?\n   * Which Slack channel should the alert be posted to?",
+    "meta": {
+      "messageType": "clarifying_question",
+      "workflow": {
+        "spec": {
+          "trigger": {
+            "service": "GitHub",
+            "event": "New Issue",
+            "sheetName": "[unknown]",
+            "details": "[unknown]"
+          },
+          "action": {
+            "service": "Slack",
+            "action": "Post Message",
+            "channel": "[unknown]",
+            "details": "[unknown]"
+          }
+        },
+        "isReadyToGenerate": false,
+        "questions": [
+          "Which GitHub repository should be monitored for new issues?",
+          "What details about the issue should be included in the Slack message?"
+        ],
+        "suggestedTemplates": [
+          "New Issue Alert: Post issue title and description in a Slack channel",
+          "New Issue Alert: Post issue title, description, and assignee in a Slack channel",
+          "New Issue Alert: Post issue title and link to the issue in a Slack channel"
+        ]
+      },
+      "n8nId": null
+    },
+    "model_name": "llama-3.3-70b-versatile",
+    "tokens_used": 1060
+  },
+  {
+    "id": "6778791e-e800-4ad9-b860-010f75264041",
+    "created_at": "2026-06-25T13:18:04.013Z",
+    "updated_at": "2026-06-25T13:18:04.013Z",
+    "conversation_id": "4241fcce-6c3a-4100-b245-2e7f69eb20b6",
+    "role": "user",
+    "content": "Send a Slack alert when a GitHub issue is labeled \"urgent\"",
+    "meta": {
+      "messageType": "message",
+      "workflow": null,
+      "n8nId": null
+    },
+    "model_name": null,
+    "tokens_used": null
+  },
+  {
+    "id": "e2e389e6-d098-473c-a034-c8e4908f2fc4",
+    "created_at": "2026-06-25T13:18:05.322Z",
+    "updated_at": "2026-06-25T13:18:05.322Z",
+    "conversation_id": "4241fcce-6c3a-4100-b245-2e7f69eb20b6",
+    "role": "ai",
+    "content": "To create a workflow that sends a Slack alert when a GitHub issue is labeled 'urgent', we need to clarify a few details. We will use GitHub as the trigger service and Slack as the action service.",
+    "meta": {
+      "messageType": "clarifying_question",
+      "workflow": {
+        "spec": {
+          "trigger": {
+            "service": "GitHub",
+            "event": "Issue Labeled",
+            "sheetName": "[unknown]",
+            "details": "Label: 'urgent'"
+          },
+          "action": {
+            "service": "Slack",
+            "action": "Send Message",
+            "channel": "[unknown]",
+            "details": "[unknown]"
+          }
+        },
+        "isReadyToGenerate": false,
+        "questions": [
+          "What is the name of the GitHub repository you want to monitor for 'urgent' issues?",
+          "Which Slack channel should the alert be sent to?"
+        ],
+        "suggestedTemplates": [
+          "GitHub Issue to Trello Card",
+          "GitHub Issue to Email Notification",
+          "GitHub Issue to Microsoft Teams Alert"
+        ]
+      },
+      "n8nId": null
+    },
+    "model_name": "llama-3.3-70b-versatile",
+    "tokens_used": 928
+  },
+  {
+    "id": "7b1a9683-b21f-4821-9191-9a4b15aebefe",
+    "created_at": "2026-06-25T13:18:13.607Z",
+    "updated_at": "2026-06-25T13:18:13.607Z",
+    "conversation_id": "4241fcce-6c3a-4100-b245-2e7f69eb20b6",
+    "role": "user",
+    "content": "GitHub Issue to Email Notification",
+    "meta": {
+      "messageType": "message",
+      "workflow": null,
+      "n8nId": null
+    },
+    "model_name": null,
+    "tokens_used": null
+  },
+  {
+    "id": "a5a2b3cd-6954-4df4-a1b4-de71a81a4ba1",
+    "created_at": "2026-06-25T13:18:15.003Z",
+    "updated_at": "2026-06-25T13:18:15.003Z",
+    "conversation_id": "4241fcce-6c3a-4100-b245-2e7f69eb20b6",
+    "role": "ai",
+    "content": "To create a workflow that sends an email notification when a GitHub issue is labeled 'urgent', we need to clarify a few details. \n   We will use GitHub as the trigger service and Gmail as the action service. \n   Here are some points to consider:\n   * Which GitHub repository should we monitor for issues?\n   * What is the exact label that should trigger the email (e.g. 'urgent', 'high priority')?\n   * Who should receive the email notifications?",
+    "meta": {
+      "messageType": "clarifying_question",
+      "workflow": {
+        "spec": {
+          "trigger": {
+            "service": "GitHub",
+            "event": "New Issue Labeled",
+            "details": "Label: '[unknown]', Repository: '[unknown]'"
+          },
+          "action": {
+            "service": "Gmail",
+            "action": "Send Email",
+            "channel": "[unknown]",
+            "details": "Email content: '[unknown]', Recipient: '[unknown]'"
+          }
+        },
+        "isReadyToGenerate": false,
+        "questions": [
+          "Which GitHub repository should we monitor for new issues?",
+          "What is the exact label that should trigger the email notification?"
+        ],
+        "suggestedTemplates": [
+          "GitHub Issue to Slack Notification",
+          "GitHub Issue to Microsoft Teams Notification",
+          "GitHub Issue to Trello Card Creation"
+        ]
+      },
+      "n8nId": null
+    },
+    "model_name": "llama-3.3-70b-versatile",
+    "tokens_used": 1044
+  }
+]

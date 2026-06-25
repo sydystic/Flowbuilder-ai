@@ -643,6 +643,637 @@
           "details": "[unknown]"
         }
       }
+    },
+    {
+      "id": "oqvde8ig1egmqdoh66k",
+      "title": "Send me an email every morning at 9am with a …",
+      "createdAt": "2026-06-14T11:05:23.084Z",
+      "updatedAt": "2026-06-14T11:05:51.744Z",
+      "messages": [
+        {
+          "id": "ewa8e6ol5dmqdoh67p",
+          "sender": "user",
+          "text": "Send me an email every morning at 9am with a motivational quote",
+          "messageType": "message",
+          "workflow": null,
+          "n8nId": null,
+          "createdAt": "2026-06-14T11:05:23.125Z"
+        },
+        {
+          "id": "63e4i7z9ozjmqdoh6zm",
+          "sender": "ai",
+          "text": "To create a workflow that sends you a motivational quote every morning, let's clarify a few details. We'll need to decide on the source of the quotes and the email service to use.",
+          "messageType": "clarifying_question",
+          "workflow": {
+            "spec": {
+              "trigger": {
+                "service": "Cron",
+                "event": "On Schedule",
+                "details": "Daily at 9am"
+              },
+              "action": {
+                "service": "[unknown]",
+                "action": "Send Email",
+                "channel": "[unknown]",
+                "details": "Motivational quote content"
+              }
+            },
+            "isReadyToGenerate": false,
+            "questions": [
+              "What email service would you like to use (e.g. Gmail, Outlook)?",
+              "Where would you like to source the motivational quotes from (e.g. a specific API, a database, or a file)?"
+            ],
+            "suggestedTemplates": [
+              "Daily Weather Update Email",
+              "Morning News Summary"
+            ]
+          },
+          "n8nId": null,
+          "createdAt": "2026-06-14T11:05:24.130Z"
+        },
+        {
+          "id": "7pa8z3umb3vmqdohbgt",
+          "sender": "user",
+          "text": "Morning News Summary",
+          "messageType": "message",
+          "workflow": null,
+          "n8nId": null,
+          "createdAt": "2026-06-14T11:05:29.933Z"
+        },
+        {
+          "id": "1uuc7ujwoztmqdohcdf",
+          "sender": "ai",
+          "text": "To create a workflow that sends a morning news summary, we need to determine a few specifics. \n   ### Trigger Details\n   The trigger for this workflow could be a scheduled event, such as a daily cron job at 9am. \n   ### Action Details\n   For the action, we'll need to decide on the news source and the email service to use. \n   Some options for news sources include:\n   * RSS feeds from news websites\n   * News APIs\n   * Web scraping\n   For the email service, options include:\n   * Gmail\n   * Outlook\n   * Custom SMTP server",
+          "messageType": "clarifying_question",
+          "workflow": {
+            "spec": {
+              "trigger": {
+                "service": "Cron",
+                "event": "On Schedule",
+                "details": "Daily at 9am"
+              },
+              "action": {
+                "service": "[unknown]",
+                "action": "Send Email",
+                "channel": "[unknown]",
+                "details": "[unknown]"
+              }
+            },
+            "isReadyToGenerate": false,
+            "questions": [
+              "What news source would you like to use for the summary?",
+              "Which email service would you like to use to send the summary?"
+            ],
+            "suggestedTemplates": [
+              "Daily News Digest from RSS Feeds",
+              "Custom News Summary using News API",
+              "Morning Brief with Web Scraping"
+            ]
+          },
+          "n8nId": null,
+          "createdAt": "2026-06-14T11:05:31.107Z"
+        },
+        {
+          "id": "90h235ouy3amqdohrl8",
+          "sender": "user",
+          "text": "Morning Brief with Web Scraping",
+          "messageType": "message",
+          "workflow": null,
+          "n8nId": null,
+          "createdAt": "2026-06-14T11:05:50.828Z"
+        },
+        {
+          "id": "p0ttyvpgelhmqdohsao",
+          "sender": "ai",
+          "text": "To create a workflow that sends a morning brief with web scraping, let's refine the details. \n   We'll need to decide on the website to scrape for news and the email service to use. \n   Some popular news websites include:\n   * BBC News\n   * CNN\n   * The New York Times\n   For the email service, options include:\n   * Gmail\n   * Outlook\n   * Custom SMTP server",
+          "messageType": "clarifying_question",
+          "workflow": {
+            "spec": {
+              "trigger": {
+                "service": "Cron",
+                "event": "On Schedule",
+                "details": "Daily at 9am"
+              },
+              "action": {
+                "service": "[unknown]",
+                "action": "Send Email",
+                "channel": "[unknown]",
+                "details": "Web scraping for news summary"
+              }
+            },
+            "isReadyToGenerate": false,
+            "questions": [
+              "Which news website would you like to scrape for the morning brief?",
+              "Which email service would you like to use to send the morning brief?"
+            ],
+            "suggestedTemplates": [
+              "Daily News Summary from BBC News",
+              "Morning Brief with Top Headlines from CNN",
+              "Custom News Summary from The New York Times"
+            ]
+          },
+          "n8nId": null,
+          "createdAt": "2026-06-14T11:05:51.744Z"
+        }
+      ],
+      "spec": {
+        "trigger": {
+          "service": "Cron",
+          "event": "On Schedule",
+          "details": "Daily at 9am"
+        },
+        "action": {
+          "service": "[unknown]",
+          "action": "Send Email",
+          "channel": "[unknown]",
+          "details": "Web scraping for news summary"
+        }
+      }
+    },
+    {
+      "id": "8mn5disoqc2mqdoi6x7",
+      "title": "Send me an email every morning at 9am with a …",
+      "createdAt": "2026-06-14T11:06:10.699Z",
+      "updatedAt": "2026-06-14T11:09:25.566Z",
+      "messages": [
+        {
+          "id": "91l3oflj6pmqdoi6y6",
+          "sender": "user",
+          "text": "Send me an email every morning at 9am with a motivational quote using gmail",
+          "messageType": "message",
+          "workflow": null,
+          "n8nId": null,
+          "createdAt": "2026-06-14T11:06:10.734Z"
+        },
+        {
+          "id": "80j5m84zbpmqdoi8ib",
+          "sender": "ai",
+          "text": "To create a workflow that sends you a motivational quote every morning at 9am using Gmail, let's break down the details. We'll need to clarify a few points to ensure the workflow meets your expectations.",
+          "messageType": "clarifying_question",
+          "workflow": {
+            "spec": {
+              "trigger": {
+                "service": "Cron",
+                "event": "On Schedule",
+                "sheetName": "[unknown]",
+                "details": "Daily at 9am"
+              },
+              "action": {
+                "service": "Gmail",
+                "action": "Send Email",
+                "channel": "[unknown]",
+                "details": "Motivational quote as email body"
+              }
+            },
+            "isReadyToGenerate": false,
+            "questions": [
+              "What is the recipient's email address for the motivational quote?",
+              "Would you like the motivational quotes to be randomly selected from a predefined list or fetched from an external API?"
+            ],
+            "suggestedTemplates": [
+              "Daily Weather Update Email",
+              "Scheduled Task Reminder",
+              "Inspirational Quote of the Day"
+            ]
+          },
+          "n8nId": null,
+          "createdAt": "2026-06-14T11:06:12.755Z"
+        },
+        {
+          "id": "9ygatg78vcmqdoifod",
+          "sender": "user",
+          "text": "Inspirational Quote of the Day",
+          "messageType": "message",
+          "workflow": null,
+          "n8nId": null,
+          "createdAt": "2026-06-14T11:06:22.045Z"
+        },
+        {
+          "id": "t41fcqg1demqdoigj8",
+          "sender": "ai",
+          "text": "To send an inspirational quote of the day via Gmail every morning at 9am, we need to clarify a few details. \n   * Where will the inspirational quotes come from? \n   * Do you have a specific Gmail account you'd like to use for sending these emails? \n   * Who should the emails be addressed to?",
+          "messageType": "clarifying_question",
+          "workflow": {
+            "spec": {
+              "trigger": {
+                "service": "Cron",
+                "event": "On Schedule",
+                "sheetName": "[unknown]",
+                "details": "Daily at 9am"
+              },
+              "action": {
+                "service": "Gmail",
+                "action": "Send Email",
+                "channel": "[unknown]",
+                "details": "Inspirational Quote of the Day"
+              }
+            },
+            "isReadyToGenerate": false,
+            "questions": [
+              "What is the source of the inspirational quotes?",
+              "Which Gmail account should be used to send the emails?"
+            ],
+            "suggestedTemplates": [
+              "Daily Motivational Email",
+              "Inspirational Quote Notification",
+              "Morning Routine Automation"
+            ]
+          },
+          "n8nId": null,
+          "createdAt": "2026-06-14T11:06:23.156Z"
+        },
+        {
+          "id": "l7hjz85qdwlmqdoiwxp",
+          "sender": "user",
+          "text": "Daily Motivational Email, sydystic.dev@gmail.com, sydystic.dev@gmail.com",
+          "messageType": "message",
+          "workflow": null,
+          "n8nId": null,
+          "createdAt": "2026-06-14T11:06:44.413Z"
+        },
+        {
+          "id": "nr8gdvwo5mgmqdoixsz",
+          "sender": "ai",
+          "text": "To confirm, you want to send a daily motivational email to `sydystic.dev@gmail.com` from the same Gmail account `sydystic.dev@gmail.com` every morning at 9am. We still need to determine where the motivational quotes will come from. Here are a few options:\n   * Use a public API that provides daily inspirational quotes\n   * Select quotes from a specific book or website\n   * Manually input a list of quotes to cycle through",
+          "messageType": "clarifying_question",
+          "workflow": {
+            "spec": {
+              "trigger": {
+                "service": "Cron",
+                "event": "On Cron Schedule",
+                "details": "Every day at 9am"
+              },
+              "action": {
+                "service": "Gmail",
+                "action": "Send Email",
+                "channel": "sydystic.dev@gmail.com",
+                "details": "Send to sydystic.dev@gmail.com"
+              }
+            },
+            "isReadyToGenerate": false,
+            "questions": [
+              "Where would you like to source the daily motivational quotes from?",
+              "Would you like to include any specific formatting or content in the email body?"
+            ],
+            "suggestedTemplates": [
+              "Daily Weather Update Email",
+              "Quote of the Day from Public API",
+              "Customizable Daily Reminder"
+            ]
+          },
+          "n8nId": null,
+          "createdAt": "2026-06-14T11:06:45.539Z"
+        },
+        {
+          "id": "afv1px39ks6mqdoj7cq",
+          "sender": "user",
+          "text": "Quote of the Day from Public API",
+          "messageType": "message",
+          "workflow": null,
+          "n8nId": null,
+          "createdAt": "2026-06-14T11:06:57.914Z"
+        },
+        {
+          "id": "sr39xhmpm7gmqdoj83w",
+          "sender": "ai",
+          "text": "We will use a public API to fetch the Quote of the Day. To proceed, let's finalize the details. \n   * The workflow will be triggered by a daily schedule at 9am.\n   * It will fetch a quote from a public API.\n   * The quote will be sent via Gmail to `sydystic.dev@gmail.com` from `sydystic.dev@gmail.com`.\n   Please confirm if you want to include the quote's author in the email and if there's a specific subject line you'd like to use for these daily emails.",
+          "messageType": "clarifying_question",
+          "workflow": {
+            "spec": {
+              "trigger": {
+                "service": "Cron",
+                "event": "On Cron Schedule",
+                "details": "Daily at 9am"
+              },
+              "action": {
+                "service": "Gmail",
+                "action": "Send Email",
+                "channel": "sydystic.dev@gmail.com",
+                "details": "Quote of the Day from Public API"
+              }
+            },
+            "isReadyToGenerate": false,
+            "questions": [
+              "Do you want to include the quote's author in the email?",
+              "Is there a specific subject line you'd like to use for these daily emails?"
+            ],
+            "suggestedTemplates": [
+              "Daily Weather Update",
+              "News Digest"
+            ]
+          },
+          "n8nId": null,
+          "createdAt": "2026-06-14T11:06:58.892Z"
+        },
+        {
+          "id": "if1vur98himqdojaep",
+          "sender": "user",
+          "text": "News Digest",
+          "messageType": "message",
+          "workflow": null,
+          "n8nId": null,
+          "createdAt": "2026-06-14T11:07:01.873Z"
+        },
+        {
+          "id": "i04w07pxivmqdojb02",
+          "sender": "ai",
+          "text": "To create a News Digest workflow, we need to clarify a few details. \n   * What type of news are you interested in (e.g. general, sports, technology)?\n   * How often would you like to receive the digest (e.g. daily, weekly)?\n   * Would you like to include summaries or just headlines?\n   * Should the digest be sent via email or another channel?",
+          "messageType": "clarifying_question",
+          "workflow": {
+            "spec": {
+              "trigger": {
+                "service": "[unknown]",
+                "event": "[unknown]",
+                "sheetName": "[unknown]",
+                "details": "[unknown]"
+              },
+              "action": {
+                "service": "[unknown]",
+                "action": "[unknown]",
+                "channel": "[unknown]",
+                "details": "[unknown]"
+              }
+            },
+            "isReadyToGenerate": false,
+            "questions": [
+              "What type of news are you interested in?",
+              "How often would you like to receive the digest?"
+            ],
+            "suggestedTemplates": [
+              "Daily News Summary",
+              "Weekly News Roundup",
+              "Custom News Feed"
+            ]
+          },
+          "n8nId": null,
+          "createdAt": "2026-06-14T11:07:02.642Z"
+        },
+        {
+          "id": "9qr9vg0wd2lmqdojp6m",
+          "sender": "user",
+          "text": "general, daily, headlines, email",
+          "messageType": "message",
+          "workflow": null,
+          "n8nId": null,
+          "createdAt": "2026-06-14T11:07:21.022Z"
+        },
+        {
+          "id": "t4k1huse079mqdojq1t",
+          "sender": "ai",
+          "text": "To create a daily general news digest sent via email with headlines, we'll need to determine the source of the news. Some options include:\n   * Using a news API (e.g. NewsAPI, Google News)\n   * Scraping news from a specific website\n   * Using an RSS feed from a news outlet\n   Please confirm which option you prefer or if you have another source in mind.",
+          "messageType": "clarifying_question",
+          "workflow": {
+            "spec": {
+              "trigger": {
+                "service": "Cron",
+                "event": "Daily Schedule",
+                "details": "9am daily"
+              },
+              "action": {
+                "service": "Gmail",
+                "action": "Send Email",
+                "channel": "sydystic.dev@gmail.com",
+                "details": "[unknown]"
+              }
+            },
+            "isReadyToGenerate": false,
+            "questions": [
+              "Which news source would you like to use for the digest?"
+            ],
+            "suggestedTemplates": [
+              "Daily News Summary from NewsAPI",
+              "Headline Digest from Google News",
+              "Custom News Feed from RSS"
+            ]
+          },
+          "n8nId": null,
+          "createdAt": "2026-06-14T11:07:22.145Z"
+        },
+        {
+          "id": "u38lvotbopmqdojvwl",
+          "sender": "user",
+          "text": "Headline Digest from Google News",
+          "messageType": "message",
+          "workflow": null,
+          "n8nId": null,
+          "createdAt": "2026-06-14T11:07:29.733Z"
+        },
+        {
+          "id": "pkjba4znnlnmqdojwmv",
+          "sender": "ai",
+          "text": "To create a daily general news digest sent via email with headlines from Google News, we'll need to finalize a few details. \n   * We will use Google News as the source for the headlines.\n   * The digest will be sent daily via email to `sydystic.dev@gmail.com` from `sydystic.dev@gmail.com`.\n   * We will include a list of headlines in the email.\n   Please confirm if you want to include a brief summary for each headline and if there's a specific subject line you'd like to use for these daily emails.",
+          "messageType": "clarifying_question",
+          "workflow": {
+            "spec": {
+              "trigger": {
+                "service": "Cron",
+                "event": "Daily Schedule",
+                "details": "9am daily"
+              },
+              "action": {
+                "service": "Gmail",
+                "action": "Send Email",
+                "channel": "sydystic.dev@gmail.com",
+                "details": "Daily News Digest"
+              }
+            },
+            "isReadyToGenerate": false,
+            "questions": [
+              "Do you want to include a brief summary for each headline?",
+              "Is there a specific subject line you'd like to use for these daily emails?"
+            ],
+            "suggestedTemplates": [
+              "Daily News Digest with Summaries",
+              "Headline-Only News Digest"
+            ]
+          },
+          "n8nId": null,
+          "createdAt": "2026-06-14T11:07:30.679Z"
+        },
+        {
+          "id": "4iz9q9c6aoqmqdok5sf",
+          "sender": "user",
+          "text": "Daily News Digest with Summaries",
+          "messageType": "message",
+          "workflow": null,
+          "n8nId": null,
+          "createdAt": "2026-06-14T11:07:42.543Z"
+        },
+        {
+          "id": "249lf5rujl3mqdok6j2",
+          "sender": "ai",
+          "text": "To confirm, you want to send a daily news digest with summaries via email to `sydystic.dev@gmail.com` from `sydystic.dev@gmail.com`. The digest will include headlines and summaries from Google News. \n   Please confirm if you want to limit the number of articles included in the digest and if there's a specific subject line you'd like to use for these daily emails.",
+          "messageType": "clarifying_question",
+          "workflow": {
+            "spec": {
+              "trigger": {
+                "service": "Cron",
+                "event": "Daily Schedule",
+                "details": "9am daily"
+              },
+              "action": {
+                "service": "Gmail",
+                "action": "Send Email",
+                "channel": "sydystic.dev@gmail.com",
+                "details": "Daily News Digest with summaries from Google News"
+              }
+            },
+            "isReadyToGenerate": false,
+            "questions": [
+              "Do you want to limit the number of articles in the digest?",
+              "Is there a specific subject line you'd like to use for these daily emails?"
+            ],
+            "suggestedTemplates": [
+              "Daily News Digest with Summaries from Google News",
+              "Weekly News Roundup with Top Stories",
+              "Customizable News Feed with Filtering Options"
+            ]
+          },
+          "n8nId": null,
+          "createdAt": "2026-06-14T11:07:43.502Z"
+        },
+        {
+          "id": "wh5tw0bx0jmqdokcdb",
+          "sender": "user",
+          "text": "Daily News Digest with Summaries from Google News",
+          "messageType": "message",
+          "workflow": null,
+          "n8nId": null,
+          "createdAt": "2026-06-14T11:07:51.071Z"
+        },
+        {
+          "id": "nece6ctdfhfmqdokd9e",
+          "sender": "ai",
+          "text": "To confirm, you want to send a daily news digest with summaries via email to `sydystic.dev@gmail.com` from `sydystic.dev@gmail.com`. The digest will include headlines and summaries from Google News. \n   We will use a daily schedule at 9am to trigger the workflow. \n   The workflow will fetch the top general news headlines and summaries from Google News. \n   The email will include a list of headlines with brief summaries.",
+          "messageType": "clarifying_question",
+          "workflow": {
+            "spec": {
+              "trigger": {
+                "service": "Cron",
+                "event": "Daily Schedule",
+                "details": "9am daily"
+              },
+              "action": {
+                "service": "Gmail",
+                "action": "Send Email",
+                "channel": "sydystic.dev@gmail.com",
+                "details": "Daily News Digest with Summaries from Google News"
+              }
+            },
+            "isReadyToGenerate": false,
+            "questions": [
+              "Do you want to limit the number of articles included in the digest?",
+              "Is there a specific subject line you'd like to use for these daily emails?"
+            ],
+            "suggestedTemplates": [
+              "Daily News Digest with Headlines",
+              "Weekly News Summary",
+              "Breaking News Alerts"
+            ]
+          },
+          "n8nId": null,
+          "createdAt": "2026-06-14T11:07:52.226Z"
+        },
+        {
+          "id": "zfebrdx38tomqdokih1",
+          "sender": "user",
+          "text": "okay",
+          "messageType": "message",
+          "workflow": null,
+          "n8nId": null,
+          "createdAt": "2026-06-14T11:07:58.981Z"
+        },
+        {
+          "id": "xa109rf516rmqdokj0y",
+          "sender": "ai",
+          "text": "We have finalized the details for the Daily News Digest with Summaries from Google News. The workflow will be triggered daily at 9am and will send an email to `sydystic.dev@gmail.com` from `sydystic.dev@gmail.com` with headlines and summaries from Google News.",
+          "messageType": "workflow",
+          "workflow": {
+            "spec": {
+              "trigger": {
+                "service": "Cron",
+                "event": "Daily Schedule",
+                "details": "9am daily"
+              },
+              "action": {
+                "service": "Gmail",
+                "action": "Send Email",
+                "channel": "sydystic.dev@gmail.com",
+                "details": "Daily News Digest with Summaries from Google News"
+              }
+            },
+            "isReadyToGenerate": true,
+            "questions": [],
+            "suggestedTemplates": []
+          },
+          "n8nId": null,
+          "createdAt": "2026-06-14T11:07:59.698Z"
+        },
+        {
+          "id": "p3jm66v3l9mqdokr1f",
+          "sender": "ai",
+          "text": "Sorry, I hit an error: Cannot read properties of undefined (reading 'id')",
+          "messageType": "message",
+          "workflow": null,
+          "n8nId": null,
+          "createdAt": "2026-06-14T11:08:10.083Z"
+        },
+        {
+          "id": "trz0udcu07dmqdokuy5",
+          "sender": "ai",
+          "text": "Sorry, I hit an error: Cannot read properties of undefined (reading 'id')",
+          "messageType": "message",
+          "workflow": null,
+          "n8nId": null,
+          "createdAt": "2026-06-14T11:08:15.149Z"
+        },
+        {
+          "id": "252o5c46o0nmqdokxzz",
+          "sender": "ai",
+          "text": "Sorry, I hit an error: Cannot read properties of undefined (reading 'id')",
+          "messageType": "message",
+          "workflow": null,
+          "n8nId": null,
+          "createdAt": "2026-06-14T11:08:19.103Z"
+        },
+        {
+          "id": "jfbha5fo0ymqdomda6",
+          "sender": "system",
+          "text": "Updated workflow specification metadata.",
+          "messageType": "message",
+          "workflow": {
+            "spec": {
+              "trigger": {
+                "service": "Cron",
+                "event": "Daily Schedule",
+                "details": "9am daily"
+              },
+              "action": {
+                "service": "Gmail",
+                "action": "Send Email",
+                "channel": "sydystic.dev@gmail.com",
+                "details": "[unknown]"
+              }
+            },
+            "isReadyToGenerate": true
+          },
+          "n8nId": null,
+          "createdAt": "2026-06-14T11:09:25.566Z"
+        }
+      ],
+      "spec": {
+        "trigger": {
+          "service": "Cron",
+          "event": "Daily Schedule",
+          "details": "9am daily"
+        },
+        "action": {
+          "service": "Gmail",
+          "action": "Send Email",
+          "channel": "sydystic.dev@gmail.com",
+          "details": "[unknown]"
+        }
+      }
     }
   ]
 }

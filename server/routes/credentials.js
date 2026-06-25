@@ -1,6 +1,12 @@
 const express = require("express");
 const router = express.Router();
 const n8nClient = require("../services/n8nClient");
+const supabase = require("../services/supabaseClient");
+const requireAuth = require("../middlewares/auth");
+const credentialEncryptionService = require("../services/credentialEncryptionService");
+
+// Require authentication for all credentials routes
+router.use(requireAuth);
 
 // ── Credential type registry ───────────────────────────────────────────────
 // Maps FlowBuilder service IDs to n8n credential types + field definitions
@@ -24,7 +30,7 @@ const CREDENTIAL_TYPES = {
       { key: "clientSecret", label: "Client Secret", type: "password", placeholder: "GOCSPX-...", required: true }
     ]
   },
-  googleSheetsOAuth2: {
+  googleSheetsOAuth2Api: {
     name: "Google Sheets",
     icon: "table_chart",
     category: "Google",
@@ -34,11 +40,31 @@ const CREDENTIAL_TYPES = {
       { key: "clientSecret", label: "Client Secret", type: "password", placeholder: "GOCSPX-...", required: true }
     ]
   },
-  googleCalendarOAuth2: {
+  googleCalendarOAuth2Api: {
     name: "Google Calendar",
     icon: "calendar_month",
     category: "Google",
     description: "Create and manage Google Calendar events",
+    fields: [
+      { key: "clientId", label: "Client ID", type: "text", placeholder: "xxxxx.apps.googleusercontent.com", required: true },
+      { key: "clientSecret", label: "Client Secret", type: "password", placeholder: "GOCSPX-...", required: true }
+    ]
+  },
+  googleDriveOAuth2Api: {
+    name: "Google Drive",
+    icon: "cloud",
+    category: "Google",
+    description: "Upload and manage files in Google Drive",
+    fields: [
+      { key: "clientId", label: "Client ID", type: "text", placeholder: "xxxxx.apps.googleusercontent.com", required: true },
+      { key: "clientSecret", label: "Client Secret", type: "password", placeholder: "GOCSPX-...", required: true }
+    ]
+  },
+  googleDocsOAuth2Api: {
+    name: "Google Docs",
+    icon: "description",
+    category: "Google",
+    description: "Create and edit Google Documents",
     fields: [
       { key: "clientId", label: "Client ID", type: "text", placeholder: "xxxxx.apps.googleusercontent.com", required: true },
       { key: "clientSecret", label: "Client Secret", type: "password", placeholder: "GOCSPX-...", required: true }
@@ -198,18 +224,15 @@ router.get("/types", (req, res) => {
   res.json(CREDENTIAL_TYPES);
 });
 
-// GET /api/credentials → fetch ALL credentials directly from n8n (source of truth)
-router.get("/", async (req, res) => {
+// GET /api/credentials/debug → return raw, normalized, and database credentials
+router.get("/debug", async (req, res) => {
   try {
-    const n8nCreds = await n8nClient.listCredentials();
-
-    // Map n8n credentials to FlowBuilder format
-    const mapped = (n8nCreds.data || n8nCreds || []).map(c => ({
+    const rawN8n = await n8nClient.listCredentials();
+    const normalized = (rawN8n.data || rawN8n || []).map(c => ({
       id: String(c.id),
       name: c.name,
       type: c.type,
       createdAt: c.createdAt || new Date().toISOString(),
-      // Enrich with our registry metadata
       meta: CREDENTIAL_TYPES[c.type] || {
         name: c.type,
         icon: "key",
@@ -218,14 +241,131 @@ router.get("/", async (req, res) => {
       }
     }));
 
-    res.json(mapped);
+    const { data: dbCreds } = await supabase
+      .from("credentials")
+      .select("*")
+      .eq("user_id", req.user.id);
+
+    res.json({
+      rawN8nCredentials: rawN8n,
+      normalizedCredentials: normalized,
+      databaseCredentials: dbCreds || []
+    });
   } catch (err) {
-    console.error("List credentials error:", err.message);
-    res.status(500).json({ error: `Failed to fetch credentials from n8n: ${err.message}` });
+    res.status(500).json({ error: `Debug failed: ${err.message}` });
   }
 });
 
-// POST /api/credentials → create credential in n8n (single source of truth)
+// GET /api/credentials → fetch credentials, run sync with Supabase and return normalized format
+router.get("/", async (req, res) => {
+  try {
+    const rawN8nCreds = await n8nClient.listCredentials();
+    console.log("=== [DEBUG LOG] Raw n8n credential payload ===");
+    console.log(JSON.stringify(rawN8nCreds, null, 2));
+
+    // Map n8n credentials to FlowBuilder format
+    const normalized = (rawN8nCreds.data || rawN8nCreds || []).map(c => ({
+      id: String(c.id),
+      name: c.name,
+      type: c.type,
+      createdAt: c.createdAt || new Date().toISOString(),
+      meta: CREDENTIAL_TYPES[c.type] || {
+        name: c.type,
+        icon: "key",
+        category: "Other",
+        description: ""
+      }
+    }));
+
+    console.log("=== [DEBUG LOG] Normalized credential payload ===");
+    console.log(JSON.stringify(normalized, null, 2));
+
+    // Database Sync Logic (Supabase)
+    const { data: dbCreds, error: fetchError } = await supabase
+      .from("credentials")
+      .select("*")
+      .eq("user_id", req.user.id);
+
+    if (fetchError) throw fetchError;
+
+    const dbCredsMap = new Map();
+    (dbCreds || []).forEach(c => {
+      if (c.provider_user_id) {
+        dbCredsMap.set(String(c.provider_user_id), c);
+      }
+    });
+
+    const n8nCredsMap = new Map();
+    normalized.forEach(c => {
+      n8nCredsMap.set(String(c.id), c);
+    });
+
+    const syncedDbCreds = [];
+
+    // 1. Upsert/Update local DB records from n8n
+    for (const nc of normalized) {
+      const existing = dbCredsMap.get(nc.id);
+      if (existing) {
+        if (existing.credential_name !== nc.name || existing.service_name !== nc.type) {
+          const { data: updated, error: updateError } = await supabase
+            .from("credentials")
+            .update({
+              credential_name: nc.name,
+              service_name: nc.type
+            })
+            .eq("id", existing.id)
+            .select()
+            .single();
+
+          if (!updateError && updated) syncedDbCreds.push(updated);
+        } else {
+          syncedDbCreds.push(existing);
+        }
+      } else {
+        const { data: inserted, error: insertError } = await supabase
+          .from("credentials")
+          .insert({
+            user_id: req.user.id,
+            service_name: nc.type,
+            credential_name: nc.name,
+            provider_user_id: nc.id,
+            is_active: true,
+            encrypted_config: credentialEncryptionService.encrypt({})
+          })
+          .select()
+          .single();
+
+        if (insertError) {
+          console.error("Error inserting synced credential to Supabase:", insertError.message);
+        }
+        if (!insertError && inserted) syncedDbCreds.push(inserted);
+      }
+    }
+
+    // 2. Delete orphaned database records (present in DB but deleted in n8n)
+    for (const dc of (dbCreds || [])) {
+      if (dc.provider_user_id && !n8nCredsMap.has(String(dc.provider_user_id))) {
+        await supabase
+          .from("credentials")
+          .delete()
+          .eq("id", dc.id);
+      }
+    }
+
+    console.log("=== [DEBUG LOG] Credentials synced/saved to Supabase ===");
+    console.log(JSON.stringify(syncedDbCreds, null, 2));
+
+    console.log("=== [DEBUG LOG] Credentials returned from GET /api/credentials ===");
+    console.log(JSON.stringify(normalized, null, 2));
+
+    res.json(normalized);
+  } catch (err) {
+    console.error("List credentials error:", err.message);
+    res.status(500).json({ error: `Failed to fetch credentials: ${err.message}` });
+  }
+});
+
+// POST /api/credentials → create credential in n8n and store encrypted in Supabase
 router.post("/", async (req, res) => {
   try {
     const { name, type, data } = req.body;
@@ -237,13 +377,32 @@ router.post("/", async (req, res) => {
     }
 
     const credentialName = name || `${CREDENTIAL_TYPES[type].name} Connection`;
-    const result = await n8nClient.createCredential(credentialName, type, data);
+
+    // 1. Create in n8n
+    const n8nResult = await n8nClient.createCredential(credentialName, type, data);
+
+    // 2. Encrypt & Save to Supabase
+    const encryptedConfig = credentialEncryptionService.encrypt(data);
+    const { data: inserted, error: insertError } = await supabase
+      .from("credentials")
+      .insert({
+        user_id: req.user.id,
+        service_name: type,
+        credential_name: credentialName,
+        encrypted_config: encryptedConfig,
+        provider_user_id: String(n8nResult.id),
+        is_active: true
+      })
+      .select()
+      .single();
+
+    if (insertError) throw insertError;
 
     res.json({
-      id: String(result.id),
-      name: result.name,
-      type: result.type,
-      createdAt: result.createdAt || new Date().toISOString(),
+      id: String(n8nResult.id),
+      name: n8nResult.name,
+      type: n8nResult.type,
+      createdAt: n8nResult.createdAt || new Date().toISOString(),
       meta: CREDENTIAL_TYPES[type]
     });
   } catch (err) {
@@ -252,10 +411,37 @@ router.post("/", async (req, res) => {
   }
 });
 
-// DELETE /api/credentials/:id → delete from n8n
+// DELETE /api/credentials/:id → delete from n8n and Supabase (checking ownership)
 router.delete("/:id", async (req, res) => {
   try {
-    await n8nClient.deleteCredential(req.params.id);
+    const { id } = req.params;
+
+    // Check ownership & existence in Supabase
+    const { data: cred, error: fetchError } = await supabase
+      .from("credentials")
+      .select("*")
+      .eq("provider_user_id", id)
+      .eq("user_id", req.user.id)
+      .maybeSingle();
+
+    if (fetchError) throw fetchError;
+
+    // Delete from n8n
+    try {
+      await n8nClient.deleteCredential(id);
+    } catch (n8nErr) {
+      console.warn(`n8n delete credential ${id} failed:`, n8nErr.message);
+    }
+
+    // Delete from Supabase
+    if (cred) {
+      const { error: deleteError } = await supabase
+        .from("credentials")
+        .delete()
+        .eq("id", cred.id);
+      if (deleteError) throw deleteError;
+    }
+
     res.json({ success: true });
   } catch (err) {
     console.error("Delete credential error:", err.message);
@@ -278,8 +464,10 @@ router.get("/status", async (req, res) => {
 
       if (name.includes("slack")) matchedType = "slackApi";
       else if (name.includes("gmail") || name.includes("email")) matchedType = "gmailOAuth2";
-      else if (name.includes("sheet")) matchedType = "googleSheetsOAuth2";
-      else if (name.includes("calendar")) matchedType = "googleCalendarOAuth2";
+      else if (name.includes("sheet")) matchedType = "googleSheetsOAuth2Api";
+      else if (name.includes("calendar")) matchedType = "googleCalendarOAuth2Api";
+      else if (name.includes("drive")) matchedType = "googleDriveOAuth2Api";
+      else if (name.includes("doc")) matchedType = "googleDocsOAuth2Api";
       else if (name.includes("github")) matchedType = "githubApi";
       else if (name.includes("telegram")) matchedType = "telegramApi";
       else if (name.includes("discord")) matchedType = "discordApi";

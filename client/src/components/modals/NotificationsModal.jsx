@@ -1,23 +1,39 @@
-import { useState } from 'react';
-
-const INITIAL_NOTIFICATIONS = [
-  { id: 1, type: 'success', title: 'Workflow generated & deployed', desc: 'Sent Slack Message when GitHub issue is urgent', time: '10 mins ago' },
-  { id: 2, type: 'info', title: 'Credential connected', desc: 'Slack bot connection has been established successfully.', time: '2 hours ago' },
-  { id: 3, type: 'warning', title: 'n8n Execution Limit Alert', desc: 'Your free n8n instance has reached 80% execution limits.', time: '1 day ago' },
-  { id: 4, type: 'success', title: 'Automation triggered', desc: 'Daily Good Morning Slack Message triggered successfully.', time: '1 day ago' },
-];
+import { useState, useEffect } from 'react';
 
 export default function NotificationsModal({ isOpen, onClose }) {
-  const [notifications, setNotifications] = useState(INITIAL_NOTIFICATIONS);
+  const [notifications, setNotifications] = useState(() => {
+    const stored = localStorage.getItem('flowbuilder_notifications');
+    return stored ? JSON.parse(stored) : [];
+  });
+
+  useEffect(() => {
+    const handleUpdate = () => {
+      const stored = localStorage.getItem('flowbuilder_notifications');
+      setNotifications(stored ? JSON.parse(stored) : []);
+    };
+    
+    // Always refresh lists when modal opens
+    if (isOpen) {
+      handleUpdate();
+    }
+
+    window.addEventListener('flowbuilder_notifications_updated', handleUpdate);
+    return () => window.removeEventListener('flowbuilder_notifications_updated', handleUpdate);
+  }, [isOpen]);
 
   if (!isOpen) return null;
 
   const handleClearAll = () => {
+    localStorage.setItem('flowbuilder_notifications', JSON.stringify([]));
     setNotifications([]);
+    window.dispatchEvent(new Event('flowbuilder_notifications_updated'));
   };
 
   const handleDismiss = (id) => {
-    setNotifications(prev => prev.filter(n => n.id !== id));
+    const updated = notifications.filter(n => n.id !== id);
+    localStorage.setItem('flowbuilder_notifications', JSON.stringify(updated));
+    setNotifications(updated);
+    window.dispatchEvent(new Event('flowbuilder_notifications_updated'));
   };
 
   return (

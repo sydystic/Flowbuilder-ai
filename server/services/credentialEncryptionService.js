@@ -8,9 +8,29 @@ if (!keyStr) {
   process.exit(1);
 }
 
-const keyBuf = Buffer.from(keyStr, "utf8");
-if (keyBuf.length !== 32) {
-  console.error(`FATAL ERROR: ENCRYPTION_KEY must be exactly 32 bytes. Current length is ${keyBuf.length} bytes.`);
+let keyBuf;
+if (keyStr.length === 64 && /^[0-9a-fA-F]+$/.test(keyStr)) {
+  keyBuf = Buffer.from(keyStr, "hex");
+} else {
+  // Try Base64 parsing (Base64 length for 32-bytes is 44 characters)
+  const base64Buf = Buffer.from(keyStr, "base64");
+  if (base64Buf.length === 32 && keyStr.includes("=")) {
+    keyBuf = base64Buf;
+  } else {
+    // Fallback to UTF-8
+    const utf8Buf = Buffer.from(keyStr, "utf8");
+    if (utf8Buf.length === 32) {
+      keyBuf = utf8Buf;
+    } else if (base64Buf.length === 32) {
+      keyBuf = base64Buf;
+    }
+  }
+}
+
+if (!keyBuf || keyBuf.length !== 32) {
+  console.error("FATAL ERROR: ENCRYPTION_KEY must resolve to exactly 32 bytes (256 bits).");
+  console.error("It can be a 32-character ASCII string, a 64-character hex string, or a 44-character base64-encoded string.");
+  console.error("Generate a secure base64 key with: node -e \"console.log(require('crypto').randomBytes(32).toString('base64'))\"");
   process.exit(1);
 }
 

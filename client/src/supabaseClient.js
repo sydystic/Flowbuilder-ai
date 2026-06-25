@@ -4,7 +4,7 @@ import axios from 'axios';
 const supabaseUrl = import.meta.env.VITE_SUPABASE_URL || '';
 const supabaseAnonKey = import.meta.env.VITE_SUPABASE_ANON_KEY || '';
 
-const isDemoMode = import.meta.env.VITE_DEMO_MODE === 'true' || !supabaseUrl || !supabaseAnonKey || supabaseUrl.includes('ukpxxynmwscjhleqfsac');
+const isDemoMode = import.meta.env.VITE_DEMO_MODE === 'true' || !supabaseUrl || !supabaseAnonKey;
 
 if (!isDemoMode && (!supabaseUrl || !supabaseAnonKey)) {
   console.warn(

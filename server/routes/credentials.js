@@ -226,6 +226,9 @@ router.get("/types", (req, res) => {
 
 // GET /api/credentials/debug → return raw, normalized, and database credentials
 router.get("/debug", async (req, res) => {
+  if (process.env.NODE_ENV === "production") {
+    return res.status(404).json({ error: "Not found" });
+  }
   try {
     const rawN8n = await n8nClient.listCredentials();
     const normalized = (rawN8n.data || rawN8n || []).map(c => ({
@@ -260,8 +263,9 @@ router.get("/debug", async (req, res) => {
 router.get("/", async (req, res) => {
   try {
     const rawN8nCreds = await n8nClient.listCredentials();
-    console.log("=== [DEBUG LOG] Raw n8n credential payload ===");
-    console.log(JSON.stringify(rawN8nCreds, null, 2));
+    if (process.env.LOG_LEVEL === "debug") {
+      console.log("[DEBUG] Raw n8n credential list size:", rawN8nCreds?.length || rawN8nCreds?.data?.length || 0);
+    }
 
     // Map n8n credentials to FlowBuilder format
     const normalized = (rawN8nCreds.data || rawN8nCreds || []).map(c => ({
@@ -277,8 +281,9 @@ router.get("/", async (req, res) => {
       }
     }));
 
-    console.log("=== [DEBUG LOG] Normalized credential payload ===");
-    console.log(JSON.stringify(normalized, null, 2));
+    if (process.env.LOG_LEVEL === "debug") {
+      console.log("[DEBUG] Normalized credential payload count:", normalized.length);
+    }
 
     // Database Sync Logic (Supabase)
     const { data: dbCreds, error: fetchError } = await supabase
@@ -352,11 +357,9 @@ router.get("/", async (req, res) => {
       }
     }
 
-    console.log("=== [DEBUG LOG] Credentials synced/saved to Supabase ===");
-    console.log(JSON.stringify(syncedDbCreds, null, 2));
-
-    console.log("=== [DEBUG LOG] Credentials returned from GET /api/credentials ===");
-    console.log(JSON.stringify(normalized, null, 2));
+    if (process.env.LOG_LEVEL === "debug") {
+      console.log("[DEBUG] Credentials sync complete. Rows synced:", syncedDbCreds.length);
+    }
 
     res.json(normalized);
   } catch (err) {
@@ -426,7 +429,11 @@ router.delete("/:id", async (req, res) => {
 
     if (fetchError) throw fetchError;
 
-    // Delete from n8n
+    if (!cred) {
+      return res.status(404).json({ error: "Credential not found or access denied" });
+    }
+
+    // Delete from n8n (only if ownership checks pass)
     try {
       await n8nClient.deleteCredential(id);
     } catch (n8nErr) {
@@ -434,13 +441,11 @@ router.delete("/:id", async (req, res) => {
     }
 
     // Delete from Supabase
-    if (cred) {
-      const { error: deleteError } = await supabase
-        .from("credentials")
-        .delete()
-        .eq("id", cred.id);
-      if (deleteError) throw deleteError;
-    }
+    const { error: deleteError } = await supabase
+      .from("credentials")
+      .delete()
+      .eq("id", cred.id);
+    if (deleteError) throw deleteError;
 
     res.json({ success: true });
   } catch (err) {

@@ -60,5 +60,45 @@
         "details": "Email content: '[unknown]', Recipient: '[unknown]'"
       }
     }
+  },
+  {
+    "id": "57992a91-9250-44cf-b810-2efc75cbe926",
+    "created_at": "2026-06-25T14:29:41.459Z",
+    "updated_at": "2026-06-25T15:15:24.964Z",
+    "owner_id": "526ee973-0cdc-4d22-bc06-280c532d31fe",
+    "title": "make a workflow that sends me a list of profi…",
+    "spec": {
+      "trigger": {
+        "service": "Cron",
+        "event": "Weekly Schedule",
+        "details": "Every week"
+      },
+      "action": {
+        "service": "LinkedIn",
+        "action": "Fetch Profile Views",
+        "channel": "https://www.linkedin.com/in/siddhikurne/",
+        "details": "Plain text"
+      }
+    }
+  },
+  {
+    "id": "dbd4e3ef-f9c5-4b73-8114-c611afeeb0ab",
+    "created_at": "2026-06-25T14:39:51.646Z",
+    "updated_at": "2026-06-25T14:39:53.659Z",
+    "owner_id": "526ee973-0cdc-4d22-bc06-280c532d31fe",
+    "title": "Trigger a webhook when a Stripe payment fails",
+    "spec": {
+      "trigger": {
+        "service": "Stripe",
+        "event": "[unknown]",
+        "details": "Payment failure"
+      },
+      "action": {
+        "service": "Webhook",
+        "action": "Send HTTP Request",
+        "channel": "[unknown]",
+        "details": "[unknown]"
+      }
+    }
   }
 ]

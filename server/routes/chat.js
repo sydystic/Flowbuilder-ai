@@ -172,51 +172,7 @@ router.get("/chat/sessions/:id/spec", async (req, res) => {
   }
 });
 
-// GET /api/credentials/status -> check connection state for required services
-router.get("/credentials/status", async (req, res) => {
-  try {
-    const servicesStr = req.query.services || "";
-    const required = servicesStr.split(",").filter(Boolean);
-    const n8nClient = require("../services/n8nClient");
-    
-    let n8nCreds = [];
-    try {
-      n8nCreds = await n8nClient.listCredentials();
-    } catch (n8nErr) {
-      console.warn("n8n list credentials failed:", n8nErr.message);
-    }
 
-    const { data: dbCreds } = await supabase
-      .from("credentials")
-      .select("*")
-      .eq("user_id", req.user.id);
-
-    const allCreds = [...(n8nCreds.data || n8nCreds || []), ...(dbCreds || []).map(c => ({ type: c.service_name }))];
-
-    const status = {};
-    required.forEach(service => {
-      let type = null;
-      const name = service.toLowerCase();
-      if (name.includes('slack')) type = 'slackApi';
-      else if (name.includes('gmail') || name.includes('email')) type = 'gmailOAuth2';
-      else if (name.includes('sheet')) type = 'googleSheetsOAuth2Api';
-      else if (name.includes('calendar')) type = 'googleCalendarOAuth2Api';
-      else if (name.includes('drive')) type = 'googleDriveOAuth2Api';
-      else if (name.includes('doc')) type = 'googleDocsOAuth2Api';
-      else if (name.includes('telegram')) type = 'telegramApi';
-      else if (name.includes('github')) type = 'githubApi';
-      else if (name.includes('webhook') || name.includes('http') || name.includes('api')) type = 'genericApi';
-      
-      // If it doesn't require a credential (like Schedule/Cron), it is automatically true
-      status[service] = type ? allCreds.some(c => c.type === type) : true;
-    });
-    
-    res.json(status);
-  } catch (err) {
-    console.error("Credentials status check error:", err.message);
-    res.status(500).json({ error: err.message });
-  }
-});
 
 // POST /api/clarify (backwards compatibility wrapper)
 router.post("/clarify", async (req, res) => {

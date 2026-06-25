@@ -1,7 +1,9 @@
 const supabase = require("../services/supabaseClient");
 
-async function requireAuth(req, res, next) {
+const profileCache = new Map(); // user.id -> { profile, expiresAt }
+const CACHE_TTL_MS = 60000; // 60s cache duration
 
+async function requireAuth(req, res, next) {
   try {
     const authHeader = req.headers.authorization;
     if (!authHeader || !authHeader.startsWith("Bearer ")) {
@@ -20,6 +22,13 @@ async function requireAuth(req, res, next) {
       return res.status(401).json({ error: "Unauthorized: Invalid or expired token" });
     }
 
+    // Check in-memory cache first to avoid 2-3 DB requests per API call
+    const cached = profileCache.get(user.id);
+    if (cached && cached.expiresAt > Date.now()) {
+      req.user = cached.profile;
+      return next();
+    }
+
     let { data: profile, error: profileError } = await supabase
       .from("users")
       .select("*")
@@ -32,7 +41,7 @@ async function requireAuth(req, res, next) {
     }
 
     if (!profile) {
-      const fullName = user.user_metadata?.full_name || user.email.split("@")[0];
+      const fullName = user.user_metadata?.full_name || (user.email ? user.email.split("@")[0] : "User");
       const avatarUrl = user.user_metadata?.avatar_url || null;
 
       const { data: newProfile, error: insertError } = await supabase
@@ -66,6 +75,8 @@ async function requireAuth(req, res, next) {
       }
     }
 
+    // Cache user profile and proceed
+    profileCache.set(user.id, { profile, expiresAt: Date.now() + CACHE_TTL_MS });
     req.user = profile;
     next();
   } catch (err) {

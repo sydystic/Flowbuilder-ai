@@ -22,7 +22,19 @@ The JSON must follow this exact structure:
 {
   "name": "workflow name here",
   "nodes": [...],
-  "connections": {},
+  "connections": {
+    "Sender Node Name": {
+      "main": [
+        [
+          {
+            "node": "Receiver Node Name",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
   "settings": { "executionOrder": "v1" }
 }
 
@@ -30,29 +42,82 @@ Each node must have ALL of these fields exactly:
 - id: unique string like "node-1", "node-2"
 - name: descriptive name
 - type: exact n8n node type string
-- typeVersion: always 1
-- position: [x, y] — use [250,300], [500,300], [750,300] etc
-- parameters: object with node config, use {} if none
+- typeVersion: number (e.g., 1 for ScheduleTrigger, 3 for Set, 4.1 for HttpRequest)
+- position: [x, y] — use [250,300], [500,300], [750,300] etc. incrementing x by 250 for each node.
+- parameters: object with node config matching the schema templates below.
 - credentials: {} always
 
-Common node types:
-- n8n-nodes-base.scheduleTrigger
-- n8n-nodes-base.manualTrigger
-- n8n-nodes-base.webhook
-- n8n-nodes-base.httpRequest
-- n8n-nodes-base.slack
-- n8n-nodes-base.gmail
-- n8n-nodes-base.telegram
-- n8n-nodes-base.if
-- n8n-nodes-base.set
-- n8n-nodes-base.code
+Node Schema Reference Guide:
+
+1. n8n-nodes-base.scheduleTrigger (typeVersion: 1)
+   parameters: {
+     "rule": {
+       "interval": [
+         {
+           "field": "cronExpression",
+           "expression": "0 9 * * *" // cron expression (e.g. every day at 9am)
+         }
+       ]
+     }
+   }
+
+2. n8n-nodes-base.httpRequest (typeVersion: 4.1)
+   parameters: {
+     "method": "GET", // GET, POST, PUT, DELETE
+     "url": "https://example.com/api",
+     "sendHeaders": true, // set to true if sending headers
+     "headerParameters": {
+       "parameters": [
+         {
+           "name": "User-Agent",
+           "value": "Mozilla/5.0"
+         }
+       ]
+     },
+     "options": {}
+   }
+
+3. n8n-nodes-base.set (typeVersion: 3)
+   parameters: {
+     "fields": {
+       "values": [
+         {
+           "name": "variable_name",
+           "type": "string", // string, number, boolean
+           "value": "variable_value" // use expressions like "={{ $json.fieldName }}" to reference previous node data
+         }
+       ]
+     },
+     "options": {}
+   }
+
+4. n8n-nodes-base.slack (typeVersion: 2.1)
+   parameters: {
+     "select": "channel",
+     "channelId": {
+       "__rl": true,
+       "value": "CHANNEL_ID_HERE",
+       "mode": "id"
+     },
+     "messageType": "text",
+     "text": "Message content here"
+   }
+
+5. n8n-nodes-base.gmail (typeVersion: 2)
+   parameters: {
+     "resource": "message",
+     "operation": "send",
+     "emailType": "text",
+     "subject": "Subject here",
+     "message": "Email body content here",
+     "toEmail": "recipient@example.com"
+   }
 
 RULES:
-1. connections use node NAME as key, not id
+1. connections use node NAME as key, not id. The connections object must follow the exact nested structure shown above: main -> array of arrays -> connection targets.
 2. every node must have credentials: {}
 3. settings must always include executionOrder: "v1"
-4. positions increment x by 250 each node
-5. return ONLY the raw JSON object, nothing else, no markdown`;
+4. return ONLY the raw JSON object, nothing else, no markdown`;
 
 // ── System Prompt for Conversational Chat Specification ───────────────────────
 const CHAT_SYSTEM_PROMPT = `You are Flowbuilder AI, an intelligent automation assistant that converts natural language into executable n8n workflows.
@@ -212,12 +277,13 @@ const aiClient = {
   async generateWorkflow(userPrompt) {
     let attempts = 0;
     const maxAttempts = 3;
+    let useGemini = !!genAI;
 
     while (attempts < maxAttempts) {
       try {
         let text = "";
 
-        if (genAI) {
+        if (useGemini) {
           try {
             const model = genAI.getGenerativeModel({
               model: "gemini-1.5-flash",
@@ -228,7 +294,7 @@ const aiClient = {
             text = result.response.text();
           } catch (err) {
             console.warn("Gemini workflow generation failed, falling back to Groq:", err.message);
-            genAI = null; // force Groq fallback on retry
+            useGemini = false; // force Groq fallback on retry for this request
             throw err;
           }
         } else {

@@ -1,209 +1,283 @@
 # FlowBuilder AI
 
-**Convert plain English into deployed n8n workflows — no drag-and-drop, no manual node wiring.**
+> Convert plain English into deployed n8n workflows — no drag-and-drop, no manual node wiring.
 
-FlowBuilder AI is a full-stack automation platform powered by Google Gemini (with Groq fallback). Describe an automation in plain English. The AI clarifies the details, builds a live workflow spec, generates valid n8n JSON, and deploys it directly to your n8n instance via REST API.
-
-## How It Works
-
-```
-User describes automation in chat
-         ↓
-AI asks targeted clarifying questions
-(trigger service, action service, channel, conditions)
-         ↓
-Structured spec built live in the Inspector panel
-         ↓
-"Generate & Deploy" → Gemini generates n8n workflow JSON
-         ↓
-Workflow validated → pushed to n8n via REST API
-         ↓
-Workflow is live and executable ✅
-```
-
-The interesting design decision: rather than one-shot generating from vague input, FlowBuilder runs a **conversational clarification phase** that extracts a structured trigger/action spec before ever touching the n8n API. This avoids generating broken workflows from ambiguous prompts.
+FlowBuilder AI is an AI-powered workflow automation platform that transforms natural language into production-ready n8n workflows. It guides users through a conversational workflow-building experience, generates valid n8n JSON, validates it, and deploys it directly to an n8n instance.
 
 ---
 
-## Features
+## 🎥 Demo
 
-- 🧠 **Natural Language → n8n Workflow** — powered by Google Gemini 1.5 Flash
-- 🔄 **Groq Fallback** — switches to `llama-3.3-70b-versatile` if Gemini is unavailable
-- ⚡ **One-click Deploy** — pushes workflow JSON directly to n8n via REST API
-- 📋 **Live Workflow Spec** — Inspector panel updates in real-time as you chat
-- 💬 **Session History** — resumable conversations with full message persistence
-- 🔐 **Encrypted Credential Storage** — AES-256-GCM, synced to n8n automatically
-- 📊 **Workflow Dashboard** — view, activate/deactivate, and retry failed deployments
-- 🏃 **Execution History** — incremental sync of n8n run history to the dashboard
-- 🐳 **Docker-ready** — spin up the full stack (postgres + n8n + backend + frontend) with one command
-- 🎭 **Demo Mode** — run fully locally without Supabase credentials
+**Watch FlowBuilder AI in action**
+
+[https://github.com/user-attachments/assets/your-demo-video](https://github.com/user-attachments/assets/04273a54-d617-4a04-98a6-6c940bccc524)
 
 ---
 
-## Tech Stack
+## ✨ Features
+
+### 🤖 AI Workflow Generation
+
+- Natural language → n8n workflow
+- Google Gemini 1.5 Flash
+- Groq fallback (`llama-3.3-70b-versatile`)
+- Conversational clarification
+- Live workflow specification
+
+### ⚡ Workflow Management
+
+- One-click deployment to n8n
+- Edit & Redeploy
+- Duplicate workflows
+- Export workflow JSON
+- View execution history
+- Retry failed deployments
+
+### 🔐 Security
+
+- Email & Google Authentication
+- AES-256-GCM encrypted credentials
+- Automatic credential sync with n8n
+- Rate limiting
+- Input validation
+- Secure JWT authentication
+
+### 📊 Dashboard
+
+- Workflow analytics
+- Execution monitoring
+- Session history
+- Conversation persistence
+- Recent workflows
+
+---
+
+## 🏗 Architecture
+
+```
+User Prompt
+      │
+      ▼
+AI Clarification
+      │
+      ▼
+Workflow Specification
+      │
+      ▼
+Gemini / Groq
+      │
+      ▼
+n8n Workflow JSON
+      │
+      ▼
+Validation
+      │
+      ▼
+n8n REST API
+      │
+      ▼
+Live Workflow
+```
+
+---
+
+## 🛠 Tech Stack
 
 | Layer | Technology |
-|---|---|
+|--------|------------|
 | Frontend | React 19, Vite, Tailwind CSS |
 | Backend | Node.js, Express 5 |
-| AI | Google Gemini 1.5 Flash + Groq llama-3.3-70b fallback |
-| Database | Supabase (Postgres) + local JSON session store |
-| Credentials | AES-256-GCM encrypted, auto-synced to n8n |
-| Automation | n8n (self-hosted via Docker) |
-| Infrastructure | Docker, Docker Compose, nginx |
+| Database | Supabase (Postgres) |
+| AI | Gemini 1.5 Flash + Groq |
+| Automation | n8n |
+| Auth | Supabase Auth |
+| Security | AES-256-GCM |
+| Infrastructure | Docker, Docker Compose |
 
 ---
 
-## Getting Started
+# 🚀 Quick Start
 
-### Prerequisites
+## Prerequisites
 
-- Node.js v20+
-- Docker & Docker Compose
-- Google Gemini API key **or** Groq API key (free tier works)
-- n8n instance (Docker setup included)
+Install:
 
-### 1. Clone
+- Node.js 20+
+- Docker Desktop
+- Docker Compose
+
+You'll also need:
+
+- Gemini API key or Groq API key
+- n8n API Key
+- Gmail OAuth (or another supported credential)
+- Supabase project (optional in Demo Mode)
+
+---
+
+## Clone
 
 ```bash
 git clone https://github.com/sydystic/Flowbuilder-ai.git
 cd Flowbuilder-ai
 ```
 
-### 2. Configure environment
+---
+
+## Configure Environment
 
 ```bash
 cp .env.example .env
 ```
 
-Edit `.env`. Minimum required for local development:
+Example
 
 ```env
-GEMINI_API_KEY=your_gemini_key    # or leave blank to use Groq
-GROQ_API_KEY=your_groq_key        # free at console.groq.com
-N8N_API_KEY=your_n8n_api_key      # generated in n8n settings
-ENCRYPTION_KEY=exactly32charstring # exactly 32 characters
-DEMO_MODE=true                     # skips Supabase auth locally
+GEMINI_API_KEY=
+
+GROQ_API_KEY=
+
+N8N_API_KEY=
+
+ENCRYPTION_KEY=
+
+DEMO_MODE=true
 ```
 
-> **Demo Mode** (`DEMO_MODE=true`) lets you run the full app without setting up Supabase. All session data is stored in local JSON files. Set to `false` and add Supabase credentials for persistent multi-user storage.
+---
 
-### 3. Start with Docker (recommended)
+## Start Docker
 
 ```bash
-docker-compose up --build
+docker compose up --build
 ```
 
 This starts:
-- **postgres** on internal network (n8n database)
-- **n8n** on `http://localhost:5678`
-- **backend** (Express API) on `http://localhost:3001`
-- **frontend** (React) on `http://localhost:3000`
 
-First run: log into n8n at `http://localhost:5678` with `N8N_USER` / `N8N_PASSWORD` from your `.env`, then generate an API key under **Settings → API** and add it to `.env` as `N8N_API_KEY`.
+- n8n
+- PostgreSQL
+- Backend
+- Frontend
 
-### 4. Manual setup (without Docker)
+---
+
+# Local Development
+
+### Backend
 
 ```bash
-# Install backend dependencies
+cd server
 npm install
-
-# Install frontend dependencies
-cd client && npm install && cd ..
-
-# Start backend
-node server/index.js
-
-# Start frontend (separate terminal)
-cd client && npm run dev
+node index.js
 ```
 
-Frontend runs on `http://localhost:5173`, backend on `http://localhost:3001`.
+Backend:
+
+```
+http://localhost:3001
+```
+
+---
+
+### Frontend
+
+Open another terminal.
+
+```bash
+cd client
+npm install
+npm run dev
+```
+
+Frontend:
+
+```
+http://localhost:5173
+```
+
+---
+
+## Environment Variables
+
+| Variable | Required | Description |
+|----------|----------|-------------|
+| GEMINI_API_KEY | Optional | Gemini AI |
+| GROQ_API_KEY | Optional | Groq fallback |
+| N8N_API_KEY | Yes | n8n deployment |
+| ENCRYPTION_KEY | Yes | Credential encryption |
+| SUPABASE_URL | Optional | Supabase |
+| SUPABASE_ANON_KEY | Optional | Auth |
+
+---
+
+## Screenshots
+
+### Chat Builder
+
+*(Add screenshot)*
+
+### Dashboard
+
+*(Add screenshot)*
+
+### Workflow Detail
+
+*(Add screenshot)*
+
+### Credential Manager
+
+*(Add screenshot)*
 
 ---
 
 ## Project Structure
 
+```text
+client/
+server/
+docker-compose.yml
+README.md
 ```
-Flowbuilder-ai/
-├── client/                        # React + Vite frontend
-│   ├── src/
-│   │   ├── screens/               # ChatScreen, Dashboard, Credentials, WorkflowDetail
-│   │   ├── components/            # WorkflowBuilder, Sidebar, Header, Modals
-│   │   │   ├── conversation/      # ConversationHistory, InputArea, ConversationHeader
-│   │   │   ├── spec/              # WorkflowSpecPanel (live inspector)
-│   │   │   ├── assistance/        # SuggestionCarousel
-│   │   │   └── auth/              # CredentialBanner
-│   │   └── App.jsx
-│   └── Dockerfile.frontend
-├── server/
-│   ├── routes/
-│   │   ├── chat.js                # Session + message endpoints
-│   │   ├── workflow.js            # Generate, deploy, manage workflows
-│   │   └── credentials.js        # Credential CRUD (n8n + Supabase)
-│   ├── services/
-│   │   ├── aiClient.js            # Gemini + Groq AI integration
-│   │   ├── n8nClient.js           # n8n REST API client
-│   │   ├── sessionStore.js        # JSON-based session persistence
-│   │   ├── workflowService.js     # Supabase workflow CRUD
-│   │   ├── credentialEncryptionService.js  # AES-256-GCM
-│   │   └── supabaseClient.js
-│   ├── middlewares/
-│   │   └── auth.js                # JWT auth + demo mode bypass
-│   └── data/                      # Local JSON session + history store
-├── docker-compose.yml
-├── Dockerfile.backend
-├── Dockerfile.frontend
-├── nginx.conf
-├── .env.example
-└── README.md
-```
-
----
-
-## Credential Management
-
-Credentials added in the FlowBuilder UI are:
-
-1. **Created in n8n** via the n8n REST API (so workflows can use them immediately)
-2. **Encrypted** using AES-256-GCM with your `ENCRYPTION_KEY`
-3. **Stored in Supabase** (or skipped in demo mode)
-
-This means you never need to manually configure credentials inside n8n — add them once in FlowBuilder and they're available to all generated workflows.
 
 ---
 
 ## Roadmap
 
-- [ ] Fix clarifying question loop — auto-proceed when spec is complete
-- [ ] Workflow template library (common patterns pre-built)
-- [ ] Support more credential types (Notion, Airtable, Postgres)
-- [ ] Workflow versioning and diff view
-- [ ] One-click deploy to Railway / Render
-- [ ] OpenAI / Claude as additional AI providers
-- [ ] Supabase Auth UI (login/signup in the frontend)
+- [ ] Workflow Templates
+- [ ] Visual Workflow Editor
+- [ ] Workflow Version History
+- [ ] Multi-user collaboration
+- [ ] OpenAI / Claude providers
+- [ ] Railway deployment
 
 ---
 
 ## Contributing
 
-Pull requests are welcome. For major changes, open an issue first.
-
 ```bash
-git checkout -b feature/your-feature
-git commit -m 'Add your feature'
-git push origin feature/your-feature
-# Open a Pull Request
+git checkout -b feature/my-feature
+
+git commit -m "feat: new feature"
+
+git push origin feature/my-feature
 ```
 
----
-
-## Author
-
-**Sid** — [@sydystic](https://github.com/sydystic)
+Open a Pull Request.
 
 ---
 
 ## License
 
 MIT
+
+---
+
+## Author
+
+**Siddhi Kurne**
+
+GitHub:
+https://github.com/sydystic
+
+LinkedIn:
+https://www.linkedin.com/in/siddhikurne/

@@ -290,7 +290,7 @@ const aiClient = {
     return parsed;
   },
 
-  async generateWorkflow(userPrompt) {
+  async generateWorkflow(userPrompt, credentialsMap = {}) {
     let attempts = 0;
     const maxAttempts = 3;
     let useGemini = !!genAI;
@@ -306,7 +306,15 @@ const aiClient = {
               systemInstruction: JSON_GENERATION_SYSTEM_PROMPT,
             });
 
-            const result = await model.generateContent(`Generate an n8n workflow for this spec: ${userPrompt}. Return ONLY valid raw JSON.`);
+            const credentialsInfo = credentialsMap && Object.keys(credentialsMap).length > 0
+              ? `\n\nAvailable credentials already configured in n8n (use these exact IDs in the credentials field of nodes that need them):
+${JSON.stringify(credentialsMap, null, 2)}
+
+For each node that requires authentication, populate its credentials field like:
+"credentials": { "slackApi": { "id": "ACTUAL_ID", "name": "ACTUAL_NAME" } }`
+              : "";
+
+            const result = await model.generateContent(`Generate an n8n workflow for this spec: ${userPrompt}. Return ONLY valid raw JSON.${credentialsInfo}`);
             text = result.response.text();
           } catch (err) {
             console.warn("Gemini workflow generation failed, falling back to Groq:", err.message);
@@ -314,13 +322,21 @@ const aiClient = {
             throw err;
           }
         } else {
+          const credentialsInfo = credentialsMap && Object.keys(credentialsMap).length > 0
+            ? `\n\nAvailable credentials already configured in n8n (use these exact IDs in the credentials field of nodes that need them):
+${JSON.stringify(credentialsMap, null, 2)}
+
+For each node that requires authentication, populate its credentials field like:
+"credentials": { "slackApi": { "id": "ACTUAL_ID", "name": "ACTUAL_NAME" } }`
+            : "";
+
           const completion = await groq.chat.completions.create({
             model: "llama-3.3-70b-versatile",
             messages: [
               { role: "system", content: JSON_GENERATION_SYSTEM_PROMPT },
               {
                 role: "user",
-                content: `Generate an n8n workflow for this: ${userPrompt}`,
+                content: `Generate an n8n workflow for this: ${userPrompt}${credentialsInfo}`,
               },
             ],
             temperature: 0.2,

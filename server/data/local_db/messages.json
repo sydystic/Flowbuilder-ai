@@ -1649,5 +1649,432 @@
     },
     "model_name": null,
     "tokens_used": null
+  },
+  {
+    "id": "4d74df3e-6fd4-4ef8-8fee-d4e236c696ca",
+    "created_at": "2026-06-28T15:33:40.230Z",
+    "updated_at": "2026-06-28T15:33:40.230Z",
+    "conversation_id": "4b3f5c21-b56c-4900-8cec-c39780f54a5a",
+    "role": "user",
+    "content": "Send me an email in one minute saying:\n\n\"🚀 This email was generated and deployed by FlowBuilder AI.\"",
+    "meta": {
+      "messageType": "message",
+      "workflow": null,
+      "n8nId": null
+    },
+    "model_name": null,
+    "tokens_used": null
+  },
+  {
+    "id": "d228e75a-9b98-421e-927f-02c9d1f5e62e",
+    "created_at": "2026-06-28T15:33:42.489Z",
+    "updated_at": "2026-06-28T15:33:42.489Z",
+    "conversation_id": "4b3f5c21-b56c-4900-8cec-c39780f54a5a",
+    "role": "ai",
+    "content": "To send an email, we need to clarify a few details. You want to send an email with the content '🚀 This email was generated and deployed by FlowBuilder AI.' in one minute. Is that correct? \n   We will need to determine the trigger and action for this workflow. \n   For the trigger, since you mentioned 'in one minute', it seems like a scheduled trigger might be appropriate.",
+    "meta": {
+      "messageType": "clarifying_question",
+      "workflow": {
+        "spec": {
+          "trigger": {
+            "service": "Cron",
+            "event": "On Schedule",
+            "sheetName": "[unknown]",
+            "details": "Every 1 minute"
+          },
+          "action": {
+            "service": "[unknown]",
+            "action": "[unknown]",
+            "channel": "[unknown]",
+            "details": "Email content: '🚀 This email was generated and deployed by FlowBuilder AI.'"
+          }
+        },
+        "isReadyToGenerate": false,
+        "questions": [
+          "What email service should we use to send the email (e.g. Gmail, Outlook)?",
+          "Who is the recipient of this email?"
+        ],
+        "suggestedTemplates": [
+          "Scheduled Email Notification",
+          "Automated Email Deployment"
+        ]
+      },
+      "n8nId": null
+    },
+    "model_name": "llama-3.3-70b-versatile",
+    "tokens_used": 983
+  },
+  {
+    "id": "02b3121c-df4d-471b-a715-5c4c01bdef50",
+    "created_at": "2026-06-28T15:33:53.628Z",
+    "updated_at": "2026-06-28T15:33:53.628Z",
+    "conversation_id": "4b3f5c21-b56c-4900-8cec-c39780f54a5a",
+    "role": "user",
+    "content": "Automated Email Deployment",
+    "meta": {
+      "messageType": "message",
+      "workflow": null,
+      "n8nId": null
+    },
+    "model_name": null,
+    "tokens_used": null
+  },
+  {
+    "id": "6ca75744-839f-4ee7-b4aa-c2645f59ff70",
+    "created_at": "2026-06-28T15:33:55.045Z",
+    "updated_at": "2026-06-28T15:33:55.045Z",
+    "conversation_id": "4b3f5c21-b56c-4900-8cec-c39780f54a5a",
+    "role": "ai",
+    "content": "To confirm, you want to create a workflow that sends an automated email with the content '🚀 This email was generated and deployed by FlowBuilder AI.' in one minute. This implies a scheduled trigger. For the action, we'll need to specify the email service and recipient. \n   Here are the key points to consider:\n   * Trigger: Scheduled (every 1 minute)\n   * Action: Send Email\n   * Email Content: '🚀 This email was generated and deployed by FlowBuilder AI.',\n   Let's break down the details:\n   1. **Trigger**: \n      * Service: Cron (for scheduling)\n      * Event: On Schedule\n   2. **Action**:\n      * Service: Email Service (e.g., Gmail, SMTP)\n      * Action: Send Email\n      * Channel/Recipient: '[unknown]'\n      * Details: Email content, subject, etc.",
+    "meta": {
+      "messageType": "clarifying_question",
+      "workflow": {
+        "spec": {
+          "trigger": {
+            "service": "Cron",
+            "event": "On Schedule",
+            "details": "Every 1 minute"
+          },
+          "action": {
+            "service": "[unknown]",
+            "action": "Send Email",
+            "channel": "[unknown]",
+            "details": "Email content: '🚀 This email was generated and deployed by FlowBuilder AI.'"
+          }
+        },
+        "isReadyToGenerate": false,
+        "questions": [
+          "Which email service would you like to use (e.g., Gmail, SMTP)?",
+          "Who is the recipient of this email?"
+        ],
+        "suggestedTemplates": [
+          "Scheduled Email Notification",
+          "Automated Report Email",
+          "Reminder Email"
+        ]
+      },
+      "n8nId": null
+    },
+    "model_name": "llama-3.3-70b-versatile",
+    "tokens_used": 1179
+  },
+  {
+    "id": "5ce045ad-46a9-459d-9249-229fe99e0c5e",
+    "created_at": "2026-06-28T15:34:24.017Z",
+    "updated_at": "2026-06-28T15:34:24.017Z",
+    "conversation_id": "4b3f5c21-b56c-4900-8cec-c39780f54a5a",
+    "role": "user",
+    "content": "recipient - sydystic.dev@gmail.com",
+    "meta": {
+      "messageType": "message",
+      "workflow": null,
+      "n8nId": null
+    },
+    "model_name": null,
+    "tokens_used": null
+  },
+  {
+    "id": "ca6dc5c2-0e99-4fc1-a864-51ceed2de6e0",
+    "created_at": "2026-06-28T15:34:25.697Z",
+    "updated_at": "2026-06-28T15:34:25.697Z",
+    "conversation_id": "4b3f5c21-b56c-4900-8cec-c39780f54a5a",
+    "role": "ai",
+    "content": "We've made progress in specifying your workflow. To recap, you want to send an automated email with the content '🚀 This email was generated and deployed by FlowBuilder AI.' to sydystic.dev@gmail.com in one minute. This implies a scheduled trigger. For the action, we've specified the recipient but still need to confirm the email service and a few other details.",
+    "meta": {
+      "messageType": "clarifying_question",
+      "workflow": {
+        "spec": {
+          "trigger": {
+            "service": "Cron",
+            "event": "On Schedule",
+            "details": "Every 1 minute"
+          },
+          "action": {
+            "service": "[unknown]",
+            "action": "Send Email",
+            "channel": "sydystic.dev@gmail.com",
+            "details": "Email content: '🚀 This email was generated and deployed by FlowBuilder AI.'"
+          }
+        },
+        "isReadyToGenerate": false,
+        "questions": [
+          "Which email service would you like to use (e.g., Gmail, SMTP)?",
+          "What should the email subject be?"
+        ],
+        "suggestedTemplates": [
+          "Scheduled Email Notification",
+          "Automated Email Deployment",
+          "Cron-Triggered Email Service"
+        ]
+      },
+      "n8nId": null
+    },
+    "model_name": "llama-3.3-70b-versatile",
+    "tokens_used": 1286
+  },
+  {
+    "id": "a1e6ad9d-e85a-43ae-ab7d-3c9193b471fe",
+    "created_at": "2026-06-28T15:34:45.860Z",
+    "updated_at": "2026-06-28T15:34:45.860Z",
+    "conversation_id": "4b3f5c21-b56c-4900-8cec-c39780f54a5a",
+    "role": "user",
+    "content": "Automated Email Deployment",
+    "meta": {
+      "messageType": "message",
+      "workflow": null,
+      "n8nId": null
+    },
+    "model_name": null,
+    "tokens_used": null
+  },
+  {
+    "id": "20f0cbd3-a993-4602-943e-4115cfdbb40f",
+    "created_at": "2026-06-28T15:34:47.314Z",
+    "updated_at": "2026-06-28T15:34:47.314Z",
+    "conversation_id": "4b3f5c21-b56c-4900-8cec-c39780f54a5a",
+    "role": "ai",
+    "content": "To confirm, you want to create a workflow that sends an automated email with the content '🚀 This email was generated and deployed by FlowBuilder AI.' to sydystic.dev@gmail.com in one minute. This implies a scheduled trigger. For the action, we've specified the recipient but still need to confirm the email service and a few other details. \n   Here are the key points to consider:\n   * Trigger: Scheduled (every 1 minute)\n   * Action: Send Email\n   * Email Content: '🚀 This email was generated and deployed by FlowBuilder AI.',\n   * Recipient: sydystic.dev@gmail.com\n   Let's break down the details:\n   1. **Trigger**: \n      * Service: Cron (for scheduling)\n      * Event: On Schedule\n   2. **Action**:\n      * Service: '[unknown]' (e.g., Gmail, SMTP)\n      * Action: Send Email\n      * Channel/Recipient: sydystic.dev@gmail.com\n      * Details: Email content, subject, etc.\n   Questions to consider:\n   * What email service would you like to use (e.g., Gmail, SMTP)?",
+    "meta": {
+      "messageType": "clarifying_question",
+      "workflow": {
+        "spec": {
+          "trigger": {
+            "service": "Cron",
+            "event": "On Schedule",
+            "sheetName": "[unknown]",
+            "details": "every 1 minute"
+          },
+          "action": {
+            "service": "[unknown]",
+            "action": "Send Email",
+            "channel": "sydystic.dev@gmail.com",
+            "details": "Email content: '🚀 This email was generated and deployed by FlowBuilder AI.'"
+          }
+        },
+        "isReadyToGenerate": false,
+        "questions": [
+          "What email service would you like to use (e.g., Gmail, SMTP)?",
+          "What should the email subject be?"
+        ],
+        "suggestedTemplates": [
+          "Scheduled Email Notification",
+          "Automated Email Deployment",
+          "Cron-based Email Trigger"
+        ]
+      },
+      "n8nId": null
+    },
+    "model_name": "llama-3.3-70b-versatile",
+    "tokens_used": 1551
+  },
+  {
+    "id": "fa38a268-6ecc-4834-af71-22a3a7a1d443",
+    "created_at": "2026-06-28T15:34:55.738Z",
+    "updated_at": "2026-06-28T15:34:55.738Z",
+    "conversation_id": "4b3f5c21-b56c-4900-8cec-c39780f54a5a",
+    "role": "user",
+    "content": "gmail",
+    "meta": {
+      "messageType": "message",
+      "workflow": null,
+      "n8nId": null
+    },
+    "model_name": null,
+    "tokens_used": null
+  },
+  {
+    "id": "610d98a2-b67a-46d7-aa3d-9c2fd15abdcd",
+    "created_at": "2026-06-28T15:34:59.791Z",
+    "updated_at": "2026-06-28T15:34:59.791Z",
+    "conversation_id": "4b3f5c21-b56c-4900-8cec-c39780f54a5a",
+    "role": "ai",
+    "content": "We've made progress in specifying your workflow. To confirm, you want to create a workflow that sends an automated email with the content '🚀 This email was generated and deployed by FlowBuilder AI.' to sydystic.dev@gmail.com in one minute using Gmail. Let's review the details: \n   * Trigger: Scheduled (every 1 minute)\n   * Action: Send Email via Gmail\n   * Email Content: '🚀 This email was generated and deployed by FlowBuilder AI.',\n   * Recipient: sydystic.dev@gmail.com\n   We still need to consider a few more details, such as the subject of the email and any potential errors that might occur during the sending process.",
+    "meta": {
+      "messageType": "clarifying_question",
+      "workflow": {
+        "spec": {
+          "trigger": {
+            "service": "Cron",
+            "event": "On Schedule",
+            "details": "every 1 minute"
+          },
+          "action": {
+            "service": "Gmail",
+            "action": "Send Email",
+            "channel": "sydystic.dev@gmail.com",
+            "details": "Email content: '🚀 This email was generated and deployed by FlowBuilder AI.'"
+          }
+        },
+        "isReadyToGenerate": false,
+        "questions": [
+          "What would you like the subject of the email to be?",
+          "How would you like to handle any errors that might occur during the sending process?"
+        ],
+        "suggestedTemplates": [
+          "Scheduled Email Notification",
+          "Automated Email Deployment",
+          "Error Handling for Email Workflows"
+        ]
+      },
+      "n8nId": null
+    },
+    "model_name": "llama-3.3-70b-versatile",
+    "tokens_used": 1704
+  },
+  {
+    "id": "43b8e509-24ba-4381-95e0-376f0210ee34",
+    "created_at": "2026-06-28T15:35:16.264Z",
+    "updated_at": "2026-06-28T15:35:16.264Z",
+    "conversation_id": "4b3f5c21-b56c-4900-8cec-c39780f54a5a",
+    "role": "user",
+    "content": "subject - first workflow",
+    "meta": {
+      "messageType": "message",
+      "workflow": null,
+      "n8nId": null
+    },
+    "model_name": null,
+    "tokens_used": null
+  },
+  {
+    "id": "2b7b67ce-ccc7-4baf-a8dc-38682e99fc33",
+    "created_at": "2026-06-28T15:35:18.945Z",
+    "updated_at": "2026-06-28T15:35:18.945Z",
+    "conversation_id": "4b3f5c21-b56c-4900-8cec-c39780f54a5a",
+    "role": "ai",
+    "content": "We've made progress in specifying your workflow. To confirm, you want to create a workflow that sends an automated email with the content '🚀 This email was generated and deployed by FlowBuilder AI.' to sydystic.dev@gmail.com in one minute using Gmail. The email subject will be 'first workflow'. Let's review the details: \n   * Trigger: Scheduled (every 1 minute)\n   * Action: Send Email via Gmail\n   * Email Content: '🚀 This email was generated and deployed by FlowBuilder AI.',\n   * Recipient: sydystic.dev@gmail.com\n   * Subject: 'first workflow'\n   We still need to consider a few more details, such as error handling and success verification.",
+    "meta": {
+      "messageType": "clarifying_question",
+      "workflow": {
+        "spec": {
+          "trigger": {
+            "service": "Cron",
+            "event": "On Schedule",
+            "details": "every 1 minute"
+          },
+          "action": {
+            "service": "Gmail",
+            "action": "Send Email",
+            "channel": "sydystic.dev@gmail.com",
+            "details": "Email content: '🚀 This email was generated and deployed by FlowBuilder AI.', Subject: 'first workflow'"
+          }
+        },
+        "isReadyToGenerate": false,
+        "questions": [
+          "How would you like to handle any errors that occur during the email sending process?",
+          "What criteria would you use to verify that the workflow has successfully sent the email?"
+        ],
+        "suggestedTemplates": [
+          "Scheduled Email Notification",
+          "Automated Email Deployment",
+          "Error Handling and Notification"
+        ]
+      },
+      "n8nId": null
+    },
+    "model_name": "llama-3.3-70b-versatile",
+    "tokens_used": 1876
+  },
+  {
+    "id": "1976f9e3-3c12-43f9-85ef-be6cd80552fe",
+    "created_at": "2026-06-28T15:35:35.979Z",
+    "updated_at": "2026-06-28T15:35:35.979Z",
+    "conversation_id": "4b3f5c21-b56c-4900-8cec-c39780f54a5a",
+    "role": "user",
+    "content": "i want verification mail to the sender",
+    "meta": {
+      "messageType": "message",
+      "workflow": null,
+      "n8nId": null
+    },
+    "model_name": null,
+    "tokens_used": null
+  },
+  {
+    "id": "03ace6ee-bca4-4b96-8f5c-b898766e0e16",
+    "created_at": "2026-06-28T15:35:37.218Z",
+    "updated_at": "2026-06-28T15:35:37.218Z",
+    "conversation_id": "4b3f5c21-b56c-4900-8cec-c39780f54a5a",
+    "role": "ai",
+    "content": "To confirm, you want to create a workflow that sends an automated email with the content '🚀 This email was generated and deployed by FlowBuilder AI.' to sydystic.dev@gmail.com in one minute using Gmail. The email subject will be 'first workflow'. You also want a verification email to be sent to the sender. Let's review the details: \n   * Trigger: Scheduled (every 1 minute)\n   * Action: Send Email via Gmail\n   * Email Content: '🚀 This email was generated and deployed by FlowBuilder AI.',\n   * Recipient: sydystic.dev@gmail.com\n   * Subject: 'first workflow'\n   * Verification: Send email to sender",
+    "meta": {
+      "messageType": "clarifying_question",
+      "workflow": {
+        "spec": {
+          "trigger": {
+            "service": "Cron",
+            "event": "On Schedule",
+            "details": "every 1 minute"
+          },
+          "action": {
+            "service": "Gmail",
+            "action": "Send Email",
+            "channel": "sydystic.dev@gmail.com",
+            "details": "Email content: '🚀 This email was generated and deployed by FlowBuilder AI.', Subject: 'first workflow'"
+          }
+        },
+        "isReadyToGenerate": false,
+        "questions": [
+          "What email address should be used as the sender for the automated email?"
+        ],
+        "suggestedTemplates": [
+          "Scheduled Email Notification",
+          "Automated Email Deployment with Verification"
+        ]
+      },
+      "n8nId": null
+    },
+    "model_name": "llama-3.3-70b-versatile",
+    "tokens_used": 2013
+  },
+  {
+    "id": "c8451d56-b40c-43be-84d5-035b6c36a799",
+    "created_at": "2026-06-28T15:35:43.699Z",
+    "updated_at": "2026-06-28T15:35:43.699Z",
+    "conversation_id": "4b3f5c21-b56c-4900-8cec-c39780f54a5a",
+    "role": "user",
+    "content": "yes",
+    "meta": {
+      "messageType": "message",
+      "workflow": null,
+      "n8nId": null
+    },
+    "model_name": null,
+    "tokens_used": null
+  },
+  {
+    "id": "68fa0343-d0ed-47d1-b146-25ec3bb38df6",
+    "created_at": "2026-06-28T15:35:44.621Z",
+    "updated_at": "2026-06-28T15:35:44.621Z",
+    "conversation_id": "4b3f5c21-b56c-4900-8cec-c39780f54a5a",
+    "role": "ai",
+    "content": "To confirm, you want to create a workflow that sends an automated email with the content '🚀 This email was generated and deployed by FlowBuilder AI.' to sydystic.dev@gmail.com in one minute using Gmail. The email subject will be 'first workflow'. You also want a verification email to be sent to the sender.",
+    "meta": {
+      "messageType": "workflow",
+      "workflow": {
+        "spec": {
+          "trigger": {
+            "service": "Cron",
+            "event": "On Schedule",
+            "details": "every 1 minute"
+          },
+          "action": {
+            "service": "Gmail",
+            "action": "Send Email",
+            "channel": "sydystic.dev@gmail.com",
+            "details": {
+              "content": "🚀 This email was generated and deployed by FlowBuilder AI.",
+              "subject": "first workflow"
+            }
+          }
+        },
+        "isReadyToGenerate": true,
+        "questions": [],
+        "suggestedTemplates": []
+      },
+      "n8nId": null
+    },
+    "model_name": "llama-3.3-70b-versatile",
+    "tokens_used": 2061
   }
 ]

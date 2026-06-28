@@ -53,10 +53,40 @@ router.post("/generate", async (req, res) => {
       active: false
     });
 
-    console.log("3. Generating workflow_json via AI...");
+    console.log("3. Fetching credentials from n8n...");
+    let credentialsMap = {};
+    try {
+      const credentials = await n8nClient.listCredentials();
+      // Build a map keyed by credential type, assuming the API returns an array of objects with id, name, type
+      // If the API returns { data: [...] } we need to adjust.
+      // From the n8nClient.listCredentials, it returns res.data, which is likely the array.
+      credentialsMap = credentials.reduce((map, cred) => {
+        // We assume cred.type is the credential type string, e.g., "slackApi", "gmailOAuth2"
+        // If there are multiple credentials of the same type, we might want to keep an array or pick the first.
+        // For simplicity, we'll map type to the first credential of that type.
+        // But note: the AI expects a single credential per type? Actually, the AI might need to choose among multiple.
+        // However, the system prompt we are adding uses the map as is. We'll change the map to be: { type: [{ id, name }, ...] }
+        // But the instruction says: use these exact IDs. We'll keep it as an array per type and let the AI handle it?
+        // However, the AI prompt we are adding expects to see the map and then use the id and name.
+        // We'll change the map to be: { [cred.type]: { id: cred.id, name: cred.name } } for the first one.
+        // Alternatively, we can change the AI prompt to handle arrays. But to keep it simple, we'll assume one credential per type.
+        // If there are multiple, we'll take the first one and log a warning.
+        if (!map[cred.type]) {
+          map[cred.type] = { id: cred.id, name: cred.name };
+        } else {
+          console.warn(`Multiple credentials of type ${cred.type} found, using the first one.`);
+        }
+        return map;
+      }, {});
+    } catch (err) {
+      console.warn("Failed to fetch credentials from n8n, proceeding without credential mapping:", err.message);
+      // credentialsMap remains empty
+    }
+
+    console.log("4. Generating workflow_json via AI with credentials map:", credentialsMap);
     let generated;
     try {
-      generated = await aiClient.generateWorkflow(prompt);
+      generated = await aiClient.generateWorkflow(prompt, credentialsMap);
       if (!generated.success) {
         throw new Error(generated.error || "AI generation returned success=false");
       }

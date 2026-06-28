@@ -100,5 +100,28 @@
         "details": "[unknown]"
       }
     }
+  },
+  {
+    "id": "4b3f5c21-b56c-4900-8cec-c39780f54a5a",
+    "created_at": "2026-06-28T15:33:38.946Z",
+    "updated_at": "2026-06-28T15:35:44.661Z",
+    "owner_id": "526ee973-0cdc-4d22-bc06-280c532d31fe",
+    "title": "Send me an email in one minute saying:\n\n\"🚀 T…",
+    "spec": {
+      "trigger": {
+        "service": "Cron",
+        "event": "On Schedule",
+        "details": "every 1 minute"
+      },
+      "action": {
+        "service": "Gmail",
+        "action": "Send Email",
+        "channel": "sydystic.dev@gmail.com",
+        "details": {
+          "content": "🚀 This email was generated and deployed by FlowBuilder AI.",
+          "subject": "first workflow"
+        }
+      }
+    }
   }
 ]

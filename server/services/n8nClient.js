@@ -19,13 +19,39 @@ const n8nClient = {
 
   async createWorkflow(workflowJson) {
     const crypto = require("crypto");
+
+    // Known-bad parameter keys that cause "Could not find property option" in n8n
+    // These are from outdated schema versions that n8n no longer accepts
+    const BANNED_PARAM_KEYS = new Set([
+      "select",        // old slack field (replaced by resource/operation)
+      "channelId",     // old slack field (replaced by channel.__rl)
+      "messageType",   // old slack field
+      "toEmail",       // old gmail field (replaced by sendTo)
+      "sendHeaders",   // old httpRequest field
+      "headerParameters", // old httpRequest field
+      "fields",        // old set node v3 field (replaced by assignments)
+    ]);
+
+    const sanitizeParams = (params) => {
+      if (!params || typeof params !== "object" || Array.isArray(params)) return params;
+      const cleaned = {};
+      for (const [k, v] of Object.entries(params)) {
+        if (!BANNED_PARAM_KEYS.has(k)) {
+          cleaned[k] = typeof v === "object" && v !== null ? sanitizeParams(v) : v;
+        } else {
+          console.warn(`[n8n sanitize] Stripped banned parameter key: "${k}"`);
+        }
+      }
+      return cleaned;
+    };
+
     const nodes = (workflowJson.nodes || []).map((node) => ({
       id: crypto.randomUUID(),
       name: node.name,
       type: node.type,
       typeVersion: node.typeVersion || 1,
       position: node.position || [250, 300],
-      parameters: node.parameters || {},
+      parameters: sanitizeParams(node.parameters || {}),
       credentials: node.credentials || {},
     }));
 
@@ -69,7 +95,7 @@ const n8nClient = {
       nodes: nodes,
       connections: normalizedConnections,
       settings: { executionOrder: "v1" },
-      staticData: null,
+      active: false,
     };
 
     console.log("Sending to n8n — node count:", payload.nodes.length);

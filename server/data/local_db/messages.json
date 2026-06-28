@@ -1118,5 +1118,536 @@
     },
     "model_name": null,
     "tokens_used": null
+  },
+  {
+    "id": "1b579c27-a10c-4795-b6e1-b4304f31de29",
+    "created_at": "2026-06-28T14:37:45.824Z",
+    "updated_at": "2026-06-28T14:37:45.824Z",
+    "conversation_id": "57992a91-9250-44cf-b810-2efc75cbe926",
+    "role": "ai",
+    "content": "Deploy complete! I have generated and activated the workflow \"Weekly LinkedIn Profile Views\" in your n8n workspace.",
+    "meta": {
+      "messageType": "workflow",
+      "workflow": {
+        "id": "d09ad514-9675-4912-b4c9-b0a3c7821f71",
+        "ownerId": "526ee973-0cdc-4d22-bc06-280c532d31fe",
+        "name": "Weekly LinkedIn Profile Views",
+        "description": "Create a complete n8n workflow for this spec:\nTrigger: Cron (Event: Weekly Schedule, Source/Sheet: undefined, Details: Every week)\nAction: LinkedIn (Action: Fetch Profile Views, Target/Channel: https://www.linkedin.com/in/siddhikurne/, Details: Plain text)",
+        "workflowSpec": {
+          "trigger": {
+            "service": "Cron",
+            "event": "Weekly Schedule",
+            "details": "Every week"
+          },
+          "action": {
+            "service": "LinkedIn",
+            "action": "Fetch Profile Views",
+            "channel": "https://www.linkedin.com/in/siddhikurne/",
+            "details": "Plain text"
+          }
+        },
+        "workflowJson": {
+          "name": "Weekly LinkedIn Profile Views",
+          "nodes": [
+            {
+              "id": "node-1",
+              "name": "Cron Trigger",
+              "type": "n8n-nodes-base.scheduleTrigger",
+              "typeVersion": 1,
+              "position": [
+                250,
+                300
+              ],
+              "parameters": {
+                "cronExpression": "0 0 0 * * 0",
+                "immediately": false
+              },
+              "credentials": {}
+            },
+            {
+              "id": "node-2",
+              "name": "HTTP Request",
+              "type": "n8n-nodes-base.httpRequest",
+              "typeVersion": 1,
+              "position": [
+                500,
+                300
+              ],
+              "parameters": {
+                "url": "https://www.linkedin.com/in/siddhikurne/",
+                "options": {
+                  "headers": {
+                    "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/74.0.3729.169 Safari/537.3"
+                  }
+                },
+                "responseFormat": "string"
+              },
+              "credentials": {}
+            },
+            {
+              "id": "node-3",
+              "name": "Set",
+              "type": "n8n-nodes-base.set",
+              "typeVersion": 1,
+              "position": [
+                750,
+                300
+              ],
+              "parameters": {
+                "values": {
+                  "profileViews": "={{$node[\"HTTP Request\"].data}}",
+                  "source": "LinkedIn"
+                },
+                "options": {
+                  "keepOnlySet": true
+                }
+              },
+              "credentials": {}
+            }
+          ],
+          "connections": {
+            "Cron Trigger": {
+              "main": [
+                "HTTP Request"
+              ]
+            },
+            "HTTP Request": {
+              "main": [
+                "Set"
+              ]
+            }
+          },
+          "settings": {
+            "executionOrder": "v1"
+          }
+        },
+        "status": "active",
+        "n8nWorkflowId": "7PBDhSjd8pXjfyku",
+        "active": true,
+        "deploymentError": null,
+        "createdAt": "2026-06-28T14:37:42.051Z",
+        "updatedAt": "2026-06-28T14:37:45.737Z",
+        "nodes": [
+          {
+            "id": "node-1",
+            "name": "Cron Trigger",
+            "type": "n8n-nodes-base.scheduleTrigger",
+            "typeVersion": 1,
+            "position": [
+              250,
+              300
+            ],
+            "parameters": {
+              "cronExpression": "0 0 0 * * 0",
+              "immediately": false
+            },
+            "credentials": {}
+          },
+          {
+            "id": "node-2",
+            "name": "HTTP Request",
+            "type": "n8n-nodes-base.httpRequest",
+            "typeVersion": 1,
+            "position": [
+              500,
+              300
+            ],
+            "parameters": {
+              "url": "https://www.linkedin.com/in/siddhikurne/",
+              "options": {
+                "headers": {
+                  "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/74.0.3729.169 Safari/537.3"
+                }
+              },
+              "responseFormat": "string"
+            },
+            "credentials": {}
+          },
+          {
+            "id": "node-3",
+            "name": "Set",
+            "type": "n8n-nodes-base.set",
+            "typeVersion": 1,
+            "position": [
+              750,
+              300
+            ],
+            "parameters": {
+              "values": {
+                "profileViews": "={{$node[\"HTTP Request\"].data}}",
+                "source": "LinkedIn"
+              },
+              "options": {
+                "keepOnlySet": true
+              }
+            },
+            "credentials": {}
+          }
+        ],
+        "connections": {
+          "Cron Trigger": {
+            "main": [
+              "HTTP Request"
+            ]
+          },
+          "HTTP Request": {
+            "main": [
+              "Set"
+            ]
+          }
+        }
+      },
+      "n8nId": "7PBDhSjd8pXjfyku"
+    },
+    "model_name": null,
+    "tokens_used": null
+  },
+  {
+    "id": "7d3c909f-1051-423e-80fd-30014575c7c8",
+    "created_at": "2026-06-28T14:47:01.089Z",
+    "updated_at": "2026-06-28T14:47:01.089Z",
+    "conversation_id": "57992a91-9250-44cf-b810-2efc75cbe926",
+    "role": "ai",
+    "content": "Deploy complete! I have generated and activated the workflow \"Weekly LinkedIn Profile Views\" in your n8n workspace.",
+    "meta": {
+      "messageType": "workflow",
+      "workflow": {
+        "id": "bf262938-76b2-4200-82a4-5f4be7ce0bda",
+        "ownerId": "526ee973-0cdc-4d22-bc06-280c532d31fe",
+        "name": "Weekly LinkedIn Profile Views",
+        "description": "Create a complete n8n workflow for this spec:\nTrigger: Cron (Event: Weekly Schedule, Source/Sheet: undefined, Details: Every week)\nAction: LinkedIn (Action: Fetch Profile Views, Target/Channel: https://www.linkedin.com/in/siddhikurne/, Details: Plain text)",
+        "workflowSpec": {
+          "trigger": {
+            "service": "Cron",
+            "event": "Weekly Schedule",
+            "details": "Every week"
+          },
+          "action": {
+            "service": "LinkedIn",
+            "action": "Fetch Profile Views",
+            "channel": "https://www.linkedin.com/in/siddhikurne/",
+            "details": "Plain text"
+          }
+        },
+        "workflowJson": {
+          "name": "Weekly LinkedIn Profile Views",
+          "nodes": [
+            {
+              "id": "node-1",
+              "name": "Cron Trigger",
+              "type": "n8n-nodes-base.scheduleTrigger",
+              "typeVersion": 1,
+              "position": [
+                250,
+                300
+              ],
+              "parameters": {
+                "cron": "0 0 * * 0",
+                "immediately": false
+              },
+              "credentials": {}
+            },
+            {
+              "id": "node-2",
+              "name": "HTTP Request",
+              "type": "n8n-nodes-base.httpRequest",
+              "typeVersion": 1,
+              "position": [
+                500,
+                300
+              ],
+              "parameters": {
+                "url": "https://www.linkedin.com/in/siddhikurne/",
+                "options": {
+                  "headers": {
+                    "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/74.0.3729.169 Safari/537.3"
+                  }
+                },
+                "responseFormat": "string"
+              },
+              "credentials": {}
+            },
+            {
+              "id": "node-3",
+              "name": "Set",
+              "type": "n8n-nodes-base.set",
+              "typeVersion": 1,
+              "position": [
+                750,
+                300
+              ],
+              "parameters": {
+                "values": {
+                  "profileViews": "={{$node[\"HTTP Request\"].json}}",
+                  "text": "Profile Views: "
+                },
+                "options": {
+                  "keepOnlySet": true
+                }
+              },
+              "credentials": {}
+            }
+          ],
+          "connections": {
+            "Cron Trigger": {
+              "main": [
+                "HTTP Request"
+              ]
+            },
+            "HTTP Request": {
+              "main": [
+                "Set"
+              ]
+            }
+          },
+          "settings": {
+            "executionOrder": "v1"
+          }
+        },
+        "status": "active",
+        "n8nWorkflowId": "JpKtXMnurgBeqpez",
+        "active": true,
+        "deploymentError": null,
+        "createdAt": "2026-06-28T14:46:59.609Z",
+        "updatedAt": "2026-06-28T14:47:00.990Z",
+        "nodes": [
+          {
+            "id": "node-1",
+            "name": "Cron Trigger",
+            "type": "n8n-nodes-base.scheduleTrigger",
+            "typeVersion": 1,
+            "position": [
+              250,
+              300
+            ],
+            "parameters": {
+              "cron": "0 0 * * 0",
+              "immediately": false
+            },
+            "credentials": {}
+          },
+          {
+            "id": "node-2",
+            "name": "HTTP Request",
+            "type": "n8n-nodes-base.httpRequest",
+            "typeVersion": 1,
+            "position": [
+              500,
+              300
+            ],
+            "parameters": {
+              "url": "https://www.linkedin.com/in/siddhikurne/",
+              "options": {
+                "headers": {
+                  "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/74.0.3729.169 Safari/537.3"
+                }
+              },
+              "responseFormat": "string"
+            },
+            "credentials": {}
+          },
+          {
+            "id": "node-3",
+            "name": "Set",
+            "type": "n8n-nodes-base.set",
+            "typeVersion": 1,
+            "position": [
+              750,
+              300
+            ],
+            "parameters": {
+              "values": {
+                "profileViews": "={{$node[\"HTTP Request\"].json}}",
+                "text": "Profile Views: "
+              },
+              "options": {
+                "keepOnlySet": true
+              }
+            },
+            "credentials": {}
+          }
+        ],
+        "connections": {
+          "Cron Trigger": {
+            "main": [
+              "HTTP Request"
+            ]
+          },
+          "HTTP Request": {
+            "main": [
+              "Set"
+            ]
+          }
+        }
+      },
+      "n8nId": "JpKtXMnurgBeqpez"
+    },
+    "model_name": null,
+    "tokens_used": null
+  },
+  {
+    "id": "d8c53eb4-a438-4115-85fd-2260f2d29863",
+    "created_at": "2026-06-28T14:49:05.006Z",
+    "updated_at": "2026-06-28T14:49:05.006Z",
+    "conversation_id": "57992a91-9250-44cf-b810-2efc75cbe926",
+    "role": "ai",
+    "content": "Deploy complete! I have generated and activated the workflow \"Weekly LinkedIn Profile Views\" in your n8n workspace.",
+    "meta": {
+      "messageType": "workflow",
+      "workflow": {
+        "id": "a6337e04-3a38-4ae5-9d6f-5df847545572",
+        "ownerId": "526ee973-0cdc-4d22-bc06-280c532d31fe",
+        "name": "Weekly LinkedIn Profile Views",
+        "description": "Create a complete n8n workflow for this spec:\nTrigger: Cron (Event: Weekly Schedule, Source/Sheet: undefined, Details: Every week)\nAction: LinkedIn (Action: Fetch Profile Views, Target/Channel: https://www.linkedin.com/in/siddhikurne/, Details: Plain text)",
+        "workflowSpec": {
+          "trigger": {
+            "service": "Cron",
+            "event": "Weekly Schedule",
+            "details": "Every week"
+          },
+          "action": {
+            "service": "LinkedIn",
+            "action": "Fetch Profile Views",
+            "channel": "https://www.linkedin.com/in/siddhikurne/",
+            "details": "Plain text"
+          }
+        },
+        "workflowJson": {
+          "name": "Weekly LinkedIn Profile Views",
+          "nodes": [
+            {
+              "id": "node-1",
+              "name": "Cron Trigger",
+              "type": "n8n-nodes-base.scheduleTrigger",
+              "typeVersion": 1,
+              "position": [
+                250,
+                300
+              ],
+              "parameters": {
+                "cronExpression": "0 0 0 * * 0",
+                "immediately": false
+              },
+              "credentials": {}
+            },
+            {
+              "id": "node-2",
+              "name": "HTTP Request",
+              "type": "n8n-nodes-base.httpRequest",
+              "typeVersion": 1,
+              "position": [
+                500,
+                300
+              ],
+              "parameters": {
+                "url": "https://www.linkedin.com/in/siddhikurne/",
+                "options": {
+                  "headers": {
+                    "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/74.0.3729.169 Safari/537.3"
+                  }
+                }
+              },
+              "credentials": {}
+            },
+            {
+              "id": "node-3",
+              "name": "Set",
+              "type": "n8n-nodes-base.set",
+              "typeVersion": 1,
+              "position": [
+                750,
+                300
+              ],
+              "parameters": {
+                "values": {
+                  "profileViews": "={{$node[\"HTTP Request\"].data}}",
+                  "text": "Profile Views: "
+                },
+                "options": {
+                  "keepOnlySet": true
+                }
+              },
+              "credentials": {}
+            }
+          ],
+          "connections": {
+            "Cron Trigger": "HTTP Request",
+            "HTTP Request": "Set"
+          },
+          "settings": {
+            "executionOrder": "v1"
+          }
+        },
+        "status": "active",
+        "n8nWorkflowId": "xVlil59MddcLeUOc",
+        "active": true,
+        "deploymentError": null,
+        "createdAt": "2026-06-28T14:49:03.360Z",
+        "updatedAt": "2026-06-28T14:49:04.891Z",
+        "nodes": [
+          {
+            "id": "node-1",
+            "name": "Cron Trigger",
+            "type": "n8n-nodes-base.scheduleTrigger",
+            "typeVersion": 1,
+            "position": [
+              250,
+              300
+            ],
+            "parameters": {
+              "cronExpression": "0 0 0 * * 0",
+              "immediately": false
+            },
+            "credentials": {}
+          },
+          {
+            "id": "node-2",
+            "name": "HTTP Request",
+            "type": "n8n-nodes-base.httpRequest",
+            "typeVersion": 1,
+            "position": [
+              500,
+              300
+            ],
+            "parameters": {
+              "url": "https://www.linkedin.com/in/siddhikurne/",
+              "options": {
+                "headers": {
+                  "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/74.0.3729.169 Safari/537.3"
+                }
+              }
+            },
+            "credentials": {}
+          },
+          {
+            "id": "node-3",
+            "name": "Set",
+            "type": "n8n-nodes-base.set",
+            "typeVersion": 1,
+            "position": [
+              750,
+              300
+            ],
+            "parameters": {
+              "values": {
+                "profileViews": "={{$node[\"HTTP Request\"].data}}",
+                "text": "Profile Views: "
+              },
+              "options": {
+                "keepOnlySet": true
+              }
+            },
+            "credentials": {}
+          }
+        ],
+        "connections": {
+          "Cron Trigger": "HTTP Request",
+          "HTTP Request": "Set"
+        }
+      },
+      "n8nId": "xVlil59MddcLeUOc"
+    },
+    "model_name": null,
+    "tokens_used": null
   }
 ]

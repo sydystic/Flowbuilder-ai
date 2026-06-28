@@ -1,33 +1,39 @@
 import React, { useState, useEffect } from 'react';
-import { useAuth } from '../contexts/AuthContext';
+import { useNavigate } from 'react-router-dom';
 import Header from '../components/Header';
 import Sidebar from '../components/Sidebar';
 import Toast from '../components/Toast';
+import axios from 'axios';
 
-const AVATAR_PRESETS = [
-  'https://lh3.googleusercontent.com/aida-public/AB6AXuBkWlDbCQnjRS8tZsr_5JP_S3UqPb3KjB55ThqKgI9G17LBBvW9bA7xHncGQe-s2UtATJPfqBbITMBH_j3WXc9GcY5GjdtxlCAarjAuzgi5Q0oZvzyhOYhlYkYIbrs526etpTdW1FAzOKUaM5d44N8P6Iaq2ipUorVOBi2uA8zJNhXIvYOHpM_Qcgkyiu_ctlJt_9okTfAkd0MJHs0zgnTEyI4CwIxggOCvjylNKySUHoSaBRDnFWQybPnXuz72ncNwbQ7zN6TwAIg7', // default
-  'https://images.unsplash.com/photo-1534528741775-53994a69daeb?w=150&auto=format&fit=crop&q=80',
-  'https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=150&auto=format&fit=crop&q=80',
-  'https://images.unsplash.com/photo-1494790108377-be9c29b29330?w=150&auto=format&fit=crop&q=80',
-  'https://images.unsplash.com/photo-1500648767791-00dcc994a43e?w=150&auto=format&fit=crop&q=80',
-  'https://images.unsplash.com/photo-1438761681033-6461ffad8d80?w=150&auto=format&fit=crop&q=80'
-];
-
-export default function AccountScreen() {
-  const { user, profile, logout, updateProfile } = useAuth();
+export default function SettingsScreen() {
+  const navigate = useNavigate();
   const [toasts, setToasts] = useState([]);
-  const [isLoggingOut, setIsLoggingOut] = useState(false);
-  const [isSaving, setIsSaving] = useState(false);
-
-  const [fullName, setFullName] = useState('');
-  const [avatarUrl, setAvatarUrl] = useState('');
+  const [theme, setTheme] = useState(localStorage.getItem('flowbuilder_theme') || 'light');
+  const [config, setConfig] = useState({
+    aiProvider: 'Loading configurations...',
+    n8nUrl: 'Loading configurations...',
+    demoMode: true
+  });
+  const [isLoading, setIsLoading] = useState(true);
 
   useEffect(() => {
-    if (profile) {
-      setFullName(profile.full_name || '');
-      setAvatarUrl(profile.avatar_url || AVATAR_PRESETS[0]);
-    }
-  }, [profile]);
+    const fetchConfig = async () => {
+      try {
+        const res = await axios.get('/api/config');
+        setConfig(res.data);
+      } catch (err) {
+        console.error('Error fetching backend config:', err);
+        setConfig({
+          aiProvider: 'Default (Offline Simulation)',
+          n8nUrl: 'http://localhost:5678',
+          demoMode: true
+        });
+      } finally {
+        setIsLoading(false);
+      }
+    };
+    fetchConfig();
+  }, []);
 
   const showToast = (message, type = 'success') => {
     const id = Date.now();
@@ -37,131 +43,82 @@ export default function AccountScreen() {
     setToasts((prev) => prev.filter((t) => t.id !== id));
   };
 
-  const handleLogout = async () => {
-    if (isLoggingOut) return;
-    setIsLoggingOut(true);
-    try {
-      await logout();
-      showToast('Logged out successfully.');
-    } catch (err) {
-      console.error(err);
-      showToast('Logout failed.', 'error');
-      setIsLoggingOut(false);
+  const handleSaveSettings = () => {
+    // Persist theme choice
+    localStorage.setItem('flowbuilder_theme', theme);
+    if (theme === 'dark') {
+      document.documentElement.classList.add('dark');
+    } else {
+      document.documentElement.classList.remove('dark');
     }
+    showToast('Preferences saved successfully!');
+    // Trigger global event in case header needs to update immediately
+    window.dispatchEvent(new Event('flowbuilder_notifications_updated'));
   };
-
-  const handleSaveProfile = async (e) => {
-    e.preventDefault();
-    if (!fullName.trim() || isSaving) return;
-    setIsSaving(true);
-    try {
-      await updateProfile(fullName, avatarUrl);
-      showToast('Profile updated successfully!');
-      // Dispatch event to update Header notifications unread count badge (and sync other assets)
-      window.dispatchEvent(new Event('flowbuilder_notifications_updated'));
-    } catch (err) {
-      console.error(err);
-      showToast(err.response?.data?.error || 'Failed to update profile.', 'error');
-    } finally {
-      setIsSaving(false);
-    }
-  };
-
-  const email = user?.email || profile?.email || '';
 
   return (
     <div className="app-shell flex h-screen flex-col overflow-hidden text-[#000000]">
-      <Header activeTab="account" />
-      
+      <Header activeTab="settings" />
+
       <div className="flex h-full flex-1 overflow-hidden">
-        <Sidebar activeTab="account" />
+        <Sidebar activeTab="settings" />
 
         <main className="flex-1 overflow-y-auto px-8 py-8 bg-[#f6f5f4]">
           <div className="mx-auto max-w-2xl bg-white rounded-xl border border-[#e6e6e6] p-8 shadow-sm">
-            <h1 className="text-[30px] font-semibold tracking-[-0.015em] text-ink">
-              User Profile
-            </h1>
+            <div className="flex items-center gap-3 mb-1">
+              <button
+                onClick={() => navigate(-1)}
+                className="flex h-8 w-8 items-center justify-center rounded-lg text-ink-muted hover:bg-black/[0.05] transition-colors"
+                type="button"
+                aria-label="Go back"
+              >
+                <span className="material-symbols-outlined text-[20px]">arrow_back</span>
+              </button>
+              <h1 className="text-[30px] font-semibold tracking-[-0.015em] text-ink">
+                Settings
+              </h1>
+            </div>
             <p className="mt-1 text-sm text-ink-muted">
-              Manage your personal information and active session.
+              Configure FlowBuilder preferences and configurations.
             </p>
 
-            <form onSubmit={handleSaveProfile} className="mt-8 space-y-6">
-              {/* Profile Card / Selector */}
-              <div className="flex flex-col sm:flex-row items-center gap-6 border-b border-[#e6e6e6] pb-6">
-                <img
-                  src={avatarUrl || AVATAR_PRESETS[0]}
-                  alt={fullName || 'Avatar'}
-                  className="h-20 w-20 rounded-2xl object-cover border border-[#e6e6e6] shadow-sm"
-                />
-                <div className="flex-1 space-y-2">
-                  <span className="text-xs font-semibold text-ink-muted uppercase tracking-wider block">Choose Avatar Preset</span>
-                  <div className="flex flex-wrap gap-2">
-                    {AVATAR_PRESETS.map((preset, index) => (
-                      <button
-                        key={index}
-                        type="button"
-                        onClick={() => setAvatarUrl(preset)}
-                        className={`h-10 w-10 rounded-lg overflow-hidden border-2 transition-all ${
-                          avatarUrl === preset ? 'border-primary scale-105 shadow-sm' : 'border-transparent opacity-70 hover:opacity-100'
-                        }`}
-                      >
-                        <img src={preset} alt={`Preset ${index}`} className="h-full w-full object-cover" />
-                      </button>
-                    ))}
-                  </div>
-                </div>
-              </div>
-
-              {/* Editable Name */}
+            <div className="mt-8 space-y-6">
               <div>
-                <label className="text-xs font-semibold text-ink-muted uppercase tracking-wider">Full Name</label>
-                <input
-                  type="text"
-                  required
-                  placeholder="e.g. Jane Doe"
-                  value={fullName}
-                  onChange={(e) => setFullName(e.target.value)}
+                <label className="text-xs font-semibold text-ink-muted uppercase tracking-wider">Appearance Mode</label>
+                <select
+                  value={theme}
+                  onChange={(e) => setTheme(e.target.value)}
                   className="notion-input mt-1 w-full"
-                />
+                >
+                  <option value="light">Light Mode (Notion Warm Paper)</option>
+                  <option value="dark">Dark Mode (Notion Charcoal)</option>
+                </select>
               </div>
 
-              {/* Read-only details */}
-              <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                <div>
-                  <span className="text-xs font-semibold text-ink-muted uppercase tracking-wider">Email Address</span>
-                  <p className="mt-1 text-sm font-medium text-ink bg-[#f6f5f4] px-3 py-2 rounded-md border border-[#e6e6e6] select-all">
-                    {email}
-                  </p>
-                </div>
-
-                <div>
-                  <span className="text-xs font-semibold text-ink-muted uppercase tracking-wider">User ID (Supabase Auth)</span>
-                  <p className="mt-1 text-xs font-mono text-ink bg-[#f6f5f4] px-3 py-2 rounded-md border border-[#e6e6e6] break-all select-all">
-                    {user?.id || ''}
-                  </p>
-                </div>
+              <div>
+                <label className="text-xs font-semibold text-ink-muted uppercase tracking-wider">AI Provider</label>
+                <p className="mt-1 text-sm font-medium text-ink bg-[#f6f5f4] px-3 py-2 rounded-md border border-[#e6e6e6] select-all">
+                  {isLoading ? 'Fetching AI Provider...' : `${config.aiProvider} (configured via backend)`}
+                </p>
               </div>
 
-              <div className="pt-4 border-t border-[#e6e6e6] flex flex-wrap items-center justify-between gap-4">
+              <div>
+                <label className="text-xs font-semibold text-ink-muted uppercase tracking-wider">n8n Instance URL</label>
+                <p className="mt-1 text-sm font-medium text-ink bg-[#f6f5f4] px-3 py-2 rounded-md border border-[#e6e6e6] select-all font-mono">
+                  {isLoading ? 'Fetching n8n URL...' : `${config.n8nUrl} (configured via backend)`}
+                </p>
+              </div>
+
+              <div className="pt-4 border-t border-[#e6e6e6] flex justify-end gap-2">
                 <button
-                  onClick={handleLogout}
-                  disabled={isLoggingOut}
-                  className="notion-button-secondary bg-[#93000a]/10 hover:bg-[#93000a]/20 text-[#93000a] flex items-center justify-center gap-1.5 h-10 px-4 font-semibold"
+                  onClick={handleSaveSettings}
+                  className="notion-button h-10 px-4"
                   type="button"
                 >
-                  <span className="material-symbols-outlined text-[19px]">logout</span>
-                  {isLoggingOut ? 'Logging out...' : 'Log Out'}
-                </button>
-
-                <button
-                  type="submit"
-                  disabled={isSaving || !fullName.trim()}
-                  className="notion-button h-10 px-4"
-                >
-                  {isSaving ? 'Saving...' : 'Save Profile'}
+                  Save Preferences
                 </button>
               </div>
-            </form>
+            </div>
 
           </div>
         </main>

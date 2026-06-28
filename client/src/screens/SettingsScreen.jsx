@@ -1,10 +1,12 @@
 import React, { useState, useEffect } from 'react';
+import { useNavigate } from 'react-router-dom';
 import Header from '../components/Header';
 import Sidebar from '../components/Sidebar';
 import Toast from '../components/Toast';
 import axios from 'axios';
 
 export default function SettingsScreen() {
+  const navigate = useNavigate();
   const [toasts, setToasts] = useState([]);
   const [theme, setTheme] = useState(localStorage.getItem('flowbuilder_theme') || 'light');
   const [config, setConfig] = useState({
@@ -57,15 +59,25 @@ export default function SettingsScreen() {
   return (
     <div className="app-shell flex h-screen flex-col overflow-hidden text-[#000000]">
       <Header activeTab="settings" />
-      
+
       <div className="flex h-full flex-1 overflow-hidden">
         <Sidebar activeTab="settings" />
 
         <main className="flex-1 overflow-y-auto px-8 py-8 bg-[#f6f5f4]">
           <div className="mx-auto max-w-2xl bg-white rounded-xl border border-[#e6e6e6] p-8 shadow-sm">
-            <h1 className="text-[30px] font-semibold tracking-[-0.015em] text-ink">
-              Settings
-            </h1>
+            <div className="flex items-center gap-3 mb-1">
+              <button
+                onClick={() => navigate(-1)}
+                className="flex h-8 w-8 items-center justify-center rounded-lg text-ink-muted hover:bg-black/[0.05] transition-colors"
+                type="button"
+                aria-label="Go back"
+              >
+                <span className="material-symbols-outlined text-[20px]">arrow_back</span>
+              </button>
+              <h1 className="text-[30px] font-semibold tracking-[-0.015em] text-ink">
+                Settings
+              </h1>
+            </div>
             <p className="mt-1 text-sm text-ink-muted">
               Configure FlowBuilder preferences and configurations.
             </p>

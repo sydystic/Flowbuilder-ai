@@ -1,5 +1,58 @@
 import React, { useEffect, useRef, useState } from 'react';
 
+// Lightweight markdown renderer — handles bold, italic, inline-code, links, lists
+function MarkdownText({ text }) {
+  if (!text) return null;
+
+  const renderInline = (line, baseKey) => {
+    const parts = [];
+    const pattern = /(\*\*(.+?)\*\*|\*(.+?)\*|`([^`]+)`|\[([^\]]+)\]\((https?:\/\/[^\)]+)\))/g;
+    let last = 0;
+    let match;
+    let k = 0;
+    while ((match = pattern.exec(line)) !== null) {
+      if (match.index > last) parts.push(<span key={`${baseKey}-t${k++}`}>{line.slice(last, match.index)}</span>);
+      if (match[2]) parts.push(<strong key={`${baseKey}-b${k++}`} className="font-semibold text-ink">{match[2]}</strong>);
+      else if (match[3]) parts.push(<em key={`${baseKey}-i${k++}`}>{match[3]}</em>);
+      else if (match[4]) parts.push(<code key={`${baseKey}-c${k++}`} className="rounded bg-black/[0.06] px-1.5 py-0.5 font-mono text-[13px] text-ink">{match[4]}</code>);
+      else if (match[5] && match[6]) parts.push(<a key={`${baseKey}-l${k++}`} href={match[6]} target="_blank" rel="noopener noreferrer" className="text-primary underline underline-offset-2 hover:opacity-80">{match[5]}</a>);
+      last = match.index + match[0].length;
+    }
+    if (last < line.length) parts.push(<span key={`${baseKey}-e${k}`}>{line.slice(last)}</span>);
+    return parts;
+  };
+
+  const lines = text.split('\n');
+  const elements = [];
+  let i = 0;
+  let ek = 0;
+  while (i < lines.length) {
+    const line = lines[i];
+    if (/^\d+\.\s/.test(line)) {
+      const items = [];
+      while (i < lines.length && /^\d+\.\s/.test(lines[i])) {
+        items.push(<li key={i} className="ml-4 list-decimal text-[15px] leading-7 text-ink-secondary">{renderInline(lines[i].replace(/^\d+\.\s/, ''), `ol${i}`)}</li>);
+        i++;
+      }
+      elements.push(<ol key={ek++} className="my-1.5 space-y-0.5">{items}</ol>);
+    } else if (/^[-*•]\s/.test(line)) {
+      const items = [];
+      while (i < lines.length && /^[-*•]\s/.test(lines[i])) {
+        items.push(<li key={i} className="ml-4 list-disc text-[15px] leading-7 text-ink-secondary">{renderInline(lines[i].replace(/^[-*•]\s/, ''), `ul${i}`)}</li>);
+        i++;
+      }
+      elements.push(<ul key={ek++} className="my-1.5 space-y-0.5">{items}</ul>);
+    } else if (line.trim() === '') {
+      elements.push(<div key={ek++} className="h-2" />);
+      i++;
+    } else {
+      elements.push(<p key={ek++} className="text-[15px] leading-7 text-ink-secondary">{renderInline(line, `p${ek}`)}</p>);
+      i++;
+    }
+  }
+  return <div className="space-y-0.5">{elements}</div>;
+}
+
 export default function ConversationHistory({ messages, onAnswerClarify, onSelectTemplate, isLoading }) {
   const bottomRef = useRef(null);
   const [clarifyingAnswers, setClarifyingAnswers] = useState({});
@@ -54,7 +107,7 @@ export default function ConversationHistory({ messages, onAnswerClarify, onSelec
                   )}
                 </div>
 
-                <p className="whitespace-pre-line text-[15px] leading-7 text-ink-secondary">{msg.text}</p>
+                <MarkdownText text={msg.text} />
 
                 {msg.messageType === 'clarifying_question' && msg.questions && !msg.answered && (
                   <div className="mt-4 rounded-xl bg-white/72 p-4 shadow-[0_1px_2px_rgba(0,0,0,0.04)]">

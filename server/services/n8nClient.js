@@ -11,6 +11,161 @@ const client = axios.create({
   timeout: parseInt(process.env.N8N_TIMEOUT_MS || "10000", 10),
 });
 
+const validateWorkflow = (wf) => {
+  if (!wf || typeof wf !== "object") {
+    throw new Error("Workflow must be a valid JSON object");
+  }
+  if (!Array.isArray(wf.nodes)) {
+    throw new Error("Workflow must contain a 'nodes' array");
+  }
+  for (const node of wf.nodes) {
+    if (!node.name) {
+      throw new Error("Every node must have a 'name' property");
+    }
+    if (!node.type) {
+      throw new Error(`Node '${node.name || "unnamed"}' must have a 'type' property`);
+    }
+  }
+  if (wf.connections && (typeof wf.connections !== "object" || Array.isArray(wf.connections))) {
+    throw new Error("'connections' must be a JSON object");
+  }
+  return true;
+};
+
+const normalizeConnections = (connections) => {
+  const normalized = {};
+  if (!connections || typeof connections !== "object" || Array.isArray(connections)) {
+    return normalized;
+  }
+
+  for (const [sourceNode, target] of Object.entries(connections)) {
+    if (!target) continue;
+
+    // Case 1: Target is a simple string -> "NodeB"
+    if (typeof target === "string") {
+      normalized[sourceNode] = {
+        main: [
+          [
+            {
+              node: target,
+              type: "main",
+              index: 0,
+            },
+          ],
+        ],
+      };
+      continue;
+    }
+
+    // Case 2: Target is an array
+    if (Array.isArray(target)) {
+      if (target.length === 0) continue;
+
+      // Subcase 2.1: Array of strings -> ["NodeB", "NodeC"]
+      if (typeof target[0] === "string") {
+        normalized[sourceNode] = {
+          main: [
+            target.map((nodeName) => ({
+              node: nodeName,
+              type: "main",
+              index: 0,
+            })),
+          ],
+        };
+      }
+      // Subcase 2.2: Double-nested array of strings -> [["NodeB", "NodeC"]]
+      else if (Array.isArray(target[0]) && typeof target[0][0] === "string") {
+        normalized[sourceNode] = {
+          main: target.map((innerArray) =>
+            innerArray.map((nodeName) => ({
+              node: nodeName,
+              type: "main",
+              index: 0,
+            }))
+          ),
+        };
+      }
+      // Subcase 2.3: Array of objects -> [ { node: "NodeB", type: "main", index: 0 } ]
+      else if (typeof target[0] === "object" && target[0] !== null && !Array.isArray(target[0])) {
+        normalized[sourceNode] = {
+          main: [
+            target.map((conn) => ({
+              node: conn.node,
+              type: conn.type || "main",
+              index: conn.index !== undefined ? conn.index : 0,
+            })),
+          ],
+        };
+      }
+      // Subcase 2.4: Array of arrays of objects
+      else if (Array.isArray(target[0]) && typeof target[0][0] === "object" && target[0][0] !== null) {
+        normalized[sourceNode] = {
+          main: target.map((innerArray) =>
+            innerArray.map((conn) => ({
+              node: conn.node,
+              type: conn.type || "main",
+              index: conn.index !== undefined ? conn.index : 0,
+            }))
+          ),
+        };
+      }
+      continue;
+    }
+
+    // Case 3: Target is an object (e.g. { main: ... } or { customPort: ... })
+    if (typeof target === "object" && target !== null) {
+      const ports = {};
+      for (const [portType, portConns] of Object.entries(target)) {
+        if (!Array.isArray(portConns)) {
+          if (typeof portConns === "object" && portConns !== null) {
+            ports[portType] = [[{
+              node: portConns.node,
+              type: portConns.type || "main",
+              index: portConns.index !== undefined ? portConns.index : 0,
+            }]];
+          }
+          continue;
+        }
+
+        if (portConns.length === 0) {
+          ports[portType] = [[]];
+          continue;
+        }
+
+        // Subcase 3.1: portConns is a single-nested array of objects
+        if (!Array.isArray(portConns[0])) {
+          ports[portType] = [
+            portConns.map((conn) => {
+              if (typeof conn === "string") return { node: conn, type: "main", index: 0 };
+              return {
+                node: conn.node,
+                type: conn.type || "main",
+                index: conn.index !== undefined ? conn.index : 0,
+              };
+            }),
+          ];
+        }
+        // Subcase 3.2: portConns is a double-nested array of objects/strings
+        else {
+          ports[portType] = portConns.map((innerArray) =>
+            innerArray.map((conn) => {
+              if (typeof conn === "string") return { node: conn, type: "main", index: 0 };
+              return {
+                node: conn.node,
+                type: conn.type || "main",
+                index: conn.index !== undefined ? conn.index : 0,
+              };
+            })
+          );
+        }
+      }
+      normalized[sourceNode] = ports;
+    }
+  }
+
+  return normalized;
+};
+
 const n8nClient = {
   async listWorkflows() {
     const res = await client.get("/workflows");
@@ -20,8 +175,14 @@ const n8nClient = {
   async createWorkflow(workflowJson) {
     const crypto = require("crypto");
 
+    // Validate workflow before deployment
+    try {
+      validateWorkflow(workflowJson);
+    } catch (valErr) {
+      throw new Error(`Validation failed: ${valErr.message}`);
+    }
+
     // Known-bad parameter keys that cause "Could not find property option" in n8n
-    // These are from outdated schema versions that n8n no longer accepts
     const BANNED_PARAM_KEYS = new Set([
       "select",        // old slack field (replaced by resource/operation)
       "channelId",     // old slack field (replaced by channel.__rl)
@@ -45,58 +206,32 @@ const n8nClient = {
       return cleaned;
     };
 
-    const nodes = (workflowJson.nodes || []).map((node) => ({
-      id: crypto.randomUUID(),
-      name: node.name,
-      type: node.type,
-      typeVersion: node.typeVersion || 1,
-      position: node.position || [250, 300],
-      parameters: sanitizeParams(node.parameters || {}),
-      credentials: node.credentials || {},
-    }));
+    const nodes = (workflowJson.nodes || []).map((node) => {
+      const mapped = {
+        id: node.id || crypto.randomUUID(),
+        name: node.name,
+        type: node.type,
+        typeVersion: node.typeVersion || 1,
+        position: node.position || [250, 300],
+        parameters: sanitizeParams(node.parameters || {}),
+        credentials: node.credentials || {},
+      };
+      if (node.meta) mapped.meta = node.meta;
+      return mapped;
+    });
 
-    // Normalize connections to n8n's standard nested structure if simplified
-    const normalizedConnections = {};
-    if (workflowJson.connections) {
-      for (const [sourceNode, target] of Object.entries(workflowJson.connections)) {
-        if (typeof target === "string") {
-          // AI generated simplified connection: "NodeA": "NodeB"
-          normalizedConnections[sourceNode] = {
-            main: [
-              [
-                {
-                  node: target,
-                  type: "main",
-                  index: 0,
-                },
-              ],
-            ],
-          };
-        } else if (Array.isArray(target) && target.length > 0 && typeof target[0] === "string") {
-          // AI generated simplified array: "NodeA": ["NodeB"]
-          normalizedConnections[sourceNode] = {
-            main: [
-              target.map((nodeName) => ({
-                node: nodeName,
-                type: "main",
-                index: 0,
-              })),
-            ],
-          };
-        } else {
-          // Already in n8n's format or custom object structure
-          normalizedConnections[sourceNode] = target;
-        }
-      }
-    }
+    const normalizedConnections = normalizeConnections(workflowJson.connections);
 
     const payload = {
       name: workflowJson.name || "Untitled Workflow",
       nodes: nodes,
       connections: normalizedConnections,
-      settings: { executionOrder: "v1" },
-      active: false,
+      settings: workflowJson.settings || { executionOrder: "v1" },
     };
+
+    // Forward optional properties if present
+    if (workflowJson.pinData) payload.pinData = workflowJson.pinData;
+    if (workflowJson.meta) payload.meta = workflowJson.meta;
 
     console.log("Sending to n8n — node count:", payload.nodes.length);
     console.log("Full payload:", JSON.stringify(payload, null, 2));
@@ -105,7 +240,6 @@ const n8nClient = {
       const res = await client.post("/workflows", payload);
       return res.data;
     } catch (err) {
-      // Log the FULL axios error including n8n's response body
       console.error("n8n API error status:", err.response?.status);
       console.error("n8n API error body:", JSON.stringify(err.response?.data, null, 2));
       console.error("n8n API error message:", err.message);

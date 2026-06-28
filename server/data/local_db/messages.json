@@ -1,11 +1,11 @@
 [
   {
-    "id": "7ed872c0-7e29-4c1a-97d6-4db1d4c45061",
-    "created_at": "2026-06-25T12:29:56.325Z",
-    "updated_at": "2026-06-25T12:29:56.325Z",
-    "conversation_id": "664338d8-b6b4-41f5-9685-996f23f2d4f3",
+    "id": "fb7d7488-ea12-4607-9b4b-f33533fbc668",
+    "created_at": "2026-06-28T16:15:18.170Z",
+    "updated_at": "2026-06-28T16:15:18.170Z",
+    "conversation_id": "13f72bb3-18c7-4744-ac0c-f060cd9ab1fe",
     "role": "user",
-    "content": "Create a slack alert for new github issues",
+    "content": "Send a Slack message when a Google Sheet row is added",
     "meta": {
       "messageType": "message",
       "workflow": null,
@@ -15,53 +15,47 @@
     "tokens_used": null
   },
   {
-    "id": "41f538d2-3b95-4dd6-b8ce-a96191e1ccbe",
-    "created_at": "2026-06-25T12:29:58.565Z",
-    "updated_at": "2026-06-25T12:29:58.565Z",
-    "conversation_id": "664338d8-b6b4-41f5-9685-996f23f2d4f3",
+    "id": "63cb17d0-9c77-4eff-9fbc-8b04a2b1b1f9",
+    "created_at": "2026-06-28T16:15:20.670Z",
+    "updated_at": "2026-06-28T16:15:20.670Z",
+    "conversation_id": "13f72bb3-18c7-4744-ac0c-f060cd9ab1fe",
     "role": "ai",
-    "content": "To create a Slack alert for new GitHub issues, we need to clarify a few details. We will use GitHub as the trigger service and Slack as the action service. \n   The event that should trigger this workflow is the creation of a new issue on a specific GitHub repository. \n   The alert will be sent to a Slack channel or user.",
+    "content": "I'll build a workflow that sends a Slack message whenever a new row is added to a Google Sheet. I'm assuming we'll monitor all sheets in the Google Sheet file, and send a message to the #general channel with the content of all columns in the new row. If you want to monitor a specific sheet or send to a different channel, please let me know.",
     "meta": {
       "messageType": "clarifying_question",
       "workflow": {
         "spec": {
           "trigger": {
-            "service": "GitHub",
-            "event": "New Issue",
+            "service": "Google Sheets",
+            "event": "New row added",
             "sheetName": "[unknown]",
-            "details": "Repository name, issue filters (e.g. labels, assignees)"
+            "details": "Monitor all sheets"
           },
           "action": {
             "service": "Slack",
-            "action": "Send Message",
-            "channel": "[unknown]",
-            "details": "Message content, formatting"
+            "action": "Send message",
+            "channel": "#general",
+            "details": "Include all columns"
           }
         },
         "isReadyToGenerate": false,
         "questions": [
-          "Which GitHub repository should we monitor for new issues?",
-          "What Slack channel or user should receive the alert?",
-          "Should the alert include any specific details about the issue, such as title, description, or labels?"
+          "Which Google Sheet file would you like to monitor?"
         ],
-        "suggestedTemplates": [
-          "New Issue Alert: Send a direct message to the repository owner",
-          "New Issue Alert: Post a message in a specific Slack channel with issue details",
-          "New Issue Alert: Send a notification to a Slack channel with a custom message"
-        ]
+        "suggestedTemplates": []
       },
       "n8nId": null
     },
     "model_name": "llama-3.3-70b-versatile",
-    "tokens_used": 1001
+    "tokens_used": 912
   },
   {
-    "id": "3c44f4c7-8b7a-465e-8af5-8306be5c3fb5",
-    "created_at": "2026-06-25T12:59:09.658Z",
-    "updated_at": "2026-06-25T12:59:09.658Z",
-    "conversation_id": "2ebaffa3-562b-437a-949c-2c2845d93526",
+    "id": "dddaec8c-e118-4dea-b5b0-d3f0265dec88",
+    "created_at": "2026-06-28T16:15:36.425Z",
+    "updated_at": "2026-06-28T16:15:36.425Z",
+    "conversation_id": "13f72bb3-18c7-4744-ac0c-f060cd9ab1fe",
     "role": "user",
-    "content": "Post to Discord when a new RSS item matches a keyword",
+    "content": "Sales Data",
     "meta": {
       "messageType": "message",
       "workflow": null,
@@ -71,466 +65,27 @@
     "tokens_used": null
   },
   {
-    "id": "0caad466-02ad-4caf-9e0e-86566cec1e9d",
-    "created_at": "2026-06-25T12:59:10.996Z",
-    "updated_at": "2026-06-25T12:59:10.996Z",
-    "conversation_id": "2ebaffa3-562b-437a-949c-2c2845d93526",
+    "id": "73f31332-4e18-4261-a9e0-08a010e22ae9",
+    "created_at": "2026-06-28T16:15:37.379Z",
+    "updated_at": "2026-06-28T16:15:37.379Z",
+    "conversation_id": "13f72bb3-18c7-4744-ac0c-f060cd9ab1fe",
     "role": "ai",
-    "content": "To create a workflow that posts to Discord when a new RSS item matches a keyword, we need to clarify a few details. We will use the RSS feed as the trigger and Discord as the action. Here are the initial steps and questions to refine the specification:",
-    "meta": {
-      "messageType": "clarifying_question",
-      "workflow": {
-        "spec": {
-          "trigger": {
-            "service": "RSS",
-            "event": "New Item",
-            "sheetName": "[unknown]",
-            "details": "Matches a keyword"
-          },
-          "action": {
-            "service": "Discord",
-            "action": "Send Message",
-            "channel": "[unknown]",
-            "details": "[unknown]"
-          }
-        },
-        "isReadyToGenerate": false,
-        "questions": [
-          "What is the URL of the RSS feed you want to monitor?",
-          "What keyword are you looking for in the RSS items?",
-          "Which Discord channel should the message be posted to?"
-        ],
-        "suggestedTemplates": [
-          "Monitor RSS feed for specific keywords and send email notifications",
-          "Post new RSS items to a Slack channel",
-          "Trigger a workflow when a new item appears in an RSS feed"
-        ]
-      },
-      "n8nId": null
-    },
-    "model_name": "llama-3.3-70b-versatile",
-    "tokens_used": 956
-  },
-  {
-    "id": "d644a12b-12a3-48cf-9e72-02c9215303cf",
-    "created_at": "2026-06-25T12:59:14.921Z",
-    "updated_at": "2026-06-25T12:59:14.921Z",
-    "conversation_id": "2ebaffa3-562b-437a-949c-2c2845d93526",
-    "role": "user",
-    "content": "Trigger a workflow when a new item appears in an RSS feed",
-    "meta": {
-      "messageType": "message",
-      "workflow": null,
-      "n8nId": null
-    },
-    "model_name": null,
-    "tokens_used": null
-  },
-  {
-    "id": "f4415a0b-1494-422f-b8fb-15c9944d7582",
-    "created_at": "2026-06-25T12:59:16.137Z",
-    "updated_at": "2026-06-25T12:59:16.138Z",
-    "conversation_id": "2ebaffa3-562b-437a-949c-2c2845d93526",
-    "role": "ai",
-    "content": "To trigger a workflow when a new item appears in an RSS feed and post to Discord when it matches a keyword, let's break down the process. We'll need to know the RSS feed URL and the keyword to filter items. The workflow will then send a message to a Discord channel with the details of the matching item.",
-    "meta": {
-      "messageType": "clarifying_question",
-      "workflow": {
-        "spec": {
-          "trigger": {
-            "service": "RSS",
-            "event": "New Item",
-            "sheetName": "[unknown]",
-            "details": "RSS feed URL: [unknown], filter by keyword: [unknown]"
-          },
-          "action": {
-            "service": "Discord",
-            "action": "Send Message",
-            "channel": "[unknown]",
-            "details": "Message content: [unknown], formatting: [unknown]"
-          }
-        },
-        "isReadyToGenerate": false,
-        "questions": [
-          "What is the URL of the RSS feed you want to monitor?",
-          "What keyword do you want to use to filter new RSS items?",
-          "Which Discord channel should the workflow post the matching items to?"
-        ],
-        "suggestedTemplates": [
-          "Monitor RSS feed for new items and send email notifications",
-          "Post new RSS items to a Slack channel",
-          "Trigger a workflow when a new item appears in a specific RSS feed category"
-        ]
-      },
-      "n8nId": null
-    },
-    "model_name": "llama-3.3-70b-versatile",
-    "tokens_used": 1068
-  },
-  {
-    "id": "50c5501d-48ee-4c70-9a8f-8af4d6103280",
-    "created_at": "2026-06-25T12:59:55.847Z",
-    "updated_at": "2026-06-25T12:59:55.847Z",
-    "conversation_id": "664338d8-b6b4-41f5-9685-996f23f2d4f3",
-    "role": "user",
-    "content": "New Issue Alert: Post a message in a specific Slack channel with issue details",
-    "meta": {
-      "messageType": "message",
-      "workflow": null,
-      "n8nId": null
-    },
-    "model_name": null,
-    "tokens_used": null
-  },
-  {
-    "id": "16d688b8-5906-4209-96bc-ae833663f34f",
-    "created_at": "2026-06-25T12:59:58.310Z",
-    "updated_at": "2026-06-25T12:59:58.310Z",
-    "conversation_id": "664338d8-b6b4-41f5-9685-996f23f2d4f3",
-    "role": "ai",
-    "content": "To create a Slack alert for new GitHub issues, we need to know: \n   * Which GitHub repository to monitor for new issues?\n   * What details about the issue should be included in the Slack message (e.g. title, description, assignee)?\n   * Which Slack channel should the alert be posted to?",
-    "meta": {
-      "messageType": "clarifying_question",
-      "workflow": {
-        "spec": {
-          "trigger": {
-            "service": "GitHub",
-            "event": "New Issue",
-            "sheetName": "[unknown]",
-            "details": "[unknown]"
-          },
-          "action": {
-            "service": "Slack",
-            "action": "Post Message",
-            "channel": "[unknown]",
-            "details": "[unknown]"
-          }
-        },
-        "isReadyToGenerate": false,
-        "questions": [
-          "Which GitHub repository should be monitored for new issues?",
-          "What details about the issue should be included in the Slack message?"
-        ],
-        "suggestedTemplates": [
-          "New Issue Alert: Post issue title and description in a Slack channel",
-          "New Issue Alert: Post issue title, description, and assignee in a Slack channel",
-          "New Issue Alert: Post issue title and link to the issue in a Slack channel"
-        ]
-      },
-      "n8nId": null
-    },
-    "model_name": "llama-3.3-70b-versatile",
-    "tokens_used": 1060
-  },
-  {
-    "id": "6778791e-e800-4ad9-b860-010f75264041",
-    "created_at": "2026-06-25T13:18:04.013Z",
-    "updated_at": "2026-06-25T13:18:04.013Z",
-    "conversation_id": "4241fcce-6c3a-4100-b245-2e7f69eb20b6",
-    "role": "user",
-    "content": "Send a Slack alert when a GitHub issue is labeled \"urgent\"",
-    "meta": {
-      "messageType": "message",
-      "workflow": null,
-      "n8nId": null
-    },
-    "model_name": null,
-    "tokens_used": null
-  },
-  {
-    "id": "e2e389e6-d098-473c-a034-c8e4908f2fc4",
-    "created_at": "2026-06-25T13:18:05.322Z",
-    "updated_at": "2026-06-25T13:18:05.322Z",
-    "conversation_id": "4241fcce-6c3a-4100-b245-2e7f69eb20b6",
-    "role": "ai",
-    "content": "To create a workflow that sends a Slack alert when a GitHub issue is labeled 'urgent', we need to clarify a few details. We will use GitHub as the trigger service and Slack as the action service.",
-    "meta": {
-      "messageType": "clarifying_question",
-      "workflow": {
-        "spec": {
-          "trigger": {
-            "service": "GitHub",
-            "event": "Issue Labeled",
-            "sheetName": "[unknown]",
-            "details": "Label: 'urgent'"
-          },
-          "action": {
-            "service": "Slack",
-            "action": "Send Message",
-            "channel": "[unknown]",
-            "details": "[unknown]"
-          }
-        },
-        "isReadyToGenerate": false,
-        "questions": [
-          "What is the name of the GitHub repository you want to monitor for 'urgent' issues?",
-          "Which Slack channel should the alert be sent to?"
-        ],
-        "suggestedTemplates": [
-          "GitHub Issue to Trello Card",
-          "GitHub Issue to Email Notification",
-          "GitHub Issue to Microsoft Teams Alert"
-        ]
-      },
-      "n8nId": null
-    },
-    "model_name": "llama-3.3-70b-versatile",
-    "tokens_used": 928
-  },
-  {
-    "id": "7b1a9683-b21f-4821-9191-9a4b15aebefe",
-    "created_at": "2026-06-25T13:18:13.607Z",
-    "updated_at": "2026-06-25T13:18:13.607Z",
-    "conversation_id": "4241fcce-6c3a-4100-b245-2e7f69eb20b6",
-    "role": "user",
-    "content": "GitHub Issue to Email Notification",
-    "meta": {
-      "messageType": "message",
-      "workflow": null,
-      "n8nId": null
-    },
-    "model_name": null,
-    "tokens_used": null
-  },
-  {
-    "id": "a5a2b3cd-6954-4df4-a1b4-de71a81a4ba1",
-    "created_at": "2026-06-25T13:18:15.003Z",
-    "updated_at": "2026-06-25T13:18:15.003Z",
-    "conversation_id": "4241fcce-6c3a-4100-b245-2e7f69eb20b6",
-    "role": "ai",
-    "content": "To create a workflow that sends an email notification when a GitHub issue is labeled 'urgent', we need to clarify a few details. \n   We will use GitHub as the trigger service and Gmail as the action service. \n   Here are some points to consider:\n   * Which GitHub repository should we monitor for issues?\n   * What is the exact label that should trigger the email (e.g. 'urgent', 'high priority')?\n   * Who should receive the email notifications?",
-    "meta": {
-      "messageType": "clarifying_question",
-      "workflow": {
-        "spec": {
-          "trigger": {
-            "service": "GitHub",
-            "event": "New Issue Labeled",
-            "details": "Label: '[unknown]', Repository: '[unknown]'"
-          },
-          "action": {
-            "service": "Gmail",
-            "action": "Send Email",
-            "channel": "[unknown]",
-            "details": "Email content: '[unknown]', Recipient: '[unknown]'"
-          }
-        },
-        "isReadyToGenerate": false,
-        "questions": [
-          "Which GitHub repository should we monitor for new issues?",
-          "What is the exact label that should trigger the email notification?"
-        ],
-        "suggestedTemplates": [
-          "GitHub Issue to Slack Notification",
-          "GitHub Issue to Microsoft Teams Notification",
-          "GitHub Issue to Trello Card Creation"
-        ]
-      },
-      "n8nId": null
-    },
-    "model_name": "llama-3.3-70b-versatile",
-    "tokens_used": 1044
-  },
-  {
-    "id": "175bd8ee-711c-4993-bb7b-371252244880",
-    "created_at": "2026-06-25T14:29:41.623Z",
-    "updated_at": "2026-06-25T14:29:41.623Z",
-    "conversation_id": "57992a91-9250-44cf-b810-2efc75cbe926",
-    "role": "user",
-    "content": "make a workflow that sends me a list of profile views on linkedin and mails me",
-    "meta": {
-      "messageType": "message",
-      "workflow": null,
-      "n8nId": null
-    },
-    "model_name": null,
-    "tokens_used": null
-  },
-  {
-    "id": "0ac2a939-0550-4cfb-b834-ff4aba67045e",
-    "created_at": "2026-06-25T14:29:43.109Z",
-    "updated_at": "2026-06-25T14:29:43.109Z",
-    "conversation_id": "57992a91-9250-44cf-b810-2efc75cbe926",
-    "role": "ai",
-    "content": "To create a workflow that sends you a list of profile views on LinkedIn and emails you, we need to clarify a few details. \n   We will be using LinkedIn and Gmail services for this workflow. \n   Here are the initial steps and questions to refine the specification: \n   1. **Trigger**: We need to determine how often you want to receive these updates. \n   2. **Action**: The action involves fetching your LinkedIn profile views and sending them via email.",
-    "meta": {
-      "messageType": "clarifying_question",
-      "workflow": {
-        "spec": {
-          "trigger": {
-            "service": "Cron",
-            "event": "On Schedule",
-            "sheetName": "[unknown]",
-            "details": "[unknown]"
-          },
-          "action": {
-            "service": "Gmail",
-            "action": "Send Email",
-            "channel": "[unknown]",
-            "details": "[unknown]"
-          }
-        },
-        "isReadyToGenerate": false,
-        "questions": [
-          "How often do you want to receive updates about your LinkedIn profile views (e.g., daily, weekly)?",
-          "What is your Gmail address where you want to receive these updates?",
-          "Do you want to include any specific details in the email, such as the number of views or viewer names?"
-        ],
-        "suggestedTemplates": [
-          "Daily LinkedIn Profile View Updates",
-          "Weekly LinkedIn Engagement Summary",
-          "Customizable LinkedIn Profile Analytics"
-        ]
-      },
-      "n8nId": null
-    },
-    "model_name": "llama-3.3-70b-versatile",
-    "tokens_used": 1013
-  },
-  {
-    "id": "25438a3d-bca2-4173-9800-b7b76df56bc7",
-    "created_at": "2026-06-25T14:30:08.335Z",
-    "updated_at": "2026-06-25T14:30:08.335Z",
-    "conversation_id": "57992a91-9250-44cf-b810-2efc75cbe926",
-    "role": "user",
-    "content": "1every week\n2.okay",
-    "meta": {
-      "messageType": "message",
-      "workflow": null,
-      "n8nId": null
-    },
-    "model_name": null,
-    "tokens_used": null
-  },
-  {
-    "id": "dc8e3df9-4cf1-45b4-a9d3-cccaeb2d3e45",
-    "created_at": "2026-06-25T14:30:09.722Z",
-    "updated_at": "2026-06-25T14:30:09.722Z",
-    "conversation_id": "57992a91-9250-44cf-b810-2efc75cbe926",
-    "role": "ai",
-    "content": "To proceed, let's break down the workflow into trigger and action components. \n   We've established that the trigger should occur **every week**. \n   For the action, we need to fetch your LinkedIn profile views and send them via email. \n   Here are a few more details to consider: \n   * How do you want to authenticate with LinkedIn to fetch your profile views? \n   * What email service do you want to use to send the updates? \n   * What format would you like the list of profile views to be in (e.g., plain text, CSV, JSON)?",
-    "meta": {
-      "messageType": "clarifying_question",
-      "workflow": {
-        "spec": {
-          "trigger": {
-            "service": "Cron",
-            "event": "On Schedule",
-            "details": "Every week"
-          },
-          "action": {
-            "service": "[unknown]",
-            "action": "Send Email",
-            "channel": "[unknown]",
-            "details": "[unknown]"
-          }
-        },
-        "isReadyToGenerate": false,
-        "questions": [
-          "Which email service would you like to use (e.g., Gmail, Outlook, custom SMTP)?",
-          "How would you like to authenticate with LinkedIn (e.g., OAuth, username/password)?",
-          "What format would you like the list of profile views to be in?"
-        ],
-        "suggestedTemplates": [
-          "Weekly LinkedIn Profile Views Report",
-          "Automated LinkedIn Profile Views Email Notification",
-          "Customizable LinkedIn Profile Views Dashboard"
-        ]
-      },
-      "n8nId": null
-    },
-    "model_name": "llama-3.3-70b-versatile",
-    "tokens_used": 1143
-  },
-  {
-    "id": "4c84a0e4-7b42-41bd-8985-ebee7440a2b8",
-    "created_at": "2026-06-25T14:30:50.022Z",
-    "updated_at": "2026-06-25T14:30:50.022Z",
-    "conversation_id": "57992a91-9250-44cf-b810-2efc75cbe926",
-    "role": "user",
-    "content": "1. weekly\n2. Automated LinkedIn Profile Views Email Notification\n3. plain text",
-    "meta": {
-      "messageType": "message",
-      "workflow": null,
-      "n8nId": null
-    },
-    "model_name": null,
-    "tokens_used": null
-  },
-  {
-    "id": "cec67563-c4e0-4702-9869-c1328848b367",
-    "created_at": "2026-06-25T14:30:51.380Z",
-    "updated_at": "2026-06-25T14:30:51.380Z",
-    "conversation_id": "57992a91-9250-44cf-b810-2efc75cbe926",
-    "role": "ai",
-    "content": "To create a workflow that sends you a list of profile views on LinkedIn and emails you, we've established the following details: \n   * The trigger will occur **every week**.\n   * The action involves fetching your LinkedIn profile views and sending them via email as plain text.\n   We'll use LinkedIn and Gmail services for this workflow. \n   Here are a few more questions to refine the specification: \n   1. What is your LinkedIn profile URL or how will we identify your profile to fetch views?\n   2. What is your Gmail address that will be used to send the updates?\n   3. Do you want to include any additional information in the email, such as the date range of the profile views or a summary of the views?",
-    "meta": {
-      "messageType": "clarifying_question",
-      "workflow": {
-        "spec": {
-          "trigger": {
-            "service": "Cron",
-            "event": "On Schedule",
-            "details": "Every week"
-          },
-          "action": {
-            "service": "Gmail",
-            "action": "Send Email",
-            "channel": "[unknown]",
-            "details": "Plain text email with LinkedIn profile views"
-          }
-        },
-        "isReadyToGenerate": false,
-        "questions": [
-          "What is your LinkedIn profile URL or how will we identify your profile to fetch views?",
-          "What is your Gmail address that will be used to send the updates?"
-        ],
-        "suggestedTemplates": [
-          "Automated Social Media Metrics Email Notification",
-          "Weekly Profile Views and Engagement Summary"
-        ]
-      },
-      "n8nId": null
-    },
-    "model_name": "llama-3.3-70b-versatile",
-    "tokens_used": 1298
-  },
-  {
-    "id": "2f935c63-c61d-4413-b054-f10ff2030bf7",
-    "created_at": "2026-06-25T14:31:31.016Z",
-    "updated_at": "2026-06-25T14:31:31.016Z",
-    "conversation_id": "57992a91-9250-44cf-b810-2efc75cbe926",
-    "role": "user",
-    "content": "1 https://www.linkedin.com/in/siddhikurne/\n2 siddhi.s.kurne@gmail.com\n3 no",
-    "meta": {
-      "messageType": "message",
-      "workflow": null,
-      "n8nId": null
-    },
-    "model_name": null,
-    "tokens_used": null
-  },
-  {
-    "id": "a0b64e0b-55e4-4851-a1c0-056fa2fe10a3",
-    "created_at": "2026-06-25T14:31:32.114Z",
-    "updated_at": "2026-06-25T14:31:32.114Z",
-    "conversation_id": "57992a91-9250-44cf-b810-2efc75cbe926",
-    "role": "ai",
-    "content": "We've gathered most of the necessary details for your workflow. To confirm, we will create a workflow that: \n* Triggers every week \n* Fetches profile views from your LinkedIn profile at https://www.linkedin.com/in/siddhikurne/ \n* Sends the list of profile views as plain text to your email address siddhi.s.kurne@gmail.com \nPlease review these details and let us know if they are correct. If so, we can proceed with generating the workflow.",
+    "content": "I'm building a workflow that sends a Slack message whenever a new row is added to the 'Sales Data' Google Sheet. I'll assume we're monitoring the first sheet in the file and sending a message to the #general channel with the content of all columns in the new row.",
     "meta": {
       "messageType": "workflow",
       "workflow": {
         "spec": {
           "trigger": {
-            "service": "Cron",
-            "event": "Weekly Schedule",
-            "details": "Every week"
+            "service": "Google Sheets",
+            "event": "New row added",
+            "sheetName": "Sales Data",
+            "details": "Monitor all sheets"
           },
           "action": {
-            "service": "LinkedIn",
-            "action": "Fetch Profile Views",
-            "channel": "https://www.linkedin.com/in/siddhikurne/",
-            "details": "Plain text"
+            "service": "Slack",
+            "action": "Send message",
+            "channel": "#general",
+            "details": "Include all columns in the message"
           }
         },
         "isReadyToGenerate": true,
@@ -540,178 +95,15 @@
       "n8nId": null
     },
     "model_name": "llama-3.3-70b-versatile",
-    "tokens_used": 1388
+    "tokens_used": 974
   },
   {
-    "id": "4587204f-316d-4a11-8e86-067984e88376",
-    "created_at": "2026-06-25T14:31:41.547Z",
-    "updated_at": "2026-06-25T14:31:41.547Z",
-    "conversation_id": "57992a91-9250-44cf-b810-2efc75cbe926",
-    "role": "ai",
-    "content": "Deploy complete! I have generated and activated the workflow \"Weekly LinkedIn Profile Views\" in your n8n workspace.",
-    "meta": {
-      "messageType": "workflow",
-      "workflow": {
-        "id": "a7d5a31d-593b-45a2-a19c-1cbe9924a76f",
-        "ownerId": "526ee973-0cdc-4d22-bc06-280c532d31fe",
-        "name": "Weekly LinkedIn Profile Views",
-        "description": "Create a complete n8n workflow for this spec:\nTrigger: Cron (Event: Weekly Schedule, Source/Sheet: undefined, Details: Every week)\nAction: LinkedIn (Action: Fetch Profile Views, Target/Channel: https://www.linkedin.com/in/siddhikurne/, Details: Plain text)",
-        "workflowSpec": {
-          "trigger": {
-            "service": "Cron",
-            "event": "Weekly Schedule",
-            "details": "Every week"
-          },
-          "action": {
-            "service": "LinkedIn",
-            "action": "Fetch Profile Views",
-            "channel": "https://www.linkedin.com/in/siddhikurne/",
-            "details": "Plain text"
-          }
-        },
-        "workflowJson": {
-          "name": "Weekly LinkedIn Profile Views",
-          "nodes": [
-            {
-              "id": "node-1",
-              "name": "Cron Trigger",
-              "type": "n8n-nodes-base.scheduleTrigger",
-              "typeVersion": 1,
-              "position": [
-                250,
-                300
-              ],
-              "parameters": {
-                "cron": "0 0 * * 0",
-                "immediate": false
-              },
-              "credentials": {}
-            },
-            {
-              "id": "node-2",
-              "name": "HTTP Request",
-              "type": "n8n-nodes-base.httpRequest",
-              "typeVersion": 1,
-              "position": [
-                500,
-                300
-              ],
-              "parameters": {
-                "url": "https://www.linkedin.com/in/siddhikurne/",
-                "options": {
-                  "headers": {
-                    "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/74.0.3729.169 Safari/537.3"
-                  }
-                }
-              },
-              "credentials": {}
-            },
-            {
-              "id": "node-3",
-              "name": "Set",
-              "type": "n8n-nodes-base.set",
-              "typeVersion": 1,
-              "position": [
-                750,
-                300
-              ],
-              "parameters": {
-                "values": {
-                  "profileViews": "=Object.values($response.body).filter(item => item.type === 'PROFILE_VIEW')[0].count"
-                },
-                "options": {
-                  "keepOnlySet": true
-                }
-              },
-              "credentials": {}
-            }
-          ],
-          "connections": {
-            "Cron Trigger": "HTTP Request",
-            "HTTP Request": "Set"
-          },
-          "settings": {
-            "executionOrder": "v1"
-          }
-        },
-        "status": "active",
-        "n8nWorkflowId": "D9zMqq9E8ULRUSv7",
-        "active": true,
-        "deploymentError": null,
-        "createdAt": "2026-06-25T14:31:36.726Z",
-        "updatedAt": "2026-06-25T14:31:41.477Z",
-        "nodes": [
-          {
-            "id": "node-1",
-            "name": "Cron Trigger",
-            "type": "n8n-nodes-base.scheduleTrigger",
-            "typeVersion": 1,
-            "position": [
-              250,
-              300
-            ],
-            "parameters": {
-              "cron": "0 0 * * 0",
-              "immediate": false
-            },
-            "credentials": {}
-          },
-          {
-            "id": "node-2",
-            "name": "HTTP Request",
-            "type": "n8n-nodes-base.httpRequest",
-            "typeVersion": 1,
-            "position": [
-              500,
-              300
-            ],
-            "parameters": {
-              "url": "https://www.linkedin.com/in/siddhikurne/",
-              "options": {
-                "headers": {
-                  "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/74.0.3729.169 Safari/537.3"
-                }
-              }
-            },
-            "credentials": {}
-          },
-          {
-            "id": "node-3",
-            "name": "Set",
-            "type": "n8n-nodes-base.set",
-            "typeVersion": 1,
-            "position": [
-              750,
-              300
-            ],
-            "parameters": {
-              "values": {
-                "profileViews": "=Object.values($response.body).filter(item => item.type === 'PROFILE_VIEW')[0].count"
-              },
-              "options": {
-                "keepOnlySet": true
-              }
-            },
-            "credentials": {}
-          }
-        ],
-        "connections": {
-          "Cron Trigger": "HTTP Request",
-          "HTTP Request": "Set"
-        }
-      },
-      "n8nId": "D9zMqq9E8ULRUSv7"
-    },
-    "model_name": null,
-    "tokens_used": null
-  },
-  {
-    "id": "6a2c07f0-28c4-4a1d-bdc5-04ef351d5aed",
-    "created_at": "2026-06-25T14:39:51.807Z",
-    "updated_at": "2026-06-25T14:39:51.807Z",
-    "conversation_id": "dbd4e3ef-f9c5-4b73-8114-c611afeeb0ab",
+    "id": "92d2db32-937a-4fc1-8393-0cbe6d3afb0c",
+    "created_at": "2026-06-28T16:23:20.919Z",
+    "updated_at": "2026-06-28T16:23:20.919Z",
+    "conversation_id": "b2f86f3d-e50e-4ca3-b42e-95bf52a9c07b",
     "role": "user",
-    "content": "Trigger a webhook when a Stripe payment fails",
+    "content": "Send me an email in one minute saying - \"FlowBuilder AI built and deployed this workflow.\"\nsender - sydystic.dev@gmail.com\nreceiver - sydystic.dev@gmail.com\nsubject - first workflow",
     "meta": {
       "messageType": "message",
       "workflow": null,
@@ -721,1213 +113,44 @@
     "tokens_used": null
   },
   {
-    "id": "7389163f-13df-4f65-9a52-53bdd1b3d8e7",
-    "created_at": "2026-06-25T14:39:53.617Z",
-    "updated_at": "2026-06-25T14:39:53.617Z",
-    "conversation_id": "dbd4e3ef-f9c5-4b73-8114-c611afeeb0ab",
+    "id": "6bd8e059-a4ed-4653-b1e3-12204396de9e",
+    "created_at": "2026-06-28T16:23:21.785Z",
+    "updated_at": "2026-06-28T16:23:21.785Z",
+    "conversation_id": "b2f86f3d-e50e-4ca3-b42e-95bf52a9c07b",
     "role": "ai",
-    "content": "To create a workflow that triggers a webhook when a Stripe payment fails, we need more details. Here are some points to consider: \n   * What specific event in Stripe should trigger the webhook? Is it the 'invoice.payment_failed' event or another?\n   * What information should be sent in the webhook payload? Should it include customer details, payment amount, or other specifics?\n   * Are there any specific conditions or filters that should be applied before triggering the webhook, such as only for certain types of payments or customers?",
+    "content": "I'm building a workflow that sends an email to `sydystic.dev@gmail.com` from `sydystic.dev@gmail.com` with the subject 'first workflow' and the message 'FlowBuilder AI built and deployed this workflow.' in one minute. I'm assuming a Gmail service for both sender and receiver.",
     "meta": {
-      "messageType": "clarifying_question",
+      "messageType": "workflow",
       "workflow": {
         "spec": {
           "trigger": {
-            "service": "Stripe",
-            "event": "[unknown]",
-            "details": "Payment failure"
-          },
-          "action": {
-            "service": "Webhook",
-            "action": "Send HTTP Request",
-            "channel": "[unknown]",
-            "details": "[unknown]"
-          }
-        },
-        "isReadyToGenerate": false,
-        "questions": [
-          "What is the exact Stripe event that should trigger the webhook?",
-          "What details should be included in the webhook payload?"
-        ],
-        "suggestedTemplates": [
-          "Stripe Payment Failure Notification",
-          "Automated Payment Retry on Failure",
-          "Customizable Webhook on Stripe Events"
-        ]
-      },
-      "n8nId": null
-    },
-    "model_name": "llama-3.3-70b-versatile",
-    "tokens_used": 970
-  },
-  {
-    "id": "ada1eca4-14fe-49ea-8c08-4203e8fed075",
-    "created_at": "2026-06-25T15:02:49.744Z",
-    "updated_at": "2026-06-25T15:02:49.744Z",
-    "conversation_id": "57992a91-9250-44cf-b810-2efc75cbe926",
-    "role": "ai",
-    "content": "Deploy complete! I have generated and activated the workflow \"Weekly LinkedIn Profile Views\" in your n8n workspace.",
-    "meta": {
-      "messageType": "workflow",
-      "workflow": {
-        "id": "1b018308-73c0-4bc5-b558-3e0e3957e497",
-        "ownerId": "526ee973-0cdc-4d22-bc06-280c532d31fe",
-        "name": "Weekly LinkedIn Profile Views",
-        "description": "Create a complete n8n workflow for this spec:\nTrigger: Cron (Event: Weekly Schedule, Source/Sheet: undefined, Details: Every week)\nAction: LinkedIn (Action: Fetch Profile Views, Target/Channel: https://www.linkedin.com/in/siddhikurne/, Details: Plain text)",
-        "workflowSpec": {
-          "trigger": {
-            "service": "Cron",
-            "event": "Weekly Schedule",
-            "details": "Every week"
-          },
-          "action": {
-            "service": "LinkedIn",
-            "action": "Fetch Profile Views",
-            "channel": "https://www.linkedin.com/in/siddhikurne/",
-            "details": "Plain text"
-          }
-        },
-        "workflowJson": {
-          "name": "Weekly LinkedIn Profile Views",
-          "nodes": [
-            {
-              "id": "node-1",
-              "name": "Cron Trigger",
-              "type": "n8n-nodes-base.scheduleTrigger",
-              "typeVersion": 1,
-              "position": [
-                250,
-                300
-              ],
-              "parameters": {
-                "cron": "0 0 * * 0",
-                "immediately": false
-              },
-              "credentials": {}
-            },
-            {
-              "id": "node-2",
-              "name": "HTTP Request",
-              "type": "n8n-nodes-base.httpRequest",
-              "typeVersion": 1,
-              "position": [
-                500,
-                300
-              ],
-              "parameters": {
-                "url": "https://www.linkedin.com/in/siddhikurne/",
-                "options": {
-                  "headers": {
-                    "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/74.0.3729.169 Safari/537.3"
-                  }
-                },
-                "responseFormat": "string"
-              },
-              "credentials": {}
-            },
-            {
-              "id": "node-3",
-              "name": "Set",
-              "type": "n8n-nodes-base.set",
-              "typeVersion": 1,
-              "position": [
-                750,
-                300
-              ],
-              "parameters": {
-                "values": {
-                  "profileViews": "={{$node[\"HTTP Request\"].json}}",
-                  "text": "Profile Views: "
-                },
-                "options": {}
-              },
-              "credentials": {}
-            }
-          ],
-          "connections": {
-            "Cron Trigger": {
-              "main": [
-                "HTTP Request"
-              ]
-            },
-            "HTTP Request": {
-              "main": [
-                "Set"
-              ]
-            }
-          },
-          "settings": {
-            "executionOrder": "v1"
-          }
-        },
-        "status": "active",
-        "n8nWorkflowId": "2zeEooNZqphEX947",
-        "active": true,
-        "deploymentError": null,
-        "createdAt": "2026-06-25T15:02:48.306Z",
-        "updatedAt": "2026-06-25T15:02:49.676Z",
-        "nodes": [
-          {
-            "id": "node-1",
-            "name": "Cron Trigger",
-            "type": "n8n-nodes-base.scheduleTrigger",
-            "typeVersion": 1,
-            "position": [
-              250,
-              300
-            ],
-            "parameters": {
-              "cron": "0 0 * * 0",
-              "immediately": false
-            },
-            "credentials": {}
-          },
-          {
-            "id": "node-2",
-            "name": "HTTP Request",
-            "type": "n8n-nodes-base.httpRequest",
-            "typeVersion": 1,
-            "position": [
-              500,
-              300
-            ],
-            "parameters": {
-              "url": "https://www.linkedin.com/in/siddhikurne/",
-              "options": {
-                "headers": {
-                  "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/74.0.3729.169 Safari/537.3"
-                }
-              },
-              "responseFormat": "string"
-            },
-            "credentials": {}
-          },
-          {
-            "id": "node-3",
-            "name": "Set",
-            "type": "n8n-nodes-base.set",
-            "typeVersion": 1,
-            "position": [
-              750,
-              300
-            ],
-            "parameters": {
-              "values": {
-                "profileViews": "={{$node[\"HTTP Request\"].json}}",
-                "text": "Profile Views: "
-              },
-              "options": {}
-            },
-            "credentials": {}
-          }
-        ],
-        "connections": {
-          "Cron Trigger": {
-            "main": [
-              "HTTP Request"
-            ]
-          },
-          "HTTP Request": {
-            "main": [
-              "Set"
-            ]
-          }
-        }
-      },
-      "n8nId": "2zeEooNZqphEX947"
-    },
-    "model_name": null,
-    "tokens_used": null
-  },
-  {
-    "id": "1cf0b9b9-eee0-41ef-a677-dc201ff926d5",
-    "created_at": "2026-06-25T15:15:24.946Z",
-    "updated_at": "2026-06-25T15:15:24.946Z",
-    "conversation_id": "57992a91-9250-44cf-b810-2efc75cbe926",
-    "role": "ai",
-    "content": "Deploy complete! I have generated and activated the workflow \"Weekly LinkedIn Profile Views\" in your n8n workspace.",
-    "meta": {
-      "messageType": "workflow",
-      "workflow": {
-        "id": "ce925877-da79-4527-9540-0d59ecd9452c",
-        "ownerId": "526ee973-0cdc-4d22-bc06-280c532d31fe",
-        "name": "Weekly LinkedIn Profile Views",
-        "description": "Create a complete n8n workflow for this spec:\nTrigger: Cron (Event: Weekly Schedule, Source/Sheet: undefined, Details: Every week)\nAction: LinkedIn (Action: Fetch Profile Views, Target/Channel: https://www.linkedin.com/in/siddhikurne/, Details: Plain text)",
-        "workflowSpec": {
-          "trigger": {
-            "service": "Cron",
-            "event": "Weekly Schedule",
-            "details": "Every week"
-          },
-          "action": {
-            "service": "LinkedIn",
-            "action": "Fetch Profile Views",
-            "channel": "https://www.linkedin.com/in/siddhikurne/",
-            "details": "Plain text"
-          }
-        },
-        "workflowJson": {
-          "name": "Weekly LinkedIn Profile Views",
-          "nodes": [
-            {
-              "id": "node-1",
-              "name": "Cron Trigger",
-              "type": "n8n-nodes-base.scheduleTrigger",
-              "typeVersion": 1,
-              "position": [
-                250,
-                300
-              ],
-              "parameters": {
-                "cron": "0 0 * * 0",
-                "immediately": false
-              },
-              "credentials": {}
-            },
-            {
-              "id": "node-2",
-              "name": "HTTP Request",
-              "type": "n8n-nodes-base.httpRequest",
-              "typeVersion": 1,
-              "position": [
-                500,
-                300
-              ],
-              "parameters": {
-                "url": "https://www.linkedin.com/in/siddhikurne/",
-                "options": {
-                  "headers": {
-                    "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/74.0.3729.169 Safari/537.3"
-                  }
-                }
-              },
-              "credentials": {}
-            },
-            {
-              "id": "node-3",
-              "name": "Set",
-              "type": "n8n-nodes-base.set",
-              "typeVersion": 1,
-              "position": [
-                750,
-                300
-              ],
-              "parameters": {
-                "values": {
-                  "profileViews": "={{$node[\"HTTP Request\"].data}}",
-                  "text": "Profile Views: "
-                },
-                "options": {
-                  "keepOnlySet": true
-                }
-              },
-              "credentials": {}
-            }
-          ],
-          "connections": {
-            "Cron Trigger": {
-              "main": [
-                "HTTP Request"
-              ]
-            },
-            "HTTP Request": {
-              "main": [
-                "Set"
-              ]
-            }
-          },
-          "settings": {
-            "executionOrder": "v1"
-          }
-        },
-        "status": "active",
-        "n8nWorkflowId": "scoTV6xFAxeB5C7J",
-        "active": true,
-        "deploymentError": null,
-        "createdAt": "2026-06-25T15:15:23.515Z",
-        "updatedAt": "2026-06-25T15:15:24.874Z",
-        "nodes": [
-          {
-            "id": "node-1",
-            "name": "Cron Trigger",
-            "type": "n8n-nodes-base.scheduleTrigger",
-            "typeVersion": 1,
-            "position": [
-              250,
-              300
-            ],
-            "parameters": {
-              "cron": "0 0 * * 0",
-              "immediately": false
-            },
-            "credentials": {}
-          },
-          {
-            "id": "node-2",
-            "name": "HTTP Request",
-            "type": "n8n-nodes-base.httpRequest",
-            "typeVersion": 1,
-            "position": [
-              500,
-              300
-            ],
-            "parameters": {
-              "url": "https://www.linkedin.com/in/siddhikurne/",
-              "options": {
-                "headers": {
-                  "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/74.0.3729.169 Safari/537.3"
-                }
-              }
-            },
-            "credentials": {}
-          },
-          {
-            "id": "node-3",
-            "name": "Set",
-            "type": "n8n-nodes-base.set",
-            "typeVersion": 1,
-            "position": [
-              750,
-              300
-            ],
-            "parameters": {
-              "values": {
-                "profileViews": "={{$node[\"HTTP Request\"].data}}",
-                "text": "Profile Views: "
-              },
-              "options": {
-                "keepOnlySet": true
-              }
-            },
-            "credentials": {}
-          }
-        ],
-        "connections": {
-          "Cron Trigger": {
-            "main": [
-              "HTTP Request"
-            ]
-          },
-          "HTTP Request": {
-            "main": [
-              "Set"
-            ]
-          }
-        }
-      },
-      "n8nId": "scoTV6xFAxeB5C7J"
-    },
-    "model_name": null,
-    "tokens_used": null
-  },
-  {
-    "id": "1b579c27-a10c-4795-b6e1-b4304f31de29",
-    "created_at": "2026-06-28T14:37:45.824Z",
-    "updated_at": "2026-06-28T14:37:45.824Z",
-    "conversation_id": "57992a91-9250-44cf-b810-2efc75cbe926",
-    "role": "ai",
-    "content": "Deploy complete! I have generated and activated the workflow \"Weekly LinkedIn Profile Views\" in your n8n workspace.",
-    "meta": {
-      "messageType": "workflow",
-      "workflow": {
-        "id": "d09ad514-9675-4912-b4c9-b0a3c7821f71",
-        "ownerId": "526ee973-0cdc-4d22-bc06-280c532d31fe",
-        "name": "Weekly LinkedIn Profile Views",
-        "description": "Create a complete n8n workflow for this spec:\nTrigger: Cron (Event: Weekly Schedule, Source/Sheet: undefined, Details: Every week)\nAction: LinkedIn (Action: Fetch Profile Views, Target/Channel: https://www.linkedin.com/in/siddhikurne/, Details: Plain text)",
-        "workflowSpec": {
-          "trigger": {
-            "service": "Cron",
-            "event": "Weekly Schedule",
-            "details": "Every week"
-          },
-          "action": {
-            "service": "LinkedIn",
-            "action": "Fetch Profile Views",
-            "channel": "https://www.linkedin.com/in/siddhikurne/",
-            "details": "Plain text"
-          }
-        },
-        "workflowJson": {
-          "name": "Weekly LinkedIn Profile Views",
-          "nodes": [
-            {
-              "id": "node-1",
-              "name": "Cron Trigger",
-              "type": "n8n-nodes-base.scheduleTrigger",
-              "typeVersion": 1,
-              "position": [
-                250,
-                300
-              ],
-              "parameters": {
-                "cronExpression": "0 0 0 * * 0",
-                "immediately": false
-              },
-              "credentials": {}
-            },
-            {
-              "id": "node-2",
-              "name": "HTTP Request",
-              "type": "n8n-nodes-base.httpRequest",
-              "typeVersion": 1,
-              "position": [
-                500,
-                300
-              ],
-              "parameters": {
-                "url": "https://www.linkedin.com/in/siddhikurne/",
-                "options": {
-                  "headers": {
-                    "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/74.0.3729.169 Safari/537.3"
-                  }
-                },
-                "responseFormat": "string"
-              },
-              "credentials": {}
-            },
-            {
-              "id": "node-3",
-              "name": "Set",
-              "type": "n8n-nodes-base.set",
-              "typeVersion": 1,
-              "position": [
-                750,
-                300
-              ],
-              "parameters": {
-                "values": {
-                  "profileViews": "={{$node[\"HTTP Request\"].data}}",
-                  "source": "LinkedIn"
-                },
-                "options": {
-                  "keepOnlySet": true
-                }
-              },
-              "credentials": {}
-            }
-          ],
-          "connections": {
-            "Cron Trigger": {
-              "main": [
-                "HTTP Request"
-              ]
-            },
-            "HTTP Request": {
-              "main": [
-                "Set"
-              ]
-            }
-          },
-          "settings": {
-            "executionOrder": "v1"
-          }
-        },
-        "status": "active",
-        "n8nWorkflowId": "7PBDhSjd8pXjfyku",
-        "active": true,
-        "deploymentError": null,
-        "createdAt": "2026-06-28T14:37:42.051Z",
-        "updatedAt": "2026-06-28T14:37:45.737Z",
-        "nodes": [
-          {
-            "id": "node-1",
-            "name": "Cron Trigger",
-            "type": "n8n-nodes-base.scheduleTrigger",
-            "typeVersion": 1,
-            "position": [
-              250,
-              300
-            ],
-            "parameters": {
-              "cronExpression": "0 0 0 * * 0",
-              "immediately": false
-            },
-            "credentials": {}
-          },
-          {
-            "id": "node-2",
-            "name": "HTTP Request",
-            "type": "n8n-nodes-base.httpRequest",
-            "typeVersion": 1,
-            "position": [
-              500,
-              300
-            ],
-            "parameters": {
-              "url": "https://www.linkedin.com/in/siddhikurne/",
-              "options": {
-                "headers": {
-                  "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/74.0.3729.169 Safari/537.3"
-                }
-              },
-              "responseFormat": "string"
-            },
-            "credentials": {}
-          },
-          {
-            "id": "node-3",
-            "name": "Set",
-            "type": "n8n-nodes-base.set",
-            "typeVersion": 1,
-            "position": [
-              750,
-              300
-            ],
-            "parameters": {
-              "values": {
-                "profileViews": "={{$node[\"HTTP Request\"].data}}",
-                "source": "LinkedIn"
-              },
-              "options": {
-                "keepOnlySet": true
-              }
-            },
-            "credentials": {}
-          }
-        ],
-        "connections": {
-          "Cron Trigger": {
-            "main": [
-              "HTTP Request"
-            ]
-          },
-          "HTTP Request": {
-            "main": [
-              "Set"
-            ]
-          }
-        }
-      },
-      "n8nId": "7PBDhSjd8pXjfyku"
-    },
-    "model_name": null,
-    "tokens_used": null
-  },
-  {
-    "id": "7d3c909f-1051-423e-80fd-30014575c7c8",
-    "created_at": "2026-06-28T14:47:01.089Z",
-    "updated_at": "2026-06-28T14:47:01.089Z",
-    "conversation_id": "57992a91-9250-44cf-b810-2efc75cbe926",
-    "role": "ai",
-    "content": "Deploy complete! I have generated and activated the workflow \"Weekly LinkedIn Profile Views\" in your n8n workspace.",
-    "meta": {
-      "messageType": "workflow",
-      "workflow": {
-        "id": "bf262938-76b2-4200-82a4-5f4be7ce0bda",
-        "ownerId": "526ee973-0cdc-4d22-bc06-280c532d31fe",
-        "name": "Weekly LinkedIn Profile Views",
-        "description": "Create a complete n8n workflow for this spec:\nTrigger: Cron (Event: Weekly Schedule, Source/Sheet: undefined, Details: Every week)\nAction: LinkedIn (Action: Fetch Profile Views, Target/Channel: https://www.linkedin.com/in/siddhikurne/, Details: Plain text)",
-        "workflowSpec": {
-          "trigger": {
-            "service": "Cron",
-            "event": "Weekly Schedule",
-            "details": "Every week"
-          },
-          "action": {
-            "service": "LinkedIn",
-            "action": "Fetch Profile Views",
-            "channel": "https://www.linkedin.com/in/siddhikurne/",
-            "details": "Plain text"
-          }
-        },
-        "workflowJson": {
-          "name": "Weekly LinkedIn Profile Views",
-          "nodes": [
-            {
-              "id": "node-1",
-              "name": "Cron Trigger",
-              "type": "n8n-nodes-base.scheduleTrigger",
-              "typeVersion": 1,
-              "position": [
-                250,
-                300
-              ],
-              "parameters": {
-                "cron": "0 0 * * 0",
-                "immediately": false
-              },
-              "credentials": {}
-            },
-            {
-              "id": "node-2",
-              "name": "HTTP Request",
-              "type": "n8n-nodes-base.httpRequest",
-              "typeVersion": 1,
-              "position": [
-                500,
-                300
-              ],
-              "parameters": {
-                "url": "https://www.linkedin.com/in/siddhikurne/",
-                "options": {
-                  "headers": {
-                    "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/74.0.3729.169 Safari/537.3"
-                  }
-                },
-                "responseFormat": "string"
-              },
-              "credentials": {}
-            },
-            {
-              "id": "node-3",
-              "name": "Set",
-              "type": "n8n-nodes-base.set",
-              "typeVersion": 1,
-              "position": [
-                750,
-                300
-              ],
-              "parameters": {
-                "values": {
-                  "profileViews": "={{$node[\"HTTP Request\"].json}}",
-                  "text": "Profile Views: "
-                },
-                "options": {
-                  "keepOnlySet": true
-                }
-              },
-              "credentials": {}
-            }
-          ],
-          "connections": {
-            "Cron Trigger": {
-              "main": [
-                "HTTP Request"
-              ]
-            },
-            "HTTP Request": {
-              "main": [
-                "Set"
-              ]
-            }
-          },
-          "settings": {
-            "executionOrder": "v1"
-          }
-        },
-        "status": "active",
-        "n8nWorkflowId": "JpKtXMnurgBeqpez",
-        "active": true,
-        "deploymentError": null,
-        "createdAt": "2026-06-28T14:46:59.609Z",
-        "updatedAt": "2026-06-28T14:47:00.990Z",
-        "nodes": [
-          {
-            "id": "node-1",
-            "name": "Cron Trigger",
-            "type": "n8n-nodes-base.scheduleTrigger",
-            "typeVersion": 1,
-            "position": [
-              250,
-              300
-            ],
-            "parameters": {
-              "cron": "0 0 * * 0",
-              "immediately": false
-            },
-            "credentials": {}
-          },
-          {
-            "id": "node-2",
-            "name": "HTTP Request",
-            "type": "n8n-nodes-base.httpRequest",
-            "typeVersion": 1,
-            "position": [
-              500,
-              300
-            ],
-            "parameters": {
-              "url": "https://www.linkedin.com/in/siddhikurne/",
-              "options": {
-                "headers": {
-                  "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/74.0.3729.169 Safari/537.3"
-                }
-              },
-              "responseFormat": "string"
-            },
-            "credentials": {}
-          },
-          {
-            "id": "node-3",
-            "name": "Set",
-            "type": "n8n-nodes-base.set",
-            "typeVersion": 1,
-            "position": [
-              750,
-              300
-            ],
-            "parameters": {
-              "values": {
-                "profileViews": "={{$node[\"HTTP Request\"].json}}",
-                "text": "Profile Views: "
-              },
-              "options": {
-                "keepOnlySet": true
-              }
-            },
-            "credentials": {}
-          }
-        ],
-        "connections": {
-          "Cron Trigger": {
-            "main": [
-              "HTTP Request"
-            ]
-          },
-          "HTTP Request": {
-            "main": [
-              "Set"
-            ]
-          }
-        }
-      },
-      "n8nId": "JpKtXMnurgBeqpez"
-    },
-    "model_name": null,
-    "tokens_used": null
-  },
-  {
-    "id": "d8c53eb4-a438-4115-85fd-2260f2d29863",
-    "created_at": "2026-06-28T14:49:05.006Z",
-    "updated_at": "2026-06-28T14:49:05.006Z",
-    "conversation_id": "57992a91-9250-44cf-b810-2efc75cbe926",
-    "role": "ai",
-    "content": "Deploy complete! I have generated and activated the workflow \"Weekly LinkedIn Profile Views\" in your n8n workspace.",
-    "meta": {
-      "messageType": "workflow",
-      "workflow": {
-        "id": "a6337e04-3a38-4ae5-9d6f-5df847545572",
-        "ownerId": "526ee973-0cdc-4d22-bc06-280c532d31fe",
-        "name": "Weekly LinkedIn Profile Views",
-        "description": "Create a complete n8n workflow for this spec:\nTrigger: Cron (Event: Weekly Schedule, Source/Sheet: undefined, Details: Every week)\nAction: LinkedIn (Action: Fetch Profile Views, Target/Channel: https://www.linkedin.com/in/siddhikurne/, Details: Plain text)",
-        "workflowSpec": {
-          "trigger": {
-            "service": "Cron",
-            "event": "Weekly Schedule",
-            "details": "Every week"
-          },
-          "action": {
-            "service": "LinkedIn",
-            "action": "Fetch Profile Views",
-            "channel": "https://www.linkedin.com/in/siddhikurne/",
-            "details": "Plain text"
-          }
-        },
-        "workflowJson": {
-          "name": "Weekly LinkedIn Profile Views",
-          "nodes": [
-            {
-              "id": "node-1",
-              "name": "Cron Trigger",
-              "type": "n8n-nodes-base.scheduleTrigger",
-              "typeVersion": 1,
-              "position": [
-                250,
-                300
-              ],
-              "parameters": {
-                "cronExpression": "0 0 0 * * 0",
-                "immediately": false
-              },
-              "credentials": {}
-            },
-            {
-              "id": "node-2",
-              "name": "HTTP Request",
-              "type": "n8n-nodes-base.httpRequest",
-              "typeVersion": 1,
-              "position": [
-                500,
-                300
-              ],
-              "parameters": {
-                "url": "https://www.linkedin.com/in/siddhikurne/",
-                "options": {
-                  "headers": {
-                    "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/74.0.3729.169 Safari/537.3"
-                  }
-                }
-              },
-              "credentials": {}
-            },
-            {
-              "id": "node-3",
-              "name": "Set",
-              "type": "n8n-nodes-base.set",
-              "typeVersion": 1,
-              "position": [
-                750,
-                300
-              ],
-              "parameters": {
-                "values": {
-                  "profileViews": "={{$node[\"HTTP Request\"].data}}",
-                  "text": "Profile Views: "
-                },
-                "options": {
-                  "keepOnlySet": true
-                }
-              },
-              "credentials": {}
-            }
-          ],
-          "connections": {
-            "Cron Trigger": "HTTP Request",
-            "HTTP Request": "Set"
-          },
-          "settings": {
-            "executionOrder": "v1"
-          }
-        },
-        "status": "active",
-        "n8nWorkflowId": "xVlil59MddcLeUOc",
-        "active": true,
-        "deploymentError": null,
-        "createdAt": "2026-06-28T14:49:03.360Z",
-        "updatedAt": "2026-06-28T14:49:04.891Z",
-        "nodes": [
-          {
-            "id": "node-1",
-            "name": "Cron Trigger",
-            "type": "n8n-nodes-base.scheduleTrigger",
-            "typeVersion": 1,
-            "position": [
-              250,
-              300
-            ],
-            "parameters": {
-              "cronExpression": "0 0 0 * * 0",
-              "immediately": false
-            },
-            "credentials": {}
-          },
-          {
-            "id": "node-2",
-            "name": "HTTP Request",
-            "type": "n8n-nodes-base.httpRequest",
-            "typeVersion": 1,
-            "position": [
-              500,
-              300
-            ],
-            "parameters": {
-              "url": "https://www.linkedin.com/in/siddhikurne/",
-              "options": {
-                "headers": {
-                  "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/74.0.3729.169 Safari/537.3"
-                }
-              }
-            },
-            "credentials": {}
-          },
-          {
-            "id": "node-3",
-            "name": "Set",
-            "type": "n8n-nodes-base.set",
-            "typeVersion": 1,
-            "position": [
-              750,
-              300
-            ],
-            "parameters": {
-              "values": {
-                "profileViews": "={{$node[\"HTTP Request\"].data}}",
-                "text": "Profile Views: "
-              },
-              "options": {
-                "keepOnlySet": true
-              }
-            },
-            "credentials": {}
-          }
-        ],
-        "connections": {
-          "Cron Trigger": "HTTP Request",
-          "HTTP Request": "Set"
-        }
-      },
-      "n8nId": "xVlil59MddcLeUOc"
-    },
-    "model_name": null,
-    "tokens_used": null
-  },
-  {
-    "id": "4d74df3e-6fd4-4ef8-8fee-d4e236c696ca",
-    "created_at": "2026-06-28T15:33:40.230Z",
-    "updated_at": "2026-06-28T15:33:40.230Z",
-    "conversation_id": "4b3f5c21-b56c-4900-8cec-c39780f54a5a",
-    "role": "user",
-    "content": "Send me an email in one minute saying:\n\n\"🚀 This email was generated and deployed by FlowBuilder AI.\"",
-    "meta": {
-      "messageType": "message",
-      "workflow": null,
-      "n8nId": null
-    },
-    "model_name": null,
-    "tokens_used": null
-  },
-  {
-    "id": "d228e75a-9b98-421e-927f-02c9d1f5e62e",
-    "created_at": "2026-06-28T15:33:42.489Z",
-    "updated_at": "2026-06-28T15:33:42.489Z",
-    "conversation_id": "4b3f5c21-b56c-4900-8cec-c39780f54a5a",
-    "role": "ai",
-    "content": "To send an email, we need to clarify a few details. You want to send an email with the content '🚀 This email was generated and deployed by FlowBuilder AI.' in one minute. Is that correct? \n   We will need to determine the trigger and action for this workflow. \n   For the trigger, since you mentioned 'in one minute', it seems like a scheduled trigger might be appropriate.",
-    "meta": {
-      "messageType": "clarifying_question",
-      "workflow": {
-        "spec": {
-          "trigger": {
-            "service": "Cron",
-            "event": "On Schedule",
-            "sheetName": "[unknown]",
+            "service": "Schedule",
+            "event": "Timer",
             "details": "Every 1 minute"
-          },
-          "action": {
-            "service": "[unknown]",
-            "action": "[unknown]",
-            "channel": "[unknown]",
-            "details": "Email content: '🚀 This email was generated and deployed by FlowBuilder AI.'"
-          }
-        },
-        "isReadyToGenerate": false,
-        "questions": [
-          "What email service should we use to send the email (e.g. Gmail, Outlook)?",
-          "Who is the recipient of this email?"
-        ],
-        "suggestedTemplates": [
-          "Scheduled Email Notification",
-          "Automated Email Deployment"
-        ]
-      },
-      "n8nId": null
-    },
-    "model_name": "llama-3.3-70b-versatile",
-    "tokens_used": 983
-  },
-  {
-    "id": "02b3121c-df4d-471b-a715-5c4c01bdef50",
-    "created_at": "2026-06-28T15:33:53.628Z",
-    "updated_at": "2026-06-28T15:33:53.628Z",
-    "conversation_id": "4b3f5c21-b56c-4900-8cec-c39780f54a5a",
-    "role": "user",
-    "content": "Automated Email Deployment",
-    "meta": {
-      "messageType": "message",
-      "workflow": null,
-      "n8nId": null
-    },
-    "model_name": null,
-    "tokens_used": null
-  },
-  {
-    "id": "6ca75744-839f-4ee7-b4aa-c2645f59ff70",
-    "created_at": "2026-06-28T15:33:55.045Z",
-    "updated_at": "2026-06-28T15:33:55.045Z",
-    "conversation_id": "4b3f5c21-b56c-4900-8cec-c39780f54a5a",
-    "role": "ai",
-    "content": "To confirm, you want to create a workflow that sends an automated email with the content '🚀 This email was generated and deployed by FlowBuilder AI.' in one minute. This implies a scheduled trigger. For the action, we'll need to specify the email service and recipient. \n   Here are the key points to consider:\n   * Trigger: Scheduled (every 1 minute)\n   * Action: Send Email\n   * Email Content: '🚀 This email was generated and deployed by FlowBuilder AI.',\n   Let's break down the details:\n   1. **Trigger**: \n      * Service: Cron (for scheduling)\n      * Event: On Schedule\n   2. **Action**:\n      * Service: Email Service (e.g., Gmail, SMTP)\n      * Action: Send Email\n      * Channel/Recipient: '[unknown]'\n      * Details: Email content, subject, etc.",
-    "meta": {
-      "messageType": "clarifying_question",
-      "workflow": {
-        "spec": {
-          "trigger": {
-            "service": "Cron",
-            "event": "On Schedule",
-            "details": "Every 1 minute"
-          },
-          "action": {
-            "service": "[unknown]",
-            "action": "Send Email",
-            "channel": "[unknown]",
-            "details": "Email content: '🚀 This email was generated and deployed by FlowBuilder AI.'"
-          }
-        },
-        "isReadyToGenerate": false,
-        "questions": [
-          "Which email service would you like to use (e.g., Gmail, SMTP)?",
-          "Who is the recipient of this email?"
-        ],
-        "suggestedTemplates": [
-          "Scheduled Email Notification",
-          "Automated Report Email",
-          "Reminder Email"
-        ]
-      },
-      "n8nId": null
-    },
-    "model_name": "llama-3.3-70b-versatile",
-    "tokens_used": 1179
-  },
-  {
-    "id": "5ce045ad-46a9-459d-9249-229fe99e0c5e",
-    "created_at": "2026-06-28T15:34:24.017Z",
-    "updated_at": "2026-06-28T15:34:24.017Z",
-    "conversation_id": "4b3f5c21-b56c-4900-8cec-c39780f54a5a",
-    "role": "user",
-    "content": "recipient - sydystic.dev@gmail.com",
-    "meta": {
-      "messageType": "message",
-      "workflow": null,
-      "n8nId": null
-    },
-    "model_name": null,
-    "tokens_used": null
-  },
-  {
-    "id": "ca6dc5c2-0e99-4fc1-a864-51ceed2de6e0",
-    "created_at": "2026-06-28T15:34:25.697Z",
-    "updated_at": "2026-06-28T15:34:25.697Z",
-    "conversation_id": "4b3f5c21-b56c-4900-8cec-c39780f54a5a",
-    "role": "ai",
-    "content": "We've made progress in specifying your workflow. To recap, you want to send an automated email with the content '🚀 This email was generated and deployed by FlowBuilder AI.' to sydystic.dev@gmail.com in one minute. This implies a scheduled trigger. For the action, we've specified the recipient but still need to confirm the email service and a few other details.",
-    "meta": {
-      "messageType": "clarifying_question",
-      "workflow": {
-        "spec": {
-          "trigger": {
-            "service": "Cron",
-            "event": "On Schedule",
-            "details": "Every 1 minute"
-          },
-          "action": {
-            "service": "[unknown]",
-            "action": "Send Email",
-            "channel": "sydystic.dev@gmail.com",
-            "details": "Email content: '🚀 This email was generated and deployed by FlowBuilder AI.'"
-          }
-        },
-        "isReadyToGenerate": false,
-        "questions": [
-          "Which email service would you like to use (e.g., Gmail, SMTP)?",
-          "What should the email subject be?"
-        ],
-        "suggestedTemplates": [
-          "Scheduled Email Notification",
-          "Automated Email Deployment",
-          "Cron-Triggered Email Service"
-        ]
-      },
-      "n8nId": null
-    },
-    "model_name": "llama-3.3-70b-versatile",
-    "tokens_used": 1286
-  },
-  {
-    "id": "a1e6ad9d-e85a-43ae-ab7d-3c9193b471fe",
-    "created_at": "2026-06-28T15:34:45.860Z",
-    "updated_at": "2026-06-28T15:34:45.860Z",
-    "conversation_id": "4b3f5c21-b56c-4900-8cec-c39780f54a5a",
-    "role": "user",
-    "content": "Automated Email Deployment",
-    "meta": {
-      "messageType": "message",
-      "workflow": null,
-      "n8nId": null
-    },
-    "model_name": null,
-    "tokens_used": null
-  },
-  {
-    "id": "20f0cbd3-a993-4602-943e-4115cfdbb40f",
-    "created_at": "2026-06-28T15:34:47.314Z",
-    "updated_at": "2026-06-28T15:34:47.314Z",
-    "conversation_id": "4b3f5c21-b56c-4900-8cec-c39780f54a5a",
-    "role": "ai",
-    "content": "To confirm, you want to create a workflow that sends an automated email with the content '🚀 This email was generated and deployed by FlowBuilder AI.' to sydystic.dev@gmail.com in one minute. This implies a scheduled trigger. For the action, we've specified the recipient but still need to confirm the email service and a few other details. \n   Here are the key points to consider:\n   * Trigger: Scheduled (every 1 minute)\n   * Action: Send Email\n   * Email Content: '🚀 This email was generated and deployed by FlowBuilder AI.',\n   * Recipient: sydystic.dev@gmail.com\n   Let's break down the details:\n   1. **Trigger**: \n      * Service: Cron (for scheduling)\n      * Event: On Schedule\n   2. **Action**:\n      * Service: '[unknown]' (e.g., Gmail, SMTP)\n      * Action: Send Email\n      * Channel/Recipient: sydystic.dev@gmail.com\n      * Details: Email content, subject, etc.\n   Questions to consider:\n   * What email service would you like to use (e.g., Gmail, SMTP)?",
-    "meta": {
-      "messageType": "clarifying_question",
-      "workflow": {
-        "spec": {
-          "trigger": {
-            "service": "Cron",
-            "event": "On Schedule",
-            "sheetName": "[unknown]",
-            "details": "every 1 minute"
-          },
-          "action": {
-            "service": "[unknown]",
-            "action": "Send Email",
-            "channel": "sydystic.dev@gmail.com",
-            "details": "Email content: '🚀 This email was generated and deployed by FlowBuilder AI.'"
-          }
-        },
-        "isReadyToGenerate": false,
-        "questions": [
-          "What email service would you like to use (e.g., Gmail, SMTP)?",
-          "What should the email subject be?"
-        ],
-        "suggestedTemplates": [
-          "Scheduled Email Notification",
-          "Automated Email Deployment",
-          "Cron-based Email Trigger"
-        ]
-      },
-      "n8nId": null
-    },
-    "model_name": "llama-3.3-70b-versatile",
-    "tokens_used": 1551
-  },
-  {
-    "id": "fa38a268-6ecc-4834-af71-22a3a7a1d443",
-    "created_at": "2026-06-28T15:34:55.738Z",
-    "updated_at": "2026-06-28T15:34:55.738Z",
-    "conversation_id": "4b3f5c21-b56c-4900-8cec-c39780f54a5a",
-    "role": "user",
-    "content": "gmail",
-    "meta": {
-      "messageType": "message",
-      "workflow": null,
-      "n8nId": null
-    },
-    "model_name": null,
-    "tokens_used": null
-  },
-  {
-    "id": "610d98a2-b67a-46d7-aa3d-9c2fd15abdcd",
-    "created_at": "2026-06-28T15:34:59.791Z",
-    "updated_at": "2026-06-28T15:34:59.791Z",
-    "conversation_id": "4b3f5c21-b56c-4900-8cec-c39780f54a5a",
-    "role": "ai",
-    "content": "We've made progress in specifying your workflow. To confirm, you want to create a workflow that sends an automated email with the content '🚀 This email was generated and deployed by FlowBuilder AI.' to sydystic.dev@gmail.com in one minute using Gmail. Let's review the details: \n   * Trigger: Scheduled (every 1 minute)\n   * Action: Send Email via Gmail\n   * Email Content: '🚀 This email was generated and deployed by FlowBuilder AI.',\n   * Recipient: sydystic.dev@gmail.com\n   We still need to consider a few more details, such as the subject of the email and any potential errors that might occur during the sending process.",
-    "meta": {
-      "messageType": "clarifying_question",
-      "workflow": {
-        "spec": {
-          "trigger": {
-            "service": "Cron",
-            "event": "On Schedule",
-            "details": "every 1 minute"
           },
           "action": {
             "service": "Gmail",
             "action": "Send Email",
             "channel": "sydystic.dev@gmail.com",
-            "details": "Email content: '🚀 This email was generated and deployed by FlowBuilder AI.'"
+            "details": "Subject: first workflow, Body: FlowBuilder AI built and deployed this workflow."
           }
         },
-        "isReadyToGenerate": false,
-        "questions": [
-          "What would you like the subject of the email to be?",
-          "How would you like to handle any errors that might occur during the sending process?"
-        ],
-        "suggestedTemplates": [
-          "Scheduled Email Notification",
-          "Automated Email Deployment",
-          "Error Handling for Email Workflows"
-        ]
+        "isReadyToGenerate": true,
+        "questions": [],
+        "suggestedTemplates": []
       },
       "n8nId": null
     },
     "model_name": "llama-3.3-70b-versatile",
-    "tokens_used": 1704
+    "tokens_used": 931
   },
   {
-    "id": "43b8e509-24ba-4381-95e0-376f0210ee34",
-    "created_at": "2026-06-28T15:35:16.264Z",
-    "updated_at": "2026-06-28T15:35:16.264Z",
-    "conversation_id": "4b3f5c21-b56c-4900-8cec-c39780f54a5a",
+    "id": "b00d12e8-8470-4f8a-8359-1e4298ee3ee9",
+    "created_at": "2026-06-28T16:23:28.752Z",
+    "updated_at": "2026-06-28T16:23:28.752Z",
+    "conversation_id": "b2f86f3d-e50e-4ca3-b42e-95bf52a9c07b",
     "role": "user",
-    "content": "subject - first workflow",
+    "content": "gmail OAuth",
     "meta": {
       "messageType": "message",
       "workflow": null,
@@ -1937,101 +160,42 @@
     "tokens_used": null
   },
   {
-    "id": "2b7b67ce-ccc7-4baf-a8dc-38682e99fc33",
-    "created_at": "2026-06-28T15:35:18.945Z",
-    "updated_at": "2026-06-28T15:35:18.945Z",
-    "conversation_id": "4b3f5c21-b56c-4900-8cec-c39780f54a5a",
+    "id": "bcc87637-1522-42a4-adb7-51ce40847b03",
+    "created_at": "2026-06-28T16:23:29.451Z",
+    "updated_at": "2026-06-28T16:23:29.451Z",
+    "conversation_id": "b2f86f3d-e50e-4ca3-b42e-95bf52a9c07b",
     "role": "ai",
-    "content": "We've made progress in specifying your workflow. To confirm, you want to create a workflow that sends an automated email with the content '🚀 This email was generated and deployed by FlowBuilder AI.' to sydystic.dev@gmail.com in one minute using Gmail. The email subject will be 'first workflow'. Let's review the details: \n   * Trigger: Scheduled (every 1 minute)\n   * Action: Send Email via Gmail\n   * Email Content: '🚀 This email was generated and deployed by FlowBuilder AI.',\n   * Recipient: sydystic.dev@gmail.com\n   * Subject: 'first workflow'\n   We still need to consider a few more details, such as error handling and success verification.",
+    "content": "I'm building a workflow that sends an email to `sydystic.dev@gmail.com` from `sydystic.dev@gmail.com` with the subject 'first workflow' and the message 'FlowBuilder AI built and deployed this workflow.' in one minute. I'm using Gmail with OAuth for authentication.",
     "meta": {
-      "messageType": "clarifying_question",
+      "messageType": "workflow",
       "workflow": {
         "spec": {
           "trigger": {
             "service": "Cron",
-            "event": "On Schedule",
-            "details": "every 1 minute"
+            "event": "Timer",
+            "details": "Every 1 minute"
           },
           "action": {
             "service": "Gmail",
             "action": "Send Email",
             "channel": "sydystic.dev@gmail.com",
-            "details": "Email content: '🚀 This email was generated and deployed by FlowBuilder AI.', Subject: 'first workflow'"
+            "details": "Subject: first workflow, Body: FlowBuilder AI built and deployed this workflow."
           }
         },
-        "isReadyToGenerate": false,
-        "questions": [
-          "How would you like to handle any errors that occur during the email sending process?",
-          "What criteria would you use to verify that the workflow has successfully sent the email?"
-        ],
-        "suggestedTemplates": [
-          "Scheduled Email Notification",
-          "Automated Email Deployment",
-          "Error Handling and Notification"
-        ]
+        "isReadyToGenerate": true,
+        "questions": [],
+        "suggestedTemplates": []
       },
       "n8nId": null
     },
     "model_name": "llama-3.3-70b-versatile",
-    "tokens_used": 1876
+    "tokens_used": 1006
   },
   {
-    "id": "1976f9e3-3c12-43f9-85ef-be6cd80552fe",
-    "created_at": "2026-06-28T15:35:35.979Z",
-    "updated_at": "2026-06-28T15:35:35.979Z",
-    "conversation_id": "4b3f5c21-b56c-4900-8cec-c39780f54a5a",
-    "role": "user",
-    "content": "i want verification mail to the sender",
-    "meta": {
-      "messageType": "message",
-      "workflow": null,
-      "n8nId": null
-    },
-    "model_name": null,
-    "tokens_used": null
-  },
-  {
-    "id": "03ace6ee-bca4-4b96-8f5c-b898766e0e16",
-    "created_at": "2026-06-28T15:35:37.218Z",
-    "updated_at": "2026-06-28T15:35:37.218Z",
-    "conversation_id": "4b3f5c21-b56c-4900-8cec-c39780f54a5a",
-    "role": "ai",
-    "content": "To confirm, you want to create a workflow that sends an automated email with the content '🚀 This email was generated and deployed by FlowBuilder AI.' to sydystic.dev@gmail.com in one minute using Gmail. The email subject will be 'first workflow'. You also want a verification email to be sent to the sender. Let's review the details: \n   * Trigger: Scheduled (every 1 minute)\n   * Action: Send Email via Gmail\n   * Email Content: '🚀 This email was generated and deployed by FlowBuilder AI.',\n   * Recipient: sydystic.dev@gmail.com\n   * Subject: 'first workflow'\n   * Verification: Send email to sender",
-    "meta": {
-      "messageType": "clarifying_question",
-      "workflow": {
-        "spec": {
-          "trigger": {
-            "service": "Cron",
-            "event": "On Schedule",
-            "details": "every 1 minute"
-          },
-          "action": {
-            "service": "Gmail",
-            "action": "Send Email",
-            "channel": "sydystic.dev@gmail.com",
-            "details": "Email content: '🚀 This email was generated and deployed by FlowBuilder AI.', Subject: 'first workflow'"
-          }
-        },
-        "isReadyToGenerate": false,
-        "questions": [
-          "What email address should be used as the sender for the automated email?"
-        ],
-        "suggestedTemplates": [
-          "Scheduled Email Notification",
-          "Automated Email Deployment with Verification"
-        ]
-      },
-      "n8nId": null
-    },
-    "model_name": "llama-3.3-70b-versatile",
-    "tokens_used": 2013
-  },
-  {
-    "id": "c8451d56-b40c-43be-84d5-035b6c36a799",
-    "created_at": "2026-06-28T15:35:43.699Z",
-    "updated_at": "2026-06-28T15:35:43.699Z",
-    "conversation_id": "4b3f5c21-b56c-4900-8cec-c39780f54a5a",
+    "id": "8493ab8f-ee54-4d08-8e1c-7c8d161cd13e",
+    "created_at": "2026-06-28T16:23:34.803Z",
+    "updated_at": "2026-06-28T16:23:34.803Z",
+    "conversation_id": "b2f86f3d-e50e-4ca3-b42e-95bf52a9c07b",
     "role": "user",
     "content": "yes",
     "meta": {
@@ -2043,28 +207,31 @@
     "tokens_used": null
   },
   {
-    "id": "68fa0343-d0ed-47d1-b146-25ec3bb38df6",
-    "created_at": "2026-06-28T15:35:44.621Z",
-    "updated_at": "2026-06-28T15:35:44.621Z",
-    "conversation_id": "4b3f5c21-b56c-4900-8cec-c39780f54a5a",
+    "id": "68dff103-311e-4d7c-8580-08e21e4f1a3b",
+    "created_at": "2026-06-28T16:23:35.612Z",
+    "updated_at": "2026-06-28T16:23:35.612Z",
+    "conversation_id": "b2f86f3d-e50e-4ca3-b42e-95bf52a9c07b",
     "role": "ai",
-    "content": "To confirm, you want to create a workflow that sends an automated email with the content '🚀 This email was generated and deployed by FlowBuilder AI.' to sydystic.dev@gmail.com in one minute using Gmail. The email subject will be 'first workflow'. You also want a verification email to be sent to the sender.",
+    "content": "I'm building a workflow that sends an email to `sydystic.dev@gmail.com` from `sydystic.dev@gmail.com` with the subject 'first workflow' and the message 'FlowBuilder AI built and deployed this workflow.' in one minute. I'm using Gmail with OAuth for authentication and a schedule trigger to send the email after 1 minute.",
     "meta": {
       "messageType": "workflow",
       "workflow": {
         "spec": {
           "trigger": {
             "service": "Cron",
-            "event": "On Schedule",
-            "details": "every 1 minute"
+            "event": "Schedule",
+            "details": "Every 1 minute"
           },
           "action": {
             "service": "Gmail",
             "action": "Send Email",
             "channel": "sydystic.dev@gmail.com",
             "details": {
-              "content": "🚀 This email was generated and deployed by FlowBuilder AI.",
-              "subject": "first workflow"
+              "subject": "first workflow",
+              "body": "FlowBuilder AI built and deployed this workflow.",
+              "from": "sydystic.dev@gmail.com",
+              "to": "sydystic.dev@gmail.com",
+              "auth": "OAuth"
             }
           }
         },
@@ -2075,6 +242,382 @@
       "n8nId": null
     },
     "model_name": "llama-3.3-70b-versatile",
-    "tokens_used": 2061
+    "tokens_used": 1132
+  },
+  {
+    "id": "ae76beaf-9a03-4d61-868b-a3e9067db7d9",
+    "created_at": "2026-06-28T16:25:09.124Z",
+    "updated_at": "2026-06-28T16:25:09.124Z",
+    "conversation_id": "13f72bb3-18c7-4744-ac0c-f060cd9ab1fe",
+    "role": "ai",
+    "content": "Deploy complete! I have generated and activated the workflow \"Google Sheets to Slack\" in your n8n workspace.",
+    "meta": {
+      "messageType": "workflow",
+      "workflow": {
+        "id": "53811506-4154-449e-9cfb-f867350272ab",
+        "ownerId": "526ee973-0cdc-4d22-bc06-280c532d31fe",
+        "name": "Google Sheets to Slack",
+        "description": "Create a complete n8n workflow for this spec:\nTrigger: Google Sheets (Event: New row added, Source/Sheet: Sales Data, Details: Monitor all sheets)\nAction: Slack (Action: Send message, Target/Channel: #general, Details: Include all columns in the message)",
+        "workflowSpec": {
+          "trigger": {
+            "service": "Google Sheets",
+            "event": "New row added",
+            "sheetName": "Sales Data",
+            "details": "Monitor all sheets"
+          },
+          "action": {
+            "service": "Slack",
+            "action": "Send message",
+            "channel": "#general",
+            "details": "Include all columns in the message"
+          }
+        },
+        "workflowJson": {
+          "name": "Google Sheets to Slack",
+          "nodes": [
+            {
+              "id": "node-1",
+              "name": "Google Sheets Trigger",
+              "type": "n8n-nodes-base.googleSheetsTrigger",
+              "typeVersion": 1,
+              "position": [
+                250,
+                300
+              ],
+              "parameters": {
+                "documentId": {
+                  "__rl": true,
+                  "value": "YOUR_SHEET_ID",
+                  "mode": "id"
+                },
+                "sheetName": {
+                  "__rl": true,
+                  "value": "Sales Data",
+                  "mode": "id"
+                },
+                "event": "rowAdded",
+                "options": {}
+              },
+              "credentials": {}
+            },
+            {
+              "id": "node-2",
+              "name": "Slack",
+              "type": "n8n-nodes-base.slack",
+              "typeVersion": 2.2,
+              "position": [
+                500,
+                300
+              ],
+              "parameters": {
+                "resource": "message",
+                "operation": "post",
+                "channel": {
+                  "__rl": true,
+                  "value": "#general",
+                  "mode": "name"
+                },
+                "text": "New row added to Sales Data sheet: {{ $json }}",
+                "options": {}
+              },
+              "credentials": {}
+            }
+          ],
+          "connections": {
+            "Google Sheets Trigger": {
+              "main": [
+                [
+                  {
+                    "node": "Slack",
+                    "type": "main",
+                    "index": 0
+                  }
+                ]
+              ]
+            }
+          },
+          "settings": {
+            "executionOrder": "v1"
+          }
+        },
+        "status": "active",
+        "n8nWorkflowId": "MsN2rh9m4oBAJAos",
+        "active": true,
+        "deploymentError": null,
+        "createdAt": "2026-06-28T16:25:07.430Z",
+        "updatedAt": "2026-06-28T16:25:09.089Z",
+        "nodes": [
+          {
+            "id": "node-1",
+            "name": "Google Sheets Trigger",
+            "type": "n8n-nodes-base.googleSheetsTrigger",
+            "typeVersion": 1,
+            "position": [
+              250,
+              300
+            ],
+            "parameters": {
+              "documentId": {
+                "__rl": true,
+                "value": "YOUR_SHEET_ID",
+                "mode": "id"
+              },
+              "sheetName": {
+                "__rl": true,
+                "value": "Sales Data",
+                "mode": "id"
+              },
+              "event": "rowAdded",
+              "options": {}
+            },
+            "credentials": {}
+          },
+          {
+            "id": "node-2",
+            "name": "Slack",
+            "type": "n8n-nodes-base.slack",
+            "typeVersion": 2.2,
+            "position": [
+              500,
+              300
+            ],
+            "parameters": {
+              "resource": "message",
+              "operation": "post",
+              "channel": {
+                "__rl": true,
+                "value": "#general",
+                "mode": "name"
+              },
+              "text": "New row added to Sales Data sheet: {{ $json }}",
+              "options": {}
+            },
+            "credentials": {}
+          }
+        ],
+        "connections": {
+          "Google Sheets Trigger": {
+            "main": [
+              [
+                {
+                  "node": "Slack",
+                  "type": "main",
+                  "index": 0
+                }
+              ]
+            ]
+          }
+        }
+      },
+      "n8nId": "MsN2rh9m4oBAJAos"
+    },
+    "model_name": null,
+    "tokens_used": null
+  },
+  {
+    "id": "a87094de-f541-43d3-a5a1-3112f56f4f13",
+    "created_at": "2026-06-28T16:26:35.139Z",
+    "updated_at": "2026-06-28T16:26:35.139Z",
+    "conversation_id": "be7fb0c9-2eaf-449e-a7ae-66a182f82465",
+    "role": "user",
+    "content": "Send a Slack message when a Google Sheet row is added",
+    "meta": {
+      "messageType": "message",
+      "workflow": null,
+      "n8nId": null
+    },
+    "model_name": null,
+    "tokens_used": null
+  },
+  {
+    "id": "59b7ffb5-447e-49eb-9f1f-b2ce8fef0452",
+    "created_at": "2026-06-28T16:26:37.974Z",
+    "updated_at": "2026-06-28T16:26:37.976Z",
+    "conversation_id": "be7fb0c9-2eaf-449e-a7ae-66a182f82465",
+    "role": "ai",
+    "content": "I'll build a workflow that sends a Slack message when a new row is added to a Google Sheet. I'm assuming: \n   - Monitoring all sheets in the Google Sheet document unless specified otherwise.\n   - Sending the message to the #general channel or a direct message to you if the channel isn't specified.\n   - Including all columns of the new row in the Slack message.\n   Please confirm or provide additional details if these assumptions are incorrect.",
+    "meta": {
+      "messageType": "clarifying_question",
+      "workflow": {
+        "spec": {
+          "trigger": {
+            "service": "Google Sheets",
+            "event": "New row added",
+            "sheetName": "[unknown]",
+            "details": "[unknown]"
+          },
+          "action": {
+            "service": "Slack",
+            "action": "Send message",
+            "channel": "[unknown]",
+            "details": "[unknown]"
+          }
+        },
+        "isReadyToGenerate": false,
+        "questions": [
+          "What is the name of the Google Sheet you'd like to monitor?"
+        ],
+        "suggestedTemplates": []
+      },
+      "n8nId": null
+    },
+    "model_name": "llama-3.3-70b-versatile",
+    "tokens_used": 927
+  },
+  {
+    "id": "02e0b312-bf1e-4d82-a26d-751a47cf8c6b",
+    "created_at": "2026-06-28T16:26:59.219Z",
+    "updated_at": "2026-06-28T16:26:59.219Z",
+    "conversation_id": "18e694a5-ca51-486f-9d09-44a021cd06b4",
+    "role": "user",
+    "content": "Send me an email in one minute saying - \"FlowBuilder AI built and deployed this workflow.\"",
+    "meta": {
+      "messageType": "message",
+      "workflow": null,
+      "n8nId": null
+    },
+    "model_name": null,
+    "tokens_used": null
+  },
+  {
+    "id": "8ba9ff22-c4fd-42fc-91d3-ff7274bf3f45",
+    "created_at": "2026-06-28T16:27:01.118Z",
+    "updated_at": "2026-06-28T16:27:01.118Z",
+    "conversation_id": "be7fb0c9-2eaf-449e-a7ae-66a182f82465",
+    "role": "user",
+    "content": "Yes, those assumptions are correct. Use 'Sales Data' sheet and channel '#general'",
+    "meta": {
+      "messageType": "message",
+      "workflow": null,
+      "n8nId": null
+    },
+    "model_name": null,
+    "tokens_used": null
+  },
+  {
+    "id": "f6dccea2-8275-47d7-a674-c61b81403b69",
+    "created_at": "2026-06-28T16:27:02.977Z",
+    "updated_at": "2026-06-28T16:27:02.977Z",
+    "conversation_id": "be7fb0c9-2eaf-449e-a7ae-66a182f82465",
+    "role": "ai",
+    "content": "I'm building a workflow that triggers when a new row is added to the 'Sales Data' sheet in your Google Sheet document. It will then send a Slack message to the '#general' channel with all columns of the new row. ",
+    "meta": {
+      "messageType": "workflow",
+      "workflow": {
+        "spec": {
+          "trigger": {
+            "service": "Google Sheets",
+            "event": "New row added",
+            "sheetName": "Sales Data",
+            "details": ""
+          },
+          "action": {
+            "service": "Slack",
+            "action": "Send message",
+            "channel": "#general",
+            "details": "Include all columns of the new row"
+          }
+        },
+        "isReadyToGenerate": true,
+        "questions": [],
+        "suggestedTemplates": []
+      },
+      "n8nId": null
+    },
+    "model_name": "llama-3.3-70b-versatile",
+    "tokens_used": 993
+  },
+  {
+    "id": "8747da3f-fe26-4423-ab1f-f9f04143592c",
+    "created_at": "2026-06-28T16:27:04.390Z",
+    "updated_at": "2026-06-28T16:27:04.390Z",
+    "conversation_id": "18e694a5-ca51-486f-9d09-44a021cd06b4",
+    "role": "ai",
+    "content": "I'll send you an email in one minute with the message 'FlowBuilder AI built and deployed this workflow.' I'm assuming your email address is the one you'd like me to use, and I'll send it to yourself. I'll use a simple email service for this purpose.",
+    "meta": {
+      "messageType": "workflow",
+      "workflow": {
+        "spec": {
+          "trigger": {
+            "service": "Schedule",
+            "event": "One-time timer",
+            "details": "Trigger in 1 minute"
+          },
+          "action": {
+            "service": "Email",
+            "action": "Send email",
+            "details": "Message body: 'FlowBuilder AI built and deployed this workflow.'"
+          }
+        },
+        "isReadyToGenerate": true,
+        "questions": [],
+        "suggestedTemplates": []
+      },
+      "n8nId": null
+    },
+    "model_name": "llama-3.3-70b-versatile",
+    "tokens_used": 886
+  },
+  {
+    "id": "9a7d11cf-2791-4e8e-b2c6-41c07ef02137",
+    "created_at": "2026-06-28T16:27:35.875Z",
+    "updated_at": "2026-06-28T16:27:35.875Z",
+    "conversation_id": "18e694a5-ca51-486f-9d09-44a021cd06b4",
+    "role": "user",
+    "content": "sydystic.dev@gmail.com for both sender and receiver and gmail OAuth service",
+    "meta": {
+      "messageType": "message",
+      "workflow": null,
+      "n8nId": null
+    },
+    "model_name": null,
+    "tokens_used": null
+  },
+  {
+    "id": "3f2d142a-d7b4-45d1-bbb2-717d60fb543a",
+    "created_at": "2026-06-28T16:27:43.987Z",
+    "updated_at": "2026-06-28T16:27:43.987Z",
+    "conversation_id": "18e694a5-ca51-486f-9d09-44a021cd06b4",
+    "role": "ai",
+    "content": "I'm building a workflow that sends an email to `sydystic.dev@gmail.com` from the same address using Gmail OAuth. The email will be sent in 1 minute with the subject 'Workflow Deployment' and the body 'FlowBuilder AI built and deployed this workflow.'",
+    "meta": {
+      "messageType": "workflow",
+      "workflow": {
+        "spec": {
+          "trigger": {
+            "service": "Cron",
+            "event": "Schedule",
+            "details": "Every 1 minute"
+          },
+          "action": {
+            "service": "Gmail",
+            "action": "Send Email",
+            "channel": "sydystic.dev@gmail.com",
+            "details": "Subject: Workflow Deployment, Body: FlowBuilder AI built and deployed this workflow."
+          }
+        },
+        "isReadyToGenerate": true,
+        "questions": [],
+        "suggestedTemplates": []
+      },
+      "n8nId": null
+    },
+    "model_name": "llama-3.3-70b-versatile",
+    "tokens_used": 983
+  },
+  {
+    "id": "b1cc841c-7762-46d8-9842-657adc48f3c1",
+    "created_at": "2026-06-28T16:28:12.247Z",
+    "updated_at": "2026-06-28T16:28:12.247Z",
+    "conversation_id": "18e694a5-ca51-486f-9d09-44a021cd06b4",
+    "role": "ai",
+    "content": "Sorry, I hit an error: n8n deployment failed: socket hang up",
+    "meta": {
+      "messageType": "message",
+      "workflow": null,
+      "n8nId": null
+    },
+    "model_name": null,
+    "tokens_used": null
   }
 ]

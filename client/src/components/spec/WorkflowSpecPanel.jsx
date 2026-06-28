@@ -1,9 +1,26 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 
 function EditableField({ label, value, onSave, validate }) {
   const [isEditing, setIsEditing] = useState(false);
-  const [tempValue, setTempValue] = useState(value || '');
+  
+  const getStringValue = (val) => {
+    if (!val) return '';
+    if (typeof val === 'object') {
+      try {
+        return JSON.stringify(val);
+      } catch (e) {
+        return String(val);
+      }
+    }
+    return String(val);
+  };
+
+  const [tempValue, setTempValue] = useState(getStringValue(value));
   const [error, setError] = useState(null);
+
+  useEffect(() => {
+    setTempValue(getStringValue(value));
+  }, [value]);
 
   const handleBlur = () => {
     const validationError = validate ? validate(tempValue) : null;
@@ -21,13 +38,13 @@ function EditableField({ label, value, onSave, validate }) {
     if (e.key === 'Enter') {
       handleBlur();
     } else if (e.key === 'Escape') {
-      setTempValue(value || '');
+      setTempValue(getStringValue(value));
       setError(null);
       setIsEditing(false);
     }
   };
 
-  const displayVal = value && value !== '[unknown]' ? value : '';
+  const displayVal = value && value !== '[unknown]' ? getStringValue(value) : '';
 
   if (isEditing) {
     return (

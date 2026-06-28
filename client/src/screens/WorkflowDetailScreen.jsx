@@ -41,6 +41,20 @@ export default function WorkflowDetailScreen() {
     setToasts(prev => prev.filter(t => t.id !== toastId));
   };
 
+  // React Query: Fetch config
+  const { data: config } = useQuery({
+    queryKey: ['config'],
+    queryFn: async () => {
+      const res = await axios.get('/api/config');
+      return res.data;
+    }
+  });
+
+  let n8nBaseUrl = config?.n8nUrl || 'http://localhost:5678';
+  if (n8nBaseUrl.includes('://n8n:')) {
+    n8nBaseUrl = n8nBaseUrl.replace('://n8n:', `://${window.location.hostname}:`);
+  }
+
   // React Query: Fetch single workflow details
   const { data: workflow, isLoading: isLoadingWorkflow, error: workflowError } = useQuery({
     queryKey: ['workflow', id],
@@ -216,7 +230,7 @@ export default function WorkflowDetailScreen() {
                           </span>
                           {workflow.n8nWorkflowId ? (
                             <a 
-                              href={`http://localhost:5678/workflow/${workflow.n8nWorkflowId}/executions/${exec.id}`} 
+                              href={`${n8nBaseUrl}/workflow/${workflow.n8nWorkflowId}/executions/${exec.id}`} 
                               target="_blank" 
                               rel="noreferrer" 
                               className="text-right font-medium text-primary hover:underline text-xs"
@@ -294,7 +308,13 @@ export default function WorkflowDetailScreen() {
                   ) : (
                     <>
                       <a 
-                        href={`http://localhost:5678/workflow/${workflow.n8nWorkflowId || ''}`} 
+                        href={workflow.n8nWorkflowId ? `${n8nBaseUrl}/workflow/${workflow.n8nWorkflowId}` : '#'}
+                        onClick={(e) => {
+                          if (!workflow.n8nWorkflowId) {
+                            e.preventDefault();
+                            showToast('No deployed workflow found for this record.', 'error');
+                          }
+                        }}
                         target="_blank" 
                         rel="noreferrer" 
                         className="notion-button-secondary flex-1 text-center flex items-center justify-center"

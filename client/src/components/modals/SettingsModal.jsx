@@ -1,9 +1,25 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
+import { useQuery } from '@tanstack/react-query';
+import axios from 'axios';
 
 export default function SettingsModal({ isOpen, onClose, showToast }) {
   const [model, setModel] = useState('gemini-1.5-flash');
   const [n8nUrl, setN8nUrl] = useState('http://localhost:5678');
   const [isTesting, setIsTesting] = useState(false);
+
+  const { data: config } = useQuery({
+    queryKey: ['config'],
+    queryFn: async () => {
+      const res = await axios.get('/api/config');
+      return res.data;
+    }
+  });
+
+  useEffect(() => {
+    if (config?.n8nUrl) {
+      setN8nUrl(config.n8nUrl);
+    }
+  }, [config]);
 
   if (!isOpen) return null;
 

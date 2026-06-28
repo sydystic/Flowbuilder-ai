@@ -39,6 +39,20 @@ export default function DashboardScreen() {
     setToasts((prev) => prev.filter((t) => t.id !== id));
   };
 
+  // React Query: Fetch config
+  const { data: config } = useQuery({
+    queryKey: ['config'],
+    queryFn: async () => {
+      const res = await axios.get('/api/config');
+      return res.data;
+    }
+  });
+
+  let n8nBaseUrl = config?.n8nUrl || 'http://localhost:5678';
+  if (n8nBaseUrl.includes('://n8n:')) {
+    n8nBaseUrl = n8nBaseUrl.replace('://n8n:', `://${window.location.hostname}:`);
+  }
+
   // React Query: Fetch workflows
   const { data: workflows = [], isLoading, error } = useQuery({
     queryKey: ['workflows'],
@@ -279,7 +293,13 @@ export default function DashboardScreen() {
                         </button>
                       ) : (
                         <a
-                          href={`http://localhost:5678/workflow/${wf.n8nWorkflowId || ''}`}
+                          href={wf.n8nWorkflowId ? `${n8nBaseUrl}/workflow/${wf.n8nWorkflowId}` : '#'}
+                          onClick={(e) => {
+                            if (!wf.n8nWorkflowId) {
+                              e.preventDefault();
+                              showToast('No deployed workflow found for this record.', 'error');
+                            }
+                          }}
                           target="_blank"
                           rel="noreferrer"
                           className="notion-button-secondary flex-1 h-9 text-sm text-center justify-center flex items-center"

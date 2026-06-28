@@ -1,1 +1,179 @@
-[]
+[
+  {
+    "id": "53811506-4154-449e-9cfb-f867350272ab",
+    "created_at": "2026-06-28T16:25:07.430Z",
+    "updated_at": "2026-06-28T16:25:09.089Z",
+    "owner_id": "526ee973-0cdc-4d22-bc06-280c532d31fe",
+    "name": "Google Sheets to Slack",
+    "description": "Create a complete n8n workflow for this spec:\nTrigger: Google Sheets (Event: New row added, Source/Sheet: Sales Data, Details: Monitor all sheets)\nAction: Slack (Action: Send message, Target/Channel: #general, Details: Include all columns in the message)",
+    "workflow_spec": {
+      "trigger": {
+        "service": "Google Sheets",
+        "event": "New row added",
+        "sheetName": "Sales Data",
+        "details": "Monitor all sheets"
+      },
+      "action": {
+        "service": "Slack",
+        "action": "Send message",
+        "channel": "#general",
+        "details": "Include all columns in the message"
+      }
+    },
+    "workflow_json": {
+      "name": "Google Sheets to Slack",
+      "nodes": [
+        {
+          "id": "node-1",
+          "name": "Google Sheets Trigger",
+          "type": "n8n-nodes-base.googleSheetsTrigger",
+          "typeVersion": 1,
+          "position": [
+            250,
+            300
+          ],
+          "parameters": {
+            "documentId": {
+              "__rl": true,
+              "value": "YOUR_SHEET_ID",
+              "mode": "id"
+            },
+            "sheetName": {
+              "__rl": true,
+              "value": "Sales Data",
+              "mode": "id"
+            },
+            "event": "rowAdded",
+            "options": {}
+          },
+          "credentials": {}
+        },
+        {
+          "id": "node-2",
+          "name": "Slack",
+          "type": "n8n-nodes-base.slack",
+          "typeVersion": 2.2,
+          "position": [
+            500,
+            300
+          ],
+          "parameters": {
+            "resource": "message",
+            "operation": "post",
+            "channel": {
+              "__rl": true,
+              "value": "#general",
+              "mode": "name"
+            },
+            "text": "New row added to Sales Data sheet: {{ $json }}",
+            "options": {}
+          },
+          "credentials": {}
+        }
+      ],
+      "connections": {
+        "Google Sheets Trigger": {
+          "main": [
+            [
+              {
+                "node": "Slack",
+                "type": "main",
+                "index": 0
+              }
+            ]
+          ]
+        }
+      },
+      "settings": {
+        "executionOrder": "v1"
+      }
+    },
+    "status": "active",
+    "is_active": true,
+    "deployment_error": null,
+    "n8n_workflow_id": "MsN2rh9m4oBAJAos"
+  },
+  {
+    "id": "0a7d1706-e54d-4280-9b59-19414227768c",
+    "created_at": "2026-06-28T16:27:53.549Z",
+    "updated_at": "2026-06-28T16:28:03.567Z",
+    "owner_id": "526ee973-0cdc-4d22-bc06-280c532d31fe",
+    "name": "Workflow Deployment Notification",
+    "description": "Create a complete n8n workflow for this spec:\nTrigger: Cron (Event: Schedule, Source/Sheet: undefined, Details: Every 1 minute)\nAction: Gmail (Action: Send Email, Target/Channel: sydystic.dev@gmail.com, Details: Subject: Workflow Deployment, Body: FlowBuilder AI built and deployed this workflow.)",
+    "workflow_spec": {
+      "trigger": {
+        "service": "Cron",
+        "event": "Schedule",
+        "details": "Every 1 minute"
+      },
+      "action": {
+        "service": "Gmail",
+        "action": "Send Email",
+        "channel": "sydystic.dev@gmail.com",
+        "details": "Subject: Workflow Deployment, Body: FlowBuilder AI built and deployed this workflow."
+      }
+    },
+    "workflow_json": {
+      "name": "Workflow Deployment Notification",
+      "nodes": [
+        {
+          "id": "node-1",
+          "name": "Cron Trigger",
+          "type": "n8n-nodes-base.scheduleTrigger",
+          "typeVersion": 1.2,
+          "position": [
+            250,
+            300
+          ],
+          "parameters": {
+            "rule": {
+              "interval": [
+                {
+                  "field": "minutes",
+                  "minutesInterval": 1
+                }
+              ]
+            }
+          },
+          "credentials": {}
+        },
+        {
+          "id": "node-2",
+          "name": "Send Email",
+          "type": "n8n-nodes-base.gmail",
+          "typeVersion": 2.1,
+          "position": [
+            500,
+            300
+          ],
+          "parameters": {
+            "sendTo": "sydystic.dev@gmail.com",
+            "subject": "Workflow Deployment",
+            "emailType": "text",
+            "message": "FlowBuilder AI built and deployed this workflow."
+          },
+          "credentials": {}
+        }
+      ],
+      "connections": {
+        "Cron Trigger": {
+          "main": [
+            [
+              {
+                "node": "Send Email",
+                "type": "main",
+                "index": 0
+              }
+            ]
+          ]
+        }
+      },
+      "settings": {
+        "executionOrder": "v1"
+      }
+    },
+    "status": "failed",
+    "is_active": false,
+    "deployment_error": "n8n deployment failed: socket hang up"
+  }
+]

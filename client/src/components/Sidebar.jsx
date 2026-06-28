@@ -1,10 +1,29 @@
-import { Link, useSearchParams } from 'react-router-dom';
-import { useQuery } from '@tanstack/react-query';
+import { useState } from 'react';
+import { Link, useSearchParams, useNavigate } from 'react-router-dom';
+import { useQuery, useQueryClient } from '@tanstack/react-query';
 import axios from 'axios';
 
 export default function Sidebar({ activeTab }) {
   const [searchParams] = useSearchParams();
   const currentChatId = searchParams.get('c');
+  const navigate = useNavigate();
+  const queryClient = useQueryClient();
+
+  const [deleteChatModal, setDeleteChatModal] = useState({ isOpen: false, id: null, title: '' });
+
+  // React Query: Fetch config
+  const { data: config } = useQuery({
+    queryKey: ['config'],
+    queryFn: async () => {
+      const res = await axios.get('/api/config');
+      return res.data;
+    }
+  });
+
+  let n8nBaseUrl = config?.n8nUrl || 'http://localhost:5678';
+  if (n8nBaseUrl.includes('://n8n:')) {
+    n8nBaseUrl = n8nBaseUrl.replace('://n8n:', `://${window.location.hostname}:`);
+  }
 
   // React Query: Fetch workflows
   const { data: workflows = [], isLoading: isWorkflowsLoading } = useQuery({
@@ -32,6 +51,25 @@ export default function Sidebar({ activeTab }) {
 
   const recentWorkflows = workflows.slice(0, 5);
   const recentChats = conversations.slice(0, 5);
+
+  const handleDeleteChatClick = (e, id, title) => {
+    e.preventDefault();
+    e.stopPropagation();
+    setDeleteChatModal({ isOpen: true, id, title });
+  };
+
+  const confirmDeleteChat = async () => {
+    try {
+      await axios.delete(`/api/chat/sessions/${deleteChatModal.id}`);
+      queryClient.invalidateQueries({ queryKey: ['conversations'] });
+      if (currentChatId === deleteChatModal.id) {
+        navigate('/');
+      }
+      setDeleteChatModal({ isOpen: false, id: null, title: '' });
+    } catch (err) {
+      console.error('Failed to delete chat:', err);
+    }
+  };
 
   return (
     <aside className="notion-sidebar w-[260px] h-full flex flex-col px-3 py-3 gap-5 overflow-y-auto flex-shrink-0">
@@ -87,12 +125,20 @@ export default function Sidebar({ activeTab }) {
             <Link
               key={chat.id}
               to={`/?c=${chat.id}`}
-              className={`notion-nav-item flex items-center gap-2 px-2 py-1.5 text-sm ${
+              className={`notion-nav-item group flex items-center gap-2 px-2 py-1.5 text-sm ${
                 currentChatId === chat.id ? 'notion-nav-item-active' : ''
               }`}
             >
-              <span className="material-symbols-outlined text-[16px] text-ink-muted">chat_bubble</span>
-              <span className="truncate">{chat.title}</span>
+              <span className="material-symbols-outlined text-[16px] text-ink-muted shrink-0">chat_bubble</span>
+              <span className="truncate flex-1">{chat.title}</span>
+              <button
+                onClick={(e) => handleDeleteChatClick(e, chat.id, chat.title)}
+                className="opacity-0 group-hover:opacity-100 flex h-5 w-5 items-center justify-center rounded text-ink-faint hover:bg-black/[0.08] hover:text-[#93000a] transition-all ml-auto shrink-0"
+                title="Delete Chat"
+                type="button"
+              >
+                <span className="material-symbols-outlined text-[14px]">delete</span>
+              </button>
             </Link>
           ))}
         </div>
@@ -131,7 +177,7 @@ export default function Sidebar({ activeTab }) {
 
       <div className="mt-auto px-2 pb-1">
         <a
-          href="http://localhost:5678"
+          href={n8nBaseUrl}
           target="_blank"
           rel="noreferrer"
           className="notion-nav-item flex items-center gap-2 px-2.5 py-1.5 text-sm"
@@ -140,6 +186,29 @@ export default function Sidebar({ activeTab }) {
           Open n8n
         </a>
       </div>
+
+      {deleteChatModal.isOpen && (
+        <div className="fixed inset-0 z-[9999] flex items-center justify-center bg-black/30 p-4 backdrop-blur-sm">
+          <div className="notion-surface w-full max-w-md p-6">
+            <h3 className="text-xl font-semibold text-ink">Delete Chat</h3>
+            <p className="mt-2 text-sm leading-6 text-ink-muted">
+              Delete <span className="font-semibold text-ink">"{deleteChatModal.title}"</span>? This will permanently remove the conversation and its message history.
+            </p>
+            <div className="mt-6 flex justify-end gap-2">
+              <button
+                onClick={() => setDeleteChatModal({ isOpen: false, id: null, title: '' })}
+                className="notion-button-secondary"
+                type="button"
+              >
+                Cancel
+              </button>
+              <button onClick={confirmDeleteChat} className="notion-button bg-[#93000a] hover:bg-[#7d0008]" type="button">
+                Delete
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
     </aside>
   );
 }

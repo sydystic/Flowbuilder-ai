@@ -136,6 +136,16 @@ const sessionStore = {
   },
 
   async deleteSession(id) {
+    // Delete associated messages first
+    try {
+      await supabase
+        .from("messages")
+        .delete()
+        .eq("conversation_id", id);
+    } catch (msgErr) {
+      console.warn("Warning deleting messages in deleteSession:", msgErr.message);
+    }
+
     const { error } = await supabase
       .from("conversations")
       .delete()

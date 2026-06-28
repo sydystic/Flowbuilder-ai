@@ -11,7 +11,7 @@ router.get("/config", requireAuth, (req, res) => {
 
   res.json({
     aiProvider: providers.join(" / ") || "Default (Offline Simulation)",
-    n8nUrl: process.env.N8N_BASE_URL || "http://localhost:5678",
+    n8nUrl: process.env.N8N_EDITOR_BASE_URL || process.env.N8N_BASE_URL || "http://localhost:5678",
     demoMode: process.env.DEMO_MODE === "true"
   });
 });

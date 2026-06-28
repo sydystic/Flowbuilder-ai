@@ -8,8 +8,6 @@ FlowBuilder AI is an AI-powered workflow automation platform that transforms nat
 
 ## 🎥 Demo
 
-**Watch FlowBuilder AI in action**
-
 [https://github.com/user-attachments/assets/your-demo-video](https://github.com/user-attachments/assets/04273a54-d617-4a04-98a6-6c940bccc524)
 
 ---
@@ -210,25 +208,6 @@ http://localhost:5173
 
 ---
 
-## Screenshots
-
-### Chat Builder
-
-*(Add screenshot)*
-
-### Dashboard
-
-*(Add screenshot)*
-
-### Workflow Detail
-
-*(Add screenshot)*
-
-### Credential Manager
-
-*(Add screenshot)*
-
----
 
 ## Project Structure
 
